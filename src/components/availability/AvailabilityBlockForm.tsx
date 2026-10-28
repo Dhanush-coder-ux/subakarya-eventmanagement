@@ -178,3 +178,4 @@ export const AvailabilityBlockForm: React.FC<AvailabilityBlockFormProps> = ({
     </div>
   );
 };
+

@@ -19,6 +19,8 @@ interface AuthState {
   updateCustomerProfile: (data: Partial<CustomerProfile>) => void;
   updateProfessionalProfile: (data: Partial<ProfessionalProfile>) => void;
   resetAuthData: () => void;
+  isMobileMenuOpen: boolean;
+  toggleMobileMenu: (open?: boolean) => void;
 }
 
 const getInitialState = () => {
@@ -55,6 +57,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoggedIn: initialState.isLoggedIn,
   allCustomers: initialState.allCustomers,
   allProfessionals: initialState.allProfessionals,
+  isMobileMenuOpen: false,
+  toggleMobileMenu: (open?: boolean) => {
+    set((state) => ({
+      isMobileMenuOpen: open !== undefined ? open : !state.isMobileMenuOpen,
+    }));
+  },
 
   login: (_email?: string, role: Role = 'customer', specificUserId?: string) => {
     const { allCustomers, allProfessionals } = get();

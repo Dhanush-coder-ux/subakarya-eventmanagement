@@ -6,7 +6,7 @@ import { BottomNav } from './BottomNav';
 import { useAuthStore } from '../../store/useAuthStore';
 
 export const Layout: React.FC = () => {
-  const { isLoggedIn } = useAuthStore();
+  const { isLoggedIn, accountType } = useAuthStore();
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
@@ -21,7 +21,7 @@ export const Layout: React.FC = () => {
       <Sidebar />
 
       {/* Main Content Area */}
-      <main className="flex-1 md:ml-[72px] lg:ml-[245px] pb-16 md:pb-6 transition-all duration-200">
+      <main className={`flex-1 ${accountType === "customer" ? "md:ml-[72px] lg:ml-[245px]" : "md:ml-64"} pb-16 md:pb-6 transition-all duration-200`}>
         <Outlet />
       </main>
 

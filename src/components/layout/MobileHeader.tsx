@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, Send, Sparkles } from 'lucide-react';
+import { Heart, Send, Sparkles, Menu } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useMarketplaceStore } from '../../store/useMarketplaceStore';
 
 export const MobileHeader: React.FC = () => {
   const navigate = useNavigate();
-  const { currentUser, accountType, setAccountType } = useAuthStore();
+  const { currentUser, accountType, setAccountType, toggleMobileMenu } = useAuthStore();
   const { conversations } = useMarketplaceStore();
 
   const isCustomer = accountType === 'customer';

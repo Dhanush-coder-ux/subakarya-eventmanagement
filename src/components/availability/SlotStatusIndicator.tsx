@@ -87,3 +87,4 @@ export const SlotStatusIndicator: React.FC<SlotStatusIndicatorProps> = ({
       );
   }
 };
+

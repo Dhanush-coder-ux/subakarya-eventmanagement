@@ -327,3 +327,4 @@ export const mockAvailabilityBlocks: AvailabilityBlock[] = [
     category: 'Maintenance',
   },
 ];
+

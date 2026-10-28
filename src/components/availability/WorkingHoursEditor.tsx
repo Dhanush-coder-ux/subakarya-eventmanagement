@@ -150,3 +150,4 @@ export const WorkingHoursEditor: React.FC<WorkingHoursEditorProps> = ({
     </div>
   );
 };
+

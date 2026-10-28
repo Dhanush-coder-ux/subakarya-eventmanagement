@@ -5,17 +5,28 @@ import {
   Search,
   Film,
   CalendarCheck,
+  Calendar,
+  Send,
   User,
   LayoutDashboard,
+  Menu,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 
+interface NavLinkItem {
+  label: string;
+  path: string;
+  icon: any;
+  isAvatar?: boolean;
+  isToggle?: boolean;
+}
+
 export const BottomNav: React.FC = () => {
   const location = useLocation();
-  const { currentUser, accountType } = useAuthStore();
+  const { currentUser, accountType, toggleMobileMenu } = useAuthStore();
   const isCustomer = accountType === 'customer';
 
-  const customerLinks = [
+  const customerLinks: NavLinkItem[] = [
     { label: 'Home', path: '/', icon: Home },
     { label: 'Search', path: '/search', icon: Search },
     { label: 'Reels', path: '/reels', icon: Film },
@@ -23,12 +34,12 @@ export const BottomNav: React.FC = () => {
     { label: 'Profile', path: `/profile/${currentUser.id}`, icon: User, isAvatar: true },
   ];
 
-  const professionalLinks = [
+  const professionalLinks: NavLinkItem[] = [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { label: 'Reels', path: '/reels', icon: Film },
+    { label: 'Calendar', path: '/professional/calendar', icon: Calendar },
     { label: 'Bookings', path: '/bookings', icon: CalendarCheck },
-    { label: 'Services', path: '/services', icon: Search },
-    { label: 'Profile', path: `/profile/${currentUser.id}`, icon: User, isAvatar: true },
+    { label: 'Messages', path: '/chat', icon: Send },
+    { label: 'Menu', path: '#menu', icon: Menu, isToggle: true },
   ];
 
   const links = isCustomer ? customerLinks : professionalLinks;
@@ -39,6 +50,21 @@ export const BottomNav: React.FC = () => {
         {links.map((link) => {
           const Icon = link.icon;
           const isActive = location.pathname === link.path;
+
+          if (link.isToggle) {
+            return (
+              <button
+                key={link.path}
+                type="button"
+                onClick={() => toggleMobileMenu(true)}
+                className="p-1.5 flex items-center justify-center transition-transform active:scale-90 text-charcoal hover:text-wine"
+                title={link.label}
+              >
+                <Icon className="w-6 h-6 stroke-[1.8px]" />
+              </button>
+            );
+          }
+
           return (
             <Link
               key={link.path}

@@ -195,3 +195,4 @@ export const BookingDetailsDrawer: React.FC<BookingDetailsDrawerProps> = ({
     </div>
   );
 };
+
