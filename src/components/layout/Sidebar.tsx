@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
@@ -96,7 +96,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
             {!isChatRoute && (
               <div className="hidden lg:flex flex-col">
                 <span className="font-bold text-xl tracking-wider text-charcoal leading-none">
-                  SOIRÉE
+                  SUBAKARYA
                 </span>
                 <span className="text-[10px] text-wine font-semibold uppercase tracking-widest mt-0.5">
                   {isCustomer ? 'Marketplace' : 'Vendor Suite'}

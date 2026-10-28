@@ -73,7 +73,7 @@ export const Navbar: React.FC = () => {
               <img src="/subakarya-logo.png" alt="Subakarya Logo" className="w-9 h-9 object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-sm" />
               <div className="flex flex-col">
                 <span className="font-bold text-2xl font-bold tracking-widest text-charcoal leading-none">
-                  SOIRÉE
+                  SUBAKARYA
                 </span>
                 <span className="text-[10px] uppercase tracking-widest text-wine font-medium">
                   Event Concierge

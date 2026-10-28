@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   CheckCircle2,
@@ -209,7 +209,7 @@ export const ProfilePage: React.FC = () => {
               <span className="font-semibold text-wine block">{professional.category}</span>
             )}
             <p className="text-charcoal leading-relaxed whitespace-pre-line">
-              {professional?.description || customer?.location || 'Event enthusiast on Soirée'}
+              {professional?.description || customer?.location || 'Event enthusiast on Subakarya'}
             </p>
             {professional?.coverageArea && (
               <p className="text-charcoal-muted flex items-center justify-center sm:justify-start gap-1">

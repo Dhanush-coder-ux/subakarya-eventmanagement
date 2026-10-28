@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Settings as SettingsIcon,
@@ -254,7 +254,7 @@ export const SettingsPage: React.FC = () => {
         <div className="mt-4 p-3 bg-sand/30 rounded-xl border border-sand-dark/50 text-[11px] text-charcoal-muted leading-relaxed flex items-start gap-2">
           <ShieldCheck className="w-4 h-4 text-wine flex-shrink-0 mt-0.5" />
           <span>
-            Soirée is a high-fidelity frontend architecture prototype. All data is persisted locally in your browser’s localStorage. No external payment processing or backend server communication occurs.
+            Subakarya is a high-fidelity frontend architecture prototype. All data is persisted locally in your browser’s localStorage. No external payment processing or backend server communication occurs.
           </span>
         </div>
       </div>

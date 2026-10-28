@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+﻿import { create } from 'zustand';
 import {
   Post,
   Reel,
@@ -32,7 +32,7 @@ import {
   defaultWorkingHours,
 } from '../data/mockAvailability';
 
-const MARKETPLACE_STORAGE_KEY = 'soiree_marketplace_data_v1';
+const MARKETPLACE_STORAGE_KEY = 'subakarya_marketplace_data_v1';
 
 interface MarketplaceState {
   posts: Post[];

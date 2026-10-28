@@ -1,4 +1,4 @@
-# SOIRÉE — Premium Event Services Marketplace (Frontend Only)
+﻿# SUBAKARYA — Premium Event Services Marketplace (Frontend Only)
 
 A responsive, editorial-style event services marketplace web application built with React, TypeScript, Vite, and Tailwind CSS. The platform connects customers with verified event professionals (wedding planners, cinematic photographers, venues, caterers, makeup artists, decorators, and equipment rentals) featuring discovery feeds, high-definition reels, hashtag searches, dynamic profile completeness tracking, and structured booking chat with precalculated itemized quotations.
 

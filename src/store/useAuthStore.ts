@@ -1,8 +1,8 @@
-import { create } from 'zustand';
+﻿import { create } from 'zustand';
 import { CustomerProfile, ProfessionalProfile, Role } from '../types';
 import { mockCustomers, mockProfessionals } from '../data/mockUsers';
 
-const AUTH_STORAGE_KEY = 'soiree_auth_state_v1';
+const AUTH_STORAGE_KEY = 'subakarya_auth_state_v1';
 
 interface AuthState {
   currentUser: CustomerProfile | ProfessionalProfile;

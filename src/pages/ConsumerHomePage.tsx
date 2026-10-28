@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Sparkles,
@@ -181,7 +181,7 @@ export const ConsumerHomePage: React.FC = () => {
             <Link to="/chat" className="hover:underline">Direct</Link>
           </p>
           <p className="mt-3 uppercase tracking-wider text-[10px]">
-            © 2026 SOIRÉE MARKETPLACE • INSTAGRAM ARCHITECTURE
+            © 2026 SUBAKARYA • INSTAGRAM ARCHITECTURE
           </p>
         </div>
       </aside>

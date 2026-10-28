@@ -45,7 +45,7 @@ export const LoginPage: React.FC = () => {
         <div className="text-center mb-6">
           <img src="/subakarya-logo.png" alt="Subakarya Logo" className="w-20 h-20 sm:w-24 sm:h-24 mx-auto object-contain mb-3 drop-shadow-md" />
           <h1 className="font-bold text-3xl font-bold tracking-wider text-charcoal">
-            SOIRÉE
+            SUBAKARYA
           </h1>
           <p className="text-xs uppercase tracking-widest text-wine font-semibold mt-1">
             Premium Event Services Marketplace
@@ -163,7 +163,7 @@ export const LoginPage: React.FC = () => {
 
         {/* Footer Link */}
         <div className="mt-6 pt-5 border-t border-border/80 text-center text-xs text-charcoal-muted">
-          <span>New to Soirée? </span>
+          <span>New to SUBAKARYA </span>
           <Link
             to="/account-type"
             className="font-bold text-wine hover:underline"
