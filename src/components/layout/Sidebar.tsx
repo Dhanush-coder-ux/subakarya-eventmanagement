@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
@@ -92,9 +92,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
             to={isCustomer ? '/' : '/dashboard'}
             className="flex items-center gap-3 px-3 py-2 text-charcoal group"
           >
-            <div className="w-8 h-8 rounded-lg bg-wine flex items-center justify-center text-white font-bold text-base shadow-xs flex-shrink-0 group-hover:scale-105 transition-transform">
-              S
-            </div>
+            <img src="/sidebar-s-emblem.png" alt="Emblem" className="w-9 h-9 object-contain flex-shrink-0 group-hover:scale-105 transition-transform drop-shadow-sm" />
             {!isChatRoute && (
               <div className="hidden lg:flex flex-col">
                 <span className="font-bold text-xl tracking-wider text-charcoal leading-none">
