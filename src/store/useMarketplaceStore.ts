@@ -16,6 +16,7 @@ import {
   AvailabilitySlot,
   AvailabilityBlock,
   AvailabilityModelType,
+  PendingBookingContext,
 } from '../types';
 import { mockPosts } from '../data/mockPosts';
 import { mockReels } from '../data/mockReels';
@@ -47,21 +48,11 @@ interface MarketplaceState {
   availabilityBlocks: AvailabilityBlock[];
   workingHours: AvailabilityRule[];
   activeConversationId: string | null;
-  pendingBookingContext: {
-    professionalId: string;
-    preselectedServiceId?: string;
-    preselectedDate?: string;
-    preselectedSlotId?: string;
-  } | null;
+  pendingBookingContext: PendingBookingContext | null;
 
   // Actions
   setActiveConversation: (id: string | null) => void;
-  setPendingBookingContext: (ctx: {
-    professionalId: string;
-    preselectedServiceId?: string;
-    preselectedDate?: string;
-    preselectedSlotId?: string;
-  } | null) => void;
+  setPendingBookingContext: (ctx: PendingBookingContext | null) => void;
 
   // Discovery interactions
   toggleLikePost: (postId: string) => void;
@@ -118,13 +109,7 @@ interface MarketplaceState {
   deleteAvailabilityBlock: (blockId: string) => void;
 
   // Structured Booking & Chat Actions
-  initiateBookingChat: (
-    professionalId: string,
-    customer: { id: string; name: string; avatar: string; phone?: string },
-    preselectedServiceId?: string,
-    preselectedDate?: string,
-    preselectedSlotId?: string
-  ) => string;
+  initiateBookingChat: (professionalId: string, customer: { id: string; name: string; avatar: string; phone?: string }, preselectedServiceId?: string, preselectedDate?: string, preselectedSlotId?: string, extraContext?: Partial<PendingBookingContext>) => string;
 
   sendBookingRequest: (
     conversationId: string,
@@ -221,7 +206,12 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
 
   setActiveConversation: (id) => set({ activeConversationId: id }),
 
-  setPendingBookingContext: (ctx) => set({ pendingBookingContext: ctx }),
+  setPendingBookingContext: (ctx) =>
+    set((state) => {
+      const newState = { ...state, pendingBookingContext: ctx };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { pendingBookingContext: ctx };
+    }),
 
   toggleLikePost: (postId) => {
     set((state) => {
@@ -657,9 +647,30 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
   /**
    * Opens or creates a structured booking conversation between customer & professional
    */
-  initiateBookingChat: (professionalId, customer, preselectedServiceId, preselectedDate, preselectedSlotId) => {
-    const { conversations, messages, bookings } = get();
+  initiateBookingChat: (professionalId: string, customer: { id: string; name: string; avatar: string; phone?: string }, preselectedServiceId?: string, preselectedDate?: string, preselectedSlotId?: string, extraContext?: Partial<PendingBookingContext>) => {
+    const { conversations, messages, bookings, services, availabilitySlots } = get();
     const pro = mockProfessionals.find((p) => p.id === professionalId) || mockProfessionals[0];
+    const matchedService = services.find((s) => s.id === preselectedServiceId);
+    const matchedSlot = availabilitySlots.find((s) => s.id === preselectedSlotId);
+
+    const bookingContext: PendingBookingContext = {
+      customerId: customer.id,
+      customerName: customer.name,
+      customerPhone: customer.phone,
+      professionalId: pro.id,
+      professionalName: pro.businessName,
+      professionalAvatar: pro.avatar,
+      preselectedServiceId,
+      selectedServiceName: matchedService?.name,
+      preselectedDate,
+      preselectedSlotId,
+      startTime: matchedSlot?.startTime,
+      endTime: matchedSlot?.endTime,
+      timezone: 'IST (UTC+5:30)',
+      packagePrice: matchedSlot?.priceOverride || matchedService?.basePrice || pro.minBookingAmount,
+      bookingType: matchedSlot?.slotType || 'appointment',
+      ...extraContext,
+    };
 
     // Check if an existing conversation exists between customer and professional
     const existing = conversations.find(
@@ -667,14 +678,14 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
     );
 
     if (existing) {
-      set({
-        activeConversationId: existing.id,
-        pendingBookingContext: {
-          professionalId,
-          preselectedServiceId,
-          preselectedDate,
-          preselectedSlotId,
-        },
+      set((state) => {
+        const newState = {
+          ...state,
+          activeConversationId: existing.id,
+          pendingBookingContext: bookingContext,
+        };
+        localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+        return newState;
       });
       return existing.id;
     }
@@ -693,10 +704,12 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
       professionalName: pro.businessName,
       professionalAvatar: pro.avatar,
       professionalCategory: pro.category,
-      eventType: 'Event Enquiry',
+      eventType: extraContext?.eventType || 'Event Enquiry',
       eventDate: preselectedDate || new Date(Date.now() + 86400000 * 20).toISOString().split('T')[0],
       slotId: preselectedSlotId,
-      location: pro.location,
+      startTime: matchedSlot?.startTime,
+      endTime: matchedSlot?.endTime,
+      location: extraContext?.location || pro.location,
       status: 'pending',
       selectedServiceIds: preselectedServiceId ? [preselectedServiceId] : [],
       createdAt: new Date().toISOString(),
@@ -745,7 +758,7 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
         bookings: updatedBookings,
         messages: updatedMessages,
         activeConversationId: newConvId,
-        pendingBookingContext: { professionalId, preselectedServiceId },
+        pendingBookingContext: bookingContext,
       };
       localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
       return newState;

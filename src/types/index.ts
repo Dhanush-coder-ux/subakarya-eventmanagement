@@ -234,6 +234,30 @@ export interface BookingRequestData {
   budgetRange?: string;
   additionalRequirements?: string;
   isCustomAvailabilityRequest?: boolean;
+  estimatedAmount?: number;
+}
+
+export interface PendingBookingContext {
+  customerId: string;
+  customerName: string;
+  customerPhone?: string;
+  professionalId: string;
+  professionalName: string;
+  professionalAvatar?: string;
+  preselectedServiceId?: string;
+  selectedServiceName?: string;
+  preselectedDate?: string;
+  preselectedSlotId?: string;
+  startTime?: string;
+  endTime?: string;
+  timezone?: string;
+  packagePrice?: number;
+  bookingType?: string;
+  guestCount?: number;
+  eventType?: string;
+  location?: string;
+  notes?: string;
+  isCustomAvailabilityRequest?: boolean;
 }
 
 export interface QuoteItem {

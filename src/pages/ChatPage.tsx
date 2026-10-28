@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useParams } from 'react-router-dom';
 import {
   Send,
   Sparkles,
@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   User,
   PlusCircle,
+  AlertCircle,
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useMarketplaceStore } from '../store/useMarketplaceStore';
@@ -27,6 +28,7 @@ import { Quotation, BookingRequestData } from '../types';
 
 export const ChatPage: React.FC = () => {
   const navigate = useNavigate();
+  const { conversationId } = useParams<{ conversationId?: string }>();
   const { currentUser, accountType } = useAuthStore();
   const {
     conversations,
@@ -48,10 +50,21 @@ export const ChatPage: React.FC = () => {
   const [messageInput, setMessageInput] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [showQuoteModal, setShowQuoteModal] = useState(false);
-  const [showMobileList, setShowMobileList] = useState(!activeConversationId);
+  const [showMobileList, setShowMobileList] = useState(!activeConversationId && !conversationId);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const isCustomer = accountType === 'customer';
+
+  // Sync conversationId from URL parameter if provided
+  useEffect(() => {
+    if (conversationId && conversationId !== activeConversationId) {
+      const exists = conversations.some((c) => c.id === conversationId);
+      if (exists) {
+        setActiveConversation(conversationId);
+        setShowMobileList(false);
+      }
+    }
+  }, [conversationId, activeConversationId, conversations, setActiveConversation]);
 
   // Active conversation
   const activeConversation = conversations.find((c) => c.id === activeConversationId);
@@ -83,6 +96,7 @@ export const ChatPage: React.FC = () => {
   const handleSelectConversation = (id: string) => {
     setActiveConversation(id);
     setShowMobileList(false);
+    navigate(`/messages/${id}`);
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -149,7 +163,7 @@ export const ChatPage: React.FC = () => {
           {/* Header & Search */}
           <div className="p-4 border-b border-border space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="font-bold text-lg font-bold text-charcoal">
+              <h2 className="font-bold text-lg text-charcoal">
                 Event Messages & Bookings
               </h2>
               <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sand text-charcoal border border-sand-dark">
@@ -280,22 +294,23 @@ export const ChatPage: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Professional Actions (Create Quotation / Manage Booking) */}
+                {/* Top Action Buttons */}
                 <div className="flex items-center gap-2">
                   {!isCustomer ? (
                     <button
                       onClick={() => setShowQuoteModal(true)}
-                      className="px-3 py-1.5 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-all active:scale-95"
+                      className="px-3 py-1.5 rounded-xl bg-wine hover:bg-wine-deep text-white text-xs font-bold flex items-center gap-1.5 shadow-subtle transition-all active:scale-95"
                     >
                       <PlusCircle className="w-3.5 h-3.5" />
                       <span>Create Quotation</span>
                     </button>
                   ) : (
                     <Link
-                      to={`/profile/${activeConversation.professionalId}`}
-                      className="px-3 py-1.5 rounded-lg border border-border hover:bg-sand/30 text-xs font-semibold text-charcoal"
+                      to={`/professionals/${activeConversation.professionalId}/availability`}
+                      className="px-3 py-1.5 rounded-lg border border-border hover:bg-sand/30 text-xs font-semibold text-charcoal flex items-center gap-1.5"
                     >
-                      View Profile
+                      <Calendar className="w-3.5 h-3.5 text-wine" />
+                      <span>Check Slots</span>
                     </Link>
                   )}
                 </div>
@@ -303,19 +318,38 @@ export const ChatPage: React.FC = () => {
 
               {/* Messages Timeline */}
               <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-                {/* Notice for Customer if they just clicked Book Now & have a pending booking form */}
+                {/* Prefilled Structured Booking Request Draft Card for Customer */}
                 {isCustomer && pendingBookingContext && (
                   <BookingRequestCard
                     isFormMode={true}
+                    professionalName={pendingBookingContext.professionalName}
+                    professionalId={pendingBookingContext.professionalId}
                     defaultCustomerId={currentUser.id}
                     defaultCustomerName={currentUser.name}
                     defaultCustomerPhone={currentUser.phone}
                     preselectedServiceId={pendingBookingContext.preselectedServiceId}
                     preselectedDate={pendingBookingContext.preselectedDate}
                     preselectedSlotId={pendingBookingContext.preselectedSlotId}
+                    preselectedStartTime={pendingBookingContext.startTime}
+                    preselectedEndTime={pendingBookingContext.endTime}
+                    preselectedPrice={pendingBookingContext.packagePrice}
+                    preselectedEventType={pendingBookingContext.eventType}
+                    preselectedLocation={pendingBookingContext.location}
+                    preselectedGuestCount={pendingBookingContext.guestCount}
+                    preselectedNotes={pendingBookingContext.notes}
+                    isCustomAvailabilityRequest={pendingBookingContext.isCustomAvailabilityRequest}
                     professionalServices={proServices}
                     professionalInventory={proInventory}
                     onSubmit={handleBookingRequestSubmit}
+                    onChangeSlot={() =>
+                      navigate(
+                        `/professionals/${pendingBookingContext.professionalId}/availability${
+                          pendingBookingContext.preselectedServiceId
+                            ? `?service=${pendingBookingContext.preselectedServiceId}`
+                            : ''
+                        }`
+                      )
+                    }
                   />
                 )}
 
@@ -351,6 +385,8 @@ export const ChatPage: React.FC = () => {
                           defaultCustomerName={msg.bookingRequest.customerName}
                           defaultCustomerPhone={msg.bookingRequest.customerPhone}
                           professionalServices={proServices}
+                          isProfessionalView={!isCustomer}
+                          onOpenQuotationModal={() => setShowQuoteModal(true)}
                         />
                       </div>
                     );
@@ -428,7 +464,7 @@ export const ChatPage: React.FC = () => {
                 <button
                   type="submit"
                   disabled={!messageInput.trim()}
-                  className="px-4 py-2.5 rounded-xl bg-wine hover:bg-wine-dark disabled:opacity-40 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs active:scale-95"
+                  className="px-4 py-2.5 rounded-xl bg-wine hover:bg-wine-deep disabled:opacity-40 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-subtle active:scale-95"
                 >
                   <Send className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Send</span>
@@ -439,9 +475,15 @@ export const ChatPage: React.FC = () => {
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-charcoal-muted">
               <FileText className="w-12 h-12 text-charcoal-light mb-3" />
               <h3 className="font-bold text-charcoal text-base">Select or Start an Enquiry</h3>
-              <p className="text-xs max-w-sm mt-1">
-                Choose a conversation from the left, or browse event professionals and click "Book Now" to initiate a structured enquiry.
+              <p className="text-xs max-w-sm mt-1 leading-relaxed">
+                Choose a conversation from the left, or browse event professionals and click "Check Availability" or "Book Now" to initiate a structured enquiry.
               </p>
+              <Link
+                to="/search"
+                className="mt-4 px-4 py-2 bg-wine text-white text-xs font-bold rounded-xl hover:bg-wine-deep transition-all shadow-subtle"
+              >
+                Browse Event Professionals
+              </Link>
             </div>
           )}
         </section>

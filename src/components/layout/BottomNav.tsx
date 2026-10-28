@@ -5,28 +5,20 @@ import {
   Search,
   Film,
   CalendarCheck,
-  Calendar,
-  Send,
   User,
   LayoutDashboard,
+  Calendar,
+  Send,
   Menu,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
-
-interface NavLinkItem {
-  label: string;
-  path: string;
-  icon: any;
-  isAvatar?: boolean;
-  isToggle?: boolean;
-}
 
 export const BottomNav: React.FC = () => {
   const location = useLocation();
   const { currentUser, accountType, toggleMobileMenu } = useAuthStore();
   const isCustomer = accountType === 'customer';
 
-  const customerLinks: NavLinkItem[] = [
+  const customerLinks = [
     { label: 'Home', path: '/', icon: Home },
     { label: 'Search', path: '/search', icon: Search },
     { label: 'Reels', path: '/reels', icon: Film },
@@ -34,7 +26,7 @@ export const BottomNav: React.FC = () => {
     { label: 'Profile', path: `/profile/${currentUser.id}`, icon: User, isAvatar: true },
   ];
 
-  const professionalLinks: NavLinkItem[] = [
+  const professionalLinks = [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { label: 'Calendar', path: '/professional/calendar', icon: Calendar },
     { label: 'Bookings', path: '/bookings', icon: CalendarCheck },
@@ -50,9 +42,8 @@ export const BottomNav: React.FC = () => {
         {links.map((link) => {
           const Icon = link.icon;
           const isActive = location.pathname === link.path;
-
-          if (link.isToggle) {
-            return (
+          return (
+            'isToggle' in link && link.isToggle ? (
               <button
                 key={link.path}
                 type="button"
@@ -62,17 +53,14 @@ export const BottomNav: React.FC = () => {
               >
                 <Icon className="w-6 h-6 stroke-[1.8px]" />
               </button>
-            );
-          }
-
-          return (
+            ) : (
             <Link
               key={link.path}
               to={link.path}
               className="p-1.5 flex items-center justify-center transition-transform active:scale-90"
               title={link.label}
             >
-              {link.isAvatar ? (
+              {'isAvatar' in link && link.isAvatar ? (
                 <img
                   src={currentUser.avatar}
                   alt={currentUser.name}
@@ -88,7 +76,7 @@ export const BottomNav: React.FC = () => {
                 />
               )}
             </Link>
-          );
+          ));
         })}
       </div>
     </nav>

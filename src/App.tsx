@@ -46,6 +46,8 @@ export const App: React.FC = () => {
           <Route path="/reels" element={<ReelsPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/chat" element={<ChatPage />} />
+          <Route path="/chat/:conversationId" element={<ChatPage />} />
+          <Route path="/messages/:conversationId" element={<ChatPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/profile/:id" element={<ProfilePage />} />
           <Route path="/bookings" element={<BookingsPage />} />

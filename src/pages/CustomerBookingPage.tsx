@@ -18,6 +18,8 @@ import {
   Users,
   ChevronLeft,
   Info,
+  AlertCircle,
+  MessageSquare,
 } from 'lucide-react';
 import { formatINR } from '../utils';
 
@@ -27,7 +29,7 @@ export const CustomerBookingPage: React.FC = () => {
   const preselectedServiceId = searchParams.get('service') || undefined;
 
   const navigate = useNavigate();
-  const { currentUser } = useAuthStore();
+  const { currentUser, allProfessionals } = useAuthStore();
   const {
     services,
     availabilitySlots,
@@ -36,18 +38,19 @@ export const CustomerBookingPage: React.FC = () => {
     setPendingBookingContext,
   } = useMarketplaceStore();
 
-  // Find professional
+  // Find professional by checking both allProfessionals and mockProfessionals
   const pro = useMemo(() => {
     return (
-      mockProfessionals.find((p) => p.id === professionalId) ||
-      mockProfessionals[0]
+      allProfessionals.find((p) => p.id === professionalId) ||
+      mockProfessionals.find((p) => p.id === professionalId)
     );
-  }, [professionalId]);
+  }, [allProfessionals, professionalId]);
 
   // Filter pro services
   const proServices = useMemo(() => {
+    if (!pro) return [];
     return services.filter((s) => s.professionalId === pro.id);
-  }, [services, pro.id]);
+  }, [services, pro]);
 
   // Selected Service
   const [selectedServiceId, setSelectedServiceId] = useState<string | undefined>(
@@ -58,26 +61,29 @@ export const CustomerBookingPage: React.FC = () => {
     return proServices.find((s) => s.id === selectedServiceId);
   }, [proServices, selectedServiceId]);
 
-  // Default selected date: today or tomorrow
+  // Default selected date: today
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
   const [selectedDate, setSelectedDate] = useState<string>(todayStr);
 
   // Selected Slot
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
+  const [isCustomRequested, setIsCustomRequested] = useState(false);
 
   // Event Details State
   const [eventType, setEventType] = useState('Wedding Ceremony');
   const [guestCount, setGuestCount] = useState<number>(250);
-  const [eventLocation, setEventLocation] = useState(pro.coverageArea || 'Bangalore');
+  const [eventLocation, setEventLocation] = useState(pro?.coverageArea || 'Bangalore');
   const [specialNotes, setSpecialNotes] = useState('');
 
   // Slots for this pro
   const proSlots = useMemo(() => {
+    if (!pro) return [];
     return availabilitySlots.filter((s) => s.professionalId === pro.id);
-  }, [availabilitySlots, pro.id]);
+  }, [availabilitySlots, pro]);
 
   // Active block for this date (if any)
   const activeBlock = useMemo(() => {
+    if (!pro) return undefined;
     return availabilityBlocks.find((b) => {
       return (
         b.professionalId === pro.id &&
@@ -85,7 +91,7 @@ export const CustomerBookingPage: React.FC = () => {
         selectedDate <= b.endDate
       );
     });
-  }, [availabilityBlocks, pro.id, selectedDate]);
+  }, [availabilityBlocks, pro, selectedDate]);
 
   // Selected slot object
   const selectedSlot = useMemo(() => {
@@ -95,23 +101,49 @@ export const CustomerBookingPage: React.FC = () => {
   // Handle slot select
   const handleSlotSelect = (slot: AvailabilitySlot) => {
     setSelectedSlotId(slot.id);
+    setIsCustomRequested(false);
   };
 
   // Handle custom availability request
   const handleRequestCustom = (date: string) => {
     setSelectedSlotId(null);
+    setIsCustomRequested(true);
     setSpecialNotes((prev) =>
       prev ? `${prev}\n[Requested custom slot on ${date}]` : `[Requested custom slot on ${date}]`
     );
   };
 
   // Price calculations
-  const basePrice = selectedSlot?.priceOverride || selectedService?.basePrice || pro.minBookingAmount || 15000;
+  const basePrice = selectedSlot?.priceOverride || selectedService?.basePrice || pro?.minBookingAmount || 15000;
   const estimatedTax = Math.round(basePrice * 0.18);
   const totalPrice = basePrice + estimatedTax;
 
+  // Validation
+  const isSelectionValid = Boolean(selectedSlotId || isCustomRequested);
+
+  // Recovery if professional is not found
+  if (!pro) {
+    return (
+      <div className="max-w-md mx-auto my-24 p-8 bg-surface-card border border-border rounded-2xl text-center space-y-4 shadow-card">
+        <AlertCircle className="w-12 h-12 text-wine mx-auto" />
+        <h2 className="text-lg font-bold text-charcoal">Professional Not Found</h2>
+        <p className="text-xs text-charcoal-muted leading-relaxed">
+          The requested event professional does not exist or has been removed.
+        </p>
+        <Link
+          to="/search"
+          className="inline-block px-5 py-2.5 bg-wine text-white text-xs font-bold rounded-xl hover:bg-wine-deep transition-all shadow-subtle"
+        >
+          Explore All Event Partners
+        </Link>
+      </div>
+    );
+  }
+
   // Handle proceed to chat
   const handleProceedToChat = () => {
+    if (!isSelectionValid) return;
+
     const customer = currentUser
       ? {
           id: currentUser.id,
@@ -126,24 +158,52 @@ export const CustomerBookingPage: React.FC = () => {
           phone: '+91 98765 43210',
         };
 
-    // Save pending booking context
-    setPendingBookingContext({
-      professionalId: pro.id,
-      preselectedServiceId: selectedService?.id,
-      preselectedDate: selectedDate,
-      preselectedSlotId: selectedSlot?.id,
-    });
+    const extraContext = {
+      eventType,
+      guestCount,
+      location: eventLocation,
+      notes: specialNotes,
+      packagePrice: basePrice,
+      startTime: selectedSlot?.startTime || '09:00',
+      endTime: selectedSlot?.endTime || '17:00',
+      isCustomAvailabilityRequest: isCustomRequested,
+    };
 
     // Initiate or switch to structured chat
-    initiateBookingChat(
+    const convId = initiateBookingChat(
       pro.id,
       customer,
       selectedService?.id,
       selectedDate,
-      selectedSlot?.id
+      selectedSlot?.id,
+      extraContext
     );
 
-    navigate('/chat');
+    // Save pending booking context explicitly with full fields
+    setPendingBookingContext({
+      customerId: customer.id,
+      customerName: customer.name,
+      customerPhone: customer.phone,
+      professionalId: pro.id,
+      professionalName: pro.businessName,
+      professionalAvatar: pro.avatar,
+      preselectedServiceId: selectedService?.id,
+      selectedServiceName: selectedService?.name,
+      preselectedDate: selectedDate,
+      preselectedSlotId: selectedSlot?.id,
+      startTime: selectedSlot?.startTime || '09:00',
+      endTime: selectedSlot?.endTime || '17:00',
+      timezone: 'IST (UTC+5:30)',
+      packagePrice: basePrice,
+      bookingType: selectedSlot?.slotType || 'appointment',
+      guestCount,
+      eventType,
+      location: eventLocation,
+      notes: specialNotes,
+      isCustomAvailabilityRequest: isCustomRequested,
+    });
+
+    navigate(`/messages/${convId}`);
   };
 
   return (
@@ -151,7 +211,7 @@ export const CustomerBookingPage: React.FC = () => {
       {/* Top back navigation */}
       <div>
         <Link
-          to={`/professionals/${pro.id}`}
+          to={`/profile/${pro.id}`}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-charcoal-muted hover:text-wine transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -174,7 +234,7 @@ export const CustomerBookingPage: React.FC = () => {
               </span>
               <span className="flex items-center gap-1 text-xs font-semibold text-charcoal">
                 <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                4.9 (48 reviews)
+                4.9 (48 verified reviews)
               </span>
             </div>
             <h1 className="text-xl md:text-2xl font-bold text-charcoal mt-1">
@@ -183,7 +243,7 @@ export const CustomerBookingPage: React.FC = () => {
             <div className="flex items-center gap-3 text-xs text-charcoal-muted mt-1">
               <span className="flex items-center gap-1">
                 <MapPin className="w-3.5 h-3.5 text-wine" />
-                {pro.coverageArea}
+                {pro.coverageArea || pro.location}
               </span>
               <span>•</span>
               <span className="flex items-center gap-1">
@@ -201,7 +261,7 @@ export const CustomerBookingPage: React.FC = () => {
           <div className="text-xl font-bold text-charcoal mt-0.5">
             {formatINR(pro.minBookingAmount || 15000)}
           </div>
-          <div className="text-[10px] text-charcoal-muted">Per event / day</div>
+          <div className="text-[10px] text-charcoal-muted">Per event / session</div>
         </div>
       </div>
 
@@ -218,7 +278,7 @@ export const CustomerBookingPage: React.FC = () => {
                   Select Date
                 </h2>
                 <p className="text-xs text-charcoal-muted mt-0.5">
-                  Choose from available dates over the next 3 weeks
+                  Choose an upcoming date across the next 3 weeks
                 </p>
               </div>
             </div>
@@ -228,6 +288,7 @@ export const CustomerBookingPage: React.FC = () => {
               onSelectDate={(d) => {
                 setSelectedDate(d);
                 setSelectedSlotId(null);
+                setIsCustomRequested(false);
               }}
               slots={proSlots}
               blocks={availabilityBlocks.filter((b) => b.professionalId === pro.id)}
@@ -241,10 +302,10 @@ export const CustomerBookingPage: React.FC = () => {
               <div>
                 <h2 className="text-base font-bold text-charcoal flex items-center gap-2">
                   <Clock className="w-4 h-4 text-wine" />
-                  Select Time Slot
+                  Select Available Time Slot
                 </h2>
                 <p className="text-xs text-charcoal-muted mt-0.5">
-                  Pick a preferred appointment or event time window
+                  Available appointment and event-day slots configured by {pro.businessName}
                 </p>
               </div>
             </div>
@@ -264,6 +325,15 @@ export const CustomerBookingPage: React.FC = () => {
                   : 'appointment'
               }
             />
+
+            {isCustomRequested && (
+              <div className="p-3 bg-wine-soft/40 border border-wine/30 rounded-xl text-xs text-charcoal flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-wine shrink-0" />
+                <span>
+                  Custom availability requested for <strong>{selectedDate}</strong>. You can proceed to chat to finalize timing.
+                </span>
+              </div>
+            )}
           </section>
 
           {/* 3. Service Package Selection */}
@@ -275,7 +345,7 @@ export const CustomerBookingPage: React.FC = () => {
                   Select Service Package
                 </h2>
                 <p className="text-xs text-charcoal-muted mt-0.5">
-                  Select the package that fits your event requirement
+                  Choose the package you would like to book or enquire about
                 </p>
               </div>
 
@@ -305,7 +375,7 @@ export const CustomerBookingPage: React.FC = () => {
                       <div className="mt-3 pt-2 border-t border-border/60 flex items-center justify-between text-xs font-semibold">
                         <span className="text-wine font-bold">{formatINR(svc.basePrice)}</span>
                         <span className="text-[11px] text-charcoal-muted font-normal">
-                          {svc.pricingModel.replace('_', ' ')}
+                          {svc.unitLabel || svc.pricingModel.replace('_', ' ')}
                         </span>
                       </div>
                     </button>
@@ -319,7 +389,7 @@ export const CustomerBookingPage: React.FC = () => {
           <section className="bg-surface-card border border-border rounded-2xl p-6 shadow-subtle space-y-4">
             <h2 className="text-base font-bold text-charcoal flex items-center gap-2">
               <Users className="w-4 h-4 text-wine" />
-              Event Details
+              Event Specifications
             </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -394,7 +464,7 @@ export const CustomerBookingPage: React.FC = () => {
                 Booking Summary
               </span>
               <h3 className="text-base font-bold text-charcoal mt-2">
-                Reservation Request
+                Selected Date & Timing
               </h3>
             </div>
 
@@ -419,7 +489,11 @@ export const CustomerBookingPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 <span className="text-charcoal-muted">Time Slot:</span>
                 <span className="font-semibold text-wine">
-                  {selectedSlot ? `${selectedSlot.startTime} – ${selectedSlot.endTime}` : 'Flexible / Pending'}
+                  {selectedSlot
+                    ? `${selectedSlot.startTime} – ${selectedSlot.endTime}`
+                    : isCustomRequested
+                    ? 'Custom Timing Requested'
+                    : 'Not Selected Yet'}
                 </span>
               </div>
 
@@ -458,17 +532,29 @@ export const CustomerBookingPage: React.FC = () => {
             {/* CTA Button */}
             <div className="space-y-3">
               <button
+                type="button"
+                disabled={!isSelectionValid}
                 onClick={handleProceedToChat}
-                className="w-full flex items-center justify-center gap-2 py-3 bg-wine text-white font-semibold text-xs rounded-xl hover:bg-wine-deep transition-all shadow-subtle group"
+                className={`w-full flex items-center justify-center gap-2 py-3 font-semibold text-xs rounded-xl transition-all shadow-subtle group ${
+                  isSelectionValid
+                    ? 'bg-wine text-white hover:bg-wine-deep cursor-pointer active:scale-98'
+                    : 'bg-sand text-charcoal-muted border border-border cursor-not-allowed opacity-60'
+                }`}
               >
                 <span>Continue to Booking Chat</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </button>
 
+              {!isSelectionValid && (
+                <p className="text-[11px] text-wine font-medium text-center">
+                  Please select an available time slot above or request custom timing to proceed.
+                </p>
+              )}
+
               <div className="flex items-start gap-2 p-3 bg-sand/30 border border-border/70 rounded-xl text-[11px] text-charcoal-muted leading-relaxed">
                 <Info className="w-3.5 h-3.5 text-wine shrink-0 mt-0.5" />
                 <span>
-                  Booking requests reserve your selected slot temporarily pending professional quotation review.
+                  Selecting a slot reserves your window temporarily. The professional reviews requirements and provides an official quotation in chat.
                 </span>
               </div>
             </div>

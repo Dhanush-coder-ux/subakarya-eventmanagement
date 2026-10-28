@@ -18,6 +18,8 @@ import {
   Heart,
   Play,
   Settings,
+  Clock,
+  ArrowRight,
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useMarketplaceStore } from '../store/useMarketplaceStore';
@@ -29,9 +31,9 @@ export const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
 
   const { currentUser, allProfessionals, allCustomers, updateProfessionalProfile } = useAuthStore();
-  const { posts, reels, works, deletePost, deleteReel, deleteWork, initiateBookingChat } = useMarketplaceStore();
+  const { posts, reels, works, services, deletePost, deleteReel, deleteWork, initiateBookingChat } = useMarketplaceStore();
 
-  const [activeTab, setActiveTab] = useState<'posts' | 'reels' | 'works'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'reels' | 'works' | 'services'>('posts');
   const [isFollowing, setIsFollowing] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
@@ -45,6 +47,7 @@ export const ProfilePage: React.FC = () => {
   const userPosts = posts.filter((p) => p.professionalId === targetId);
   const userReels = reels.filter((r) => r.professionalId === targetId);
   const userWorks = works.filter((w) => w.professionalId === targetId);
+  const proServices = services.filter((s) => s.professionalId === targetId);
 
   const followersCount = (professional?.followersCount || 120) + (isFollowing ? 1 : 0);
   const postsCount = userPosts.length;
@@ -84,40 +87,37 @@ export const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-[935px] mx-auto px-4 sm:px-6 py-6 space-y-8">
+    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-200">
       {/* 1. Instagram Profile Header */}
-      <header className="flex flex-col sm:flex-row items-center sm:items-start gap-8 sm:gap-16 pb-4 sm:pb-8 border-b border-border">
-        {/* Left Circular Avatar with Gradient Ring */}
-        <div className="flex-shrink-0">
-          <div className="p-1 rounded-full bg-gradient-to-tr from-sand-dark via-wine to-wine-dark">
+      <header className="flex flex-col sm:flex-row items-center sm:items-start gap-8 sm:gap-14 pb-4">
+        {/* Avatar */}
+        <div className="relative group">
+          <div className="p-1 rounded-full bg-gradient-to-tr from-sand-dark via-wine to-sand ring-2 ring-transparent">
             <img
-              src={professional?.avatar || customer?.avatar}
-              alt={professional?.businessName || customer?.name}
-              className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover ring-4 ring-surface"
+              src={professional?.avatar || customer?.avatar || currentUser.avatar}
+              alt=""
+              className="w-24 h-24 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-surface"
             />
           </div>
         </div>
 
-        {/* Right Info Section */}
+        {/* Profile Info & Actions */}
         <div className="flex-1 space-y-4 text-center sm:text-left">
           {/* Top Row: Username & Action Buttons */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-            <h1 className="text-xl sm:text-2xl font-bold text-charcoal flex items-center justify-center sm:justify-start gap-2">
-              <span>{professional ? professional.businessName : customer?.name}</span>
-              {professional?.isVerified && (
-                <span title="Verified Professional"><CheckCircle2 className="w-5 h-5 text-wine fill-sand flex-shrink-0" /></span>
-              )}
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <h1 className="text-xl font-bold text-charcoal">
+              {professional?.businessName || customer?.name || currentUser.name}
             </h1>
 
-            <div className="flex items-center justify-center gap-2">
-              {!isOwner ? (
+            <div className="flex items-center justify-center gap-2 flex-wrap">
+              {!isOwner && professional ? (
                 <>
                   <button
                     onClick={() => setIsFollowing(!isFollowing)}
-                    className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                       isFollowing
                         ? 'bg-sand text-charcoal border border-sand-dark'
-                        : 'bg-wine hover:bg-wine-dark text-white'
+                        : 'bg-surface hover:bg-sand/30 text-charcoal border border-border'
                     }`}
                   >
                     {isFollowing ? 'Following' : 'Follow'}
@@ -125,19 +125,27 @@ export const ProfilePage: React.FC = () => {
 
                   <button
                     onClick={handleBookNow}
-                    className="px-4 py-1.5 rounded-lg border border-border hover:bg-sand/30 text-xs font-semibold text-charcoal"
+                    className="px-3 sm:px-4 py-1.5 rounded-lg border border-border hover:bg-sand/30 text-xs font-semibold text-charcoal transition-colors"
                   >
                     Message
                   </button>
 
-                  <button
-                    onClick={handleBookNow}
-                    className="px-4 py-1.5 rounded-lg bg-wine hover:bg-wine-dark text-white text-xs font-bold shadow-xs active:scale-95"
+                  <Link
+                    to={`/professionals/${professional.id}/availability`}
+                    className="px-3.5 sm:px-4 py-1.5 rounded-lg border border-wine text-wine hover:bg-wine/10 text-xs font-bold transition-all inline-flex items-center gap-1.5 shadow-xs"
                   >
-                    Book Now
-                  </button>
+                    <Calendar className="w-3.5 h-3.5" />
+                    <span>Check Availability</span>
+                  </Link>
+
+                  <Link
+                    to={`/professionals/${professional.id}/availability`}
+                    className="px-3.5 sm:px-4 py-1.5 rounded-lg bg-wine hover:bg-wine-deep text-white text-xs font-bold shadow-subtle active:scale-95 transition-all inline-flex items-center gap-1.5"
+                  >
+                    <span>Book Now</span>
+                  </Link>
                 </>
-              ) : (
+              ) : isOwner ? (
                 <>
                   <button
                     onClick={() => setShowEditModal(true)}
@@ -154,6 +162,20 @@ export const ProfilePage: React.FC = () => {
                   </Link>
 
                   <Link
+                    to="/professional/calendar"
+                    className="px-3 py-1.5 rounded-lg border border-border hover:bg-sand/30 text-xs font-semibold text-charcoal"
+                  >
+                    Calendar
+                  </Link>
+
+                  <Link
+                    to="/professional/availability"
+                    className="px-3 py-1.5 rounded-lg border border-border hover:bg-sand/30 text-xs font-semibold text-charcoal"
+                  >
+                    Availability
+                  </Link>
+
+                  <Link
                     to="/settings"
                     className="p-1.5 rounded-lg border border-border hover:bg-sand/30 text-charcoal"
                     title="Settings"
@@ -161,7 +183,7 @@ export const ProfilePage: React.FC = () => {
                     <Settings className="w-4 h-4" />
                   </Link>
                 </>
-              )}
+              ) : null}
             </div>
           </div>
 
@@ -181,34 +203,33 @@ export const ProfilePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Bottom Row: Name, Category, Bio, Location */}
-          <div className="text-xs sm:text-sm space-y-1">
-            <span className="font-bold text-charcoal block">
-              {professional ? professional.name : customer?.name}
-            </span>
-            {professional && (
-              <span className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-sand text-charcoal border border-sand-dark">
-                {professional.category}
-              </span>
+          {/* Bottom Row: Bio & Category */}
+          <div className="text-xs space-y-1">
+            {professional?.category && (
+              <span className="font-semibold text-wine block">{professional.category}</span>
             )}
-            <p className="text-xs text-charcoal leading-relaxed max-w-lg mt-1">
-              {professional ? professional.description : 'Event Enthusiast & Host'}
+            <p className="text-charcoal leading-relaxed whitespace-pre-line">
+              {professional?.description || customer?.location || 'Event enthusiast on Soirée'}
             </p>
-            <div className="flex items-center justify-center sm:justify-start gap-1 text-xs text-charcoal-muted pt-1">
-              <MapPin className="w-3.5 h-3.5 text-wine" />
-              <span>{professional ? professional.location : customer?.location}</span>
-            </div>
+            {professional?.coverageArea && (
+              <p className="text-charcoal-muted flex items-center justify-center sm:justify-start gap-1">
+                <MapPin className="w-3.5 h-3.5 text-wine" />
+                <span>Serving {professional.coverageArea}</span>
+              </p>
+            )}
 
-            {/* Profile Completeness for Owner only */}
+            {/* Profile Completion Bar (For Owner) */}
             {isOwner && professional && (
               <div className="pt-2">
-                <div className="p-2.5 bg-sand/30 rounded-xl border border-sand-dark/60 text-xs flex items-center justify-between">
-                  <span className="font-bold text-wine">
-                    Profile Completeness: {professional.profileCompleteness}%
-                  </span>
-                  <Link to="/onboarding/professional" className="text-wine font-semibold hover:underline">
-                    Complete Sections
-                  </Link>
+                <div className="flex items-center justify-between text-[11px] mb-1">
+                  <span className="font-semibold text-charcoal">Profile Completeness</span>
+                  <span className="font-bold text-wine">{professional.profileCompleteness || 85}%</span>
+                </div>
+                <div className="h-1.5 w-full bg-sand rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-wine rounded-full transition-all duration-300"
+                    style={{ width: `${professional.profileCompleteness || 85}%` }}
+                  />
                 </div>
               </div>
             )}
@@ -233,10 +254,10 @@ export const ProfilePage: React.FC = () => {
       </div>
 
       {/* 3. Instagram Profile Tabs Navigation */}
-      <div className="flex items-center justify-center gap-12 border-t border-border uppercase text-xs font-bold tracking-widest">
+      <div className="flex items-center justify-center gap-8 sm:gap-12 border-t border-border uppercase text-xs font-bold tracking-widest overflow-x-auto">
         <button
           onClick={() => setActiveTab('posts')}
-          className={`flex items-center gap-2 py-3 border-t-2 -mt-[2px] transition-all ${
+          className={`flex items-center gap-2 py-3 border-t-2 -mt-[2px] transition-all shrink-0 ${
             activeTab === 'posts' ? 'border-charcoal text-charcoal' : 'border-transparent text-charcoal-muted hover:text-charcoal'
           }`}
         >
@@ -246,7 +267,7 @@ export const ProfilePage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('reels')}
-          className={`flex items-center gap-2 py-3 border-t-2 -mt-[2px] transition-all ${
+          className={`flex items-center gap-2 py-3 border-t-2 -mt-[2px] transition-all shrink-0 ${
             activeTab === 'reels' ? 'border-charcoal text-charcoal' : 'border-transparent text-charcoal-muted hover:text-charcoal'
           }`}
         >
@@ -256,13 +277,25 @@ export const ProfilePage: React.FC = () => {
 
         <button
           onClick={() => setActiveTab('works')}
-          className={`flex items-center gap-2 py-3 border-t-2 -mt-[2px] transition-all ${
+          className={`flex items-center gap-2 py-3 border-t-2 -mt-[2px] transition-all shrink-0 ${
             activeTab === 'works' ? 'border-charcoal text-charcoal' : 'border-transparent text-charcoal-muted hover:text-charcoal'
           }`}
         >
           <Briefcase className="w-3.5 h-3.5" />
           <span>Our Works</span>
         </button>
+
+        {professional && (
+          <button
+            onClick={() => setActiveTab('services')}
+            className={`flex items-center gap-2 py-3 border-t-2 -mt-[2px] transition-all shrink-0 ${
+              activeTab === 'services' ? 'border-charcoal text-charcoal' : 'border-transparent text-charcoal-muted hover:text-charcoal'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>Packages ({proServices.length})</span>
+          </button>
+        )}
       </div>
 
       {/* 4. Instagram 3-Column Square Grid for Posts */}
@@ -270,10 +303,11 @@ export const ProfilePage: React.FC = () => {
         <div>
           {userPosts.length === 0 ? (
             <div className="py-16 text-center text-charcoal-muted">
+              <Grid className="w-10 h-10 mx-auto mb-2 opacity-40 text-wine" />
               <p className="text-sm font-semibold">No posts published yet.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-1 sm:gap-7">
+            <div className="grid grid-cols-3 gap-1 sm:gap-4">
               {userPosts.map((post) => (
                 <div
                   key={post.id}
@@ -282,13 +316,13 @@ export const ProfilePage: React.FC = () => {
                   <img
                     src={post.mediaUrl}
                     alt={post.caption}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
                   />
-                  {/* Instagram Hover Overlay */}
-                  <div className="absolute inset-0 bg-charcoal/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-6 text-white text-sm font-bold">
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-charcoal/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-6 text-white font-bold text-sm">
                     <span className="flex items-center gap-1.5">
-                      <Heart className="w-5 h-5 fill-white text-white" />
-                      <span>{post.likesCount}</span>
+                      <Heart className="w-4 h-4 fill-white" />
+                      {post.likesCount}
                     </span>
                     {isOwner && (
                       <button
@@ -296,7 +330,7 @@ export const ProfilePage: React.FC = () => {
                           e.stopPropagation();
                           deletePost(post.id);
                         }}
-                        className="hover:text-error"
+                        className="hover:text-error transition-colors"
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
@@ -314,6 +348,7 @@ export const ProfilePage: React.FC = () => {
         <div>
           {userReels.length === 0 ? (
             <div className="py-16 text-center text-charcoal-muted">
+              <Film className="w-10 h-10 mx-auto mb-2 opacity-40 text-wine" />
               <p className="text-sm font-semibold">No reels uploaded yet.</p>
             </div>
           ) : (
@@ -345,6 +380,7 @@ export const ProfilePage: React.FC = () => {
         <div className="space-y-6">
           {userWorks.length === 0 ? (
             <div className="py-16 text-center text-charcoal-muted">
+              <Briefcase className="w-10 h-10 mx-auto mb-2 opacity-40 text-wine" />
               <p className="text-sm font-semibold">No completed projects added yet.</p>
             </div>
           ) : (
@@ -379,6 +415,81 @@ export const ProfilePage: React.FC = () => {
                 </div>
               </div>
             ))
+          )}
+        </div>
+      )}
+
+      {/* 7. Services & Packages Tab */}
+      {activeTab === 'services' && professional && (
+        <div className="space-y-4">
+          {proServices.length === 0 ? (
+            <div className="py-16 text-center text-charcoal-muted">
+              <Sparkles className="w-10 h-10 mx-auto mb-2 opacity-40 text-wine" />
+              <p className="text-sm font-semibold">No service packages published yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {proServices.map((service) => (
+                <div
+                  key={service.id}
+                  className="bg-surface-card border border-border rounded-2xl p-5 shadow-card flex flex-col justify-between hover:border-wine/40 transition-all space-y-4"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <span className="text-[10px] uppercase font-bold tracking-wider text-wine bg-sand/60 px-2 py-0.5 rounded">
+                          {service.category}
+                        </span>
+                        <h4 className="font-bold text-base text-charcoal mt-1.5">{service.name}</h4>
+                      </div>
+                      <span className="text-base font-bold text-wine shrink-0">
+                        {formatINR(service.basePrice)}
+                      </span>
+                    </div>
+
+                    <p className="text-xs text-charcoal-muted leading-relaxed line-clamp-2">
+                      {service.description}
+                    </p>
+
+                    {service.inclusions && service.inclusions.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 pt-1">
+                        {service.inclusions.slice(0, 3).map((inc, i) => (
+                          <span
+                            key={i}
+                            className="text-[10px] bg-sand/40 border border-border/80 px-2 py-0.5 rounded-full text-charcoal"
+                          >
+                            ✓ {inc}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="pt-3 border-t border-border flex items-center justify-between">
+                    <span className="text-[11px] text-charcoal-muted">
+                      Pricing: <strong className="text-charcoal capitalize">{service.unitLabel || service.pricingModel.replace('_', ' ')}</strong>
+                    </span>
+
+                    {!isOwner ? (
+                      <Link
+                        to={`/professionals/${professional.id}/availability?service=${service.id}`}
+                        className="px-3.5 py-1.5 rounded-xl bg-wine hover:bg-wine-deep text-white text-xs font-bold shadow-subtle inline-flex items-center gap-1.5 transition-all active:scale-95"
+                      >
+                        <Calendar className="w-3.5 h-3.5" />
+                        <span>Check Availability</span>
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/services"
+                        className="text-xs font-semibold text-wine hover:underline"
+                      >
+                        Manage Service →
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </div>
       )}
