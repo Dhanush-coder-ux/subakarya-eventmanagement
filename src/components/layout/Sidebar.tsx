@@ -90,17 +90,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
         <div className="space-y-6">
           <Link
             to={isCustomer ? '/' : '/dashboard'}
-            className="flex items-center gap-3 px-3 py-2 text-charcoal group"
+            className="flex items-center px-1.5 py-1 text-charcoal group"
           >
-            <img src="/crimson-ribbon-s-logo.png" alt="Emblem" className="w-9 h-9 object-contain flex-shrink-0 group-hover:scale-105 transition-transform drop-shadow-sm" />
+            {/* When sidebar is collapsed (e.g. icon-only / chat route / md screen) */}
+            <div className={isChatRoute ? 'block' : 'lg:hidden'}>
+              <img
+                src="/crimson-ribbon-s-logo.png"
+                alt="Subakarya"
+                className="w-9 h-9 object-contain flex-shrink-0 group-hover:scale-105 transition-transform drop-shadow-sm mx-auto"
+              />
+            </div>
+
+            {/* When sidebar is open / expanded on large desktop */}
             {!isChatRoute && (
-              <div className="hidden lg:flex flex-col">
-                <span className="font-bold text-xl tracking-wider text-charcoal leading-none">
-                  SUBAKARYA
-                </span>
-                <span className="text-[10px] text-wine font-semibold uppercase tracking-widest mt-0.5">
-                  {isCustomer ? 'Marketplace' : 'Vendor Suite'}
-                </span>
+              <div className="hidden lg:block w-full">
+                <img
+                  src="/subakarya-ribbon-tagline.png"
+                  alt="Subakarya"
+                  className="h-11 w-auto max-w-[215px] object-contain group-hover:scale-[1.02] transition-transform drop-shadow-sm"
+                />
               </div>
             )}
           </Link>
