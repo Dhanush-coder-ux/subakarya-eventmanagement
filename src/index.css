@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-wine: #7F011F;
+    --color-wine-dark: #650019;
+    --color-sand: #F5EBD0;
+    --color-surface: #FFFCF6;
+    --color-border: #E6DCCB;
+    --color-charcoal: #282326;
+    --color-muted: #77716D;
+  }
+
+  body {
+    background-color: #FFFCF6;
+    color: #282326;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #FAF5E8;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #E2D3B3;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #7F011F;
+  }
+}
+
+.font-serif-display {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+/* Glass & editorial styling */
+.editorial-border {
+  border: 1px solid #E6DCCB;
+}
+
+.editorial-shadow {
+  box-shadow: 0 4px 20px -2px rgba(40, 35, 38, 0.05);
+}
+
+.active-nav-pill {
+  background-color: #7F011F;
+  color: #FFFFFF;
+}
+
+/* Hide scrollbar for category ribbons */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
