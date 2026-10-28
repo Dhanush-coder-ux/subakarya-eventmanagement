@@ -8,6 +8,8 @@ import {
   Heart,
   PlusSquare,
   CalendarCheck,
+  Calendar,
+  Clock,
   User,
   LayoutDashboard,
   Layers,
@@ -67,6 +69,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
         { label: 'Messages', path: '/chat', icon: Send, badge: unreadCount },
         { label: 'Services', path: '/services', icon: Sparkles },
         { label: 'Inventory', path: '/inventory', icon: Package },
+        { label: 'Calendar', path: '/professional/calendar', icon: Calendar },
+        { label: 'Availability', path: '/professional/availability', icon: Clock },
         { label: 'Bookings', path: '/bookings', icon: CalendarCheck },
         { label: 'Content', path: '/portfolio', icon: Layers },
         { label: 'Profile', path: `/profile/${currentUser.id}`, icon: User, isAvatar: true },
@@ -308,3 +312,4 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
     </>
   );
 };
+

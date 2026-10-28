@@ -161,7 +161,58 @@ export type BookingStatus =
   | 'quote_received'
   | 'confirmed'
   | 'completed'
-  | 'cancelled';
+  | 'cancelled'
+  | 'rejected'
+  | 'expired';
+
+export type AvailabilityModelType = 'appointment' | 'event_day' | 'venue' | 'rental';
+
+export type AvailabilitySlotStatus = 'available' | 'limited' | 'booked' | 'unavailable' | 'pending';
+
+export interface AvailabilityRule {
+  id: string;
+  professionalId: string;
+  dayOfWeek: number; // 0 = Sunday, 1 = Monday ... 6 = Saturday
+  dayName: string;
+  isOpen: boolean;
+  openTime: string; // HH:mm
+  closeTime: string; // HH:mm
+  slotDurationMinutes: number;
+  bufferMinutes: number;
+  applicableServiceIds?: string[];
+}
+
+export interface AvailabilitySlot {
+  id: string;
+  professionalId: string;
+  serviceId?: string;
+  serviceCategory?: ServiceCategory;
+  title: string;
+  date: string; // YYYY-MM-DD
+  startTime: string; // HH:mm
+  endTime: string; // HH:mm
+  capacity: number;
+  confirmedCount: number;
+  pendingHoldCount: number;
+  priceOverride?: number;
+  bufferMinutes?: number;
+  durationMinutes?: number;
+  status: AvailabilitySlotStatus;
+  notes?: string;
+  slotType: AvailabilityModelType;
+}
+
+export interface AvailabilityBlock {
+  id: string;
+  professionalId: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+  startTime?: string;
+  endTime?: string;
+  allDay: boolean;
+  reason: string;
+  category: 'Personal Leave' | 'Holiday' | 'Maintenance' | 'External Event' | 'Other';
+}
 
 export interface BookingRequestData {
   customerId: string;
@@ -170,6 +221,9 @@ export interface BookingRequestData {
   eventType: string;
   eventDate: string;
   eventLocation: string;
+  slotId?: string;
+  startTime?: string;
+  endTime?: string;
   guestCount?: number;
   selectedServiceIds: string[];
   selectedInventoryItems?: {
@@ -179,6 +233,7 @@ export interface BookingRequestData {
   preferredTime?: string;
   budgetRange?: string;
   additionalRequirements?: string;
+  isCustomAvailabilityRequest?: boolean;
 }
 
 export interface QuoteItem {
@@ -221,6 +276,10 @@ export interface Booking {
   eventType: string;
   eventDate: string;
   location: string;
+  slotId?: string;
+  startTime?: string;
+  endTime?: string;
+  availabilityModel?: AvailabilityModelType;
   guestCount?: number;
   status: BookingStatus;
   selectedServiceIds: string[];

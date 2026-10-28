@@ -16,6 +16,9 @@ import { InventoryPage } from './pages/InventoryPage';
 import { PortfolioPage } from './pages/PortfolioPage';
 import { BookingsPage } from './pages/BookingsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { CustomerBookingPage } from './pages/CustomerBookingPage';
+import { ProfessionalAvailabilityPage } from './pages/ProfessionalAvailabilityPage';
+import { ProfessionalCalendarPage } from './pages/ProfessionalCalendarPage';
 import { useAuthStore } from './store/useAuthStore';
 
 // Main Home Switcher component based on active role
@@ -48,11 +51,20 @@ export const App: React.FC = () => {
           <Route path="/bookings" element={<BookingsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
 
-          {/* Professional Only Management Routes */}
+          {/* Customer Booking & Availability Exploration Routes */}
+          <Route path="/professionals/:professionalId/book" element={<CustomerBookingPage />} />
+          <Route path="/professionals/:professionalId/availability" element={<CustomerBookingPage />} />
+
+          {/* Professional Management & Availability Routes */}
           <Route path="/dashboard" element={<ProfessionalDashboardPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/inventory" element={<InventoryPage />} />
           <Route path="/portfolio" element={<PortfolioPage />} />
+          <Route path="/availability" element={<ProfessionalAvailabilityPage />} />
+          <Route path="/professional/availability" element={<ProfessionalAvailabilityPage />} />
+          <Route path="/calendar" element={<ProfessionalCalendarPage />} />
+          <Route path="/professional/calendar" element={<ProfessionalCalendarPage />} />
+          <Route path="/professional/bookings" element={<BookingsPage />} />
         </Route>
 
         {/* Fallback */}
@@ -63,4 +75,3 @@ export const App: React.FC = () => {
 };
 
 export default App;
-

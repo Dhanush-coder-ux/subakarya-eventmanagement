@@ -9,6 +9,8 @@ interface BookingRequestCardProps {
   professionalServices: ServiceItem[];
   professionalInventory?: InventoryItem[];
   preselectedServiceId?: string;
+  preselectedDate?: string;
+  preselectedSlotId?: string;
   defaultCustomerId: string;
   defaultCustomerName: string;
   defaultCustomerPhone: string;
@@ -22,6 +24,8 @@ export const BookingRequestCard: React.FC<BookingRequestCardProps> = ({
   professionalServices,
   professionalInventory = [],
   preselectedServiceId,
+  preselectedDate,
+  preselectedSlotId,
   defaultCustomerId,
   defaultCustomerName,
   defaultCustomerPhone,
@@ -30,7 +34,7 @@ export const BookingRequestCard: React.FC<BookingRequestCardProps> = ({
   // Form State
   const [eventType, setEventType] = useState(data?.eventType || 'Traditional Wedding');
   const [eventDate, setEventDate] = useState(
-    data?.eventDate || new Date(Date.now() + 86400000 * 30).toISOString().split('T')[0]
+    data?.eventDate || preselectedDate || new Date(Date.now() + 86400000 * 30).toISOString().split("T")[0]
   );
   const [eventLocation, setEventLocation] = useState(data?.eventLocation || 'Madurai, Tamil Nadu');
   const [guestCount, setGuestCount] = useState<number>(data?.guestCount || 350);
@@ -345,6 +349,18 @@ export const BookingRequestCard: React.FC<BookingRequestCardProps> = ({
           </span>
           <span className="font-semibold text-charcoal">{data.eventDate}</span>
         </div>
+
+        {(data.startTime || data.preferredTime) && (
+          <div className="flex justify-between py-1 border-b border-border/50">
+            <span className="text-charcoal-muted flex items-center gap-1">
+              <Clock className="w-3 h-3 text-wine" />
+              <span>Time / Slot</span>
+            </span>
+            <span className="font-semibold text-charcoal">
+              {data.startTime ? `${data.startTime} - ${data.endTime || "Flexible"}` : data.preferredTime}
+            </span>
+          </div>
+        )}
 
         <div className="flex justify-between py-1 border-b border-border/50">
           <span className="text-charcoal-muted flex items-center gap-1">

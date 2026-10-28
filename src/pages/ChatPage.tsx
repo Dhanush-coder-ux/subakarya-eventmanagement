@@ -311,6 +311,8 @@ export const ChatPage: React.FC = () => {
                     defaultCustomerName={currentUser.name}
                     defaultCustomerPhone={currentUser.phone}
                     preselectedServiceId={pendingBookingContext.preselectedServiceId}
+                    preselectedDate={pendingBookingContext.preselectedDate}
+                    preselectedSlotId={pendingBookingContext.preselectedSlotId}
                     professionalServices={proServices}
                     professionalInventory={proInventory}
                     onSubmit={handleBookingRequestSubmit}

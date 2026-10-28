@@ -12,6 +12,10 @@ import {
   BookingRequestData,
   BookingStatus,
   Role,
+  AvailabilityRule,
+  AvailabilitySlot,
+  AvailabilityBlock,
+  AvailabilityModelType,
 } from '../types';
 import { mockPosts } from '../data/mockPosts';
 import { mockReels } from '../data/mockReels';
@@ -21,6 +25,11 @@ import { mockInventory } from '../data/mockInventory';
 import { mockBookings } from '../data/mockBookings';
 import { mockConversations, mockMessages, mockQuotations } from '../data/mockMessages';
 import { mockProfessionals } from '../data/mockUsers';
+import {
+  mockAvailabilitySlots,
+  mockAvailabilityBlocks,
+  defaultWorkingHours,
+} from '../data/mockAvailability';
 
 const MARKETPLACE_STORAGE_KEY = 'soiree_marketplace_data_v1';
 
@@ -34,15 +43,25 @@ interface MarketplaceState {
   conversations: Conversation[];
   messages: Record<string, ChatMessage[]>;
   quotations: Quotation[];
+  availabilitySlots: AvailabilitySlot[];
+  availabilityBlocks: AvailabilityBlock[];
+  workingHours: AvailabilityRule[];
   activeConversationId: string | null;
   pendingBookingContext: {
     professionalId: string;
     preselectedServiceId?: string;
+    preselectedDate?: string;
+    preselectedSlotId?: string;
   } | null;
 
   // Actions
   setActiveConversation: (id: string | null) => void;
-  setPendingBookingContext: (ctx: { professionalId: string; preselectedServiceId?: string } | null) => void;
+  setPendingBookingContext: (ctx: {
+    professionalId: string;
+    preselectedServiceId?: string;
+    preselectedDate?: string;
+    preselectedSlotId?: string;
+  } | null) => void;
 
   // Discovery interactions
   toggleLikePost: (postId: string) => void;
@@ -74,11 +93,37 @@ interface MarketplaceState {
   deleteInventoryItem: (itemId: string) => void;
   adjustInventoryStock: (itemId: string, availableDelta: number, damagedDelta?: number) => boolean;
 
+  // Availability & Scheduling Actions
+  addAvailabilitySlot: (slot: Omit<AvailabilitySlot, 'id' | 'confirmedCount' | 'pendingHoldCount'>) => void;
+  updateAvailabilitySlot: (slot: AvailabilitySlot) => void;
+  deleteAvailabilitySlot: (slotId: string) => boolean;
+  duplicateAvailabilitySlot: (slotId: string, newDate?: string) => void;
+  createRecurringSlots: (config: {
+    professionalId: string;
+    serviceId?: string;
+    title: string;
+    startTime: string;
+    endTime: string;
+    capacity: number;
+    weekdays: number[];
+    startDate: string;
+    endDate: string;
+    priceOverride?: number;
+    slotType: AvailabilityModelType;
+    bufferMinutes?: number;
+  }) => number;
+  updateWorkingHours: (professionalId: string, rules: AvailabilityRule[]) => void;
+  addAvailabilityBlock: (block: Omit<AvailabilityBlock, 'id'>) => void;
+  updateAvailabilityBlock: (block: AvailabilityBlock) => void;
+  deleteAvailabilityBlock: (blockId: string) => void;
+
   // Structured Booking & Chat Actions
   initiateBookingChat: (
     professionalId: string,
     customer: { id: string; name: string; avatar: string; phone?: string },
-    preselectedServiceId?: string
+    preselectedServiceId?: string,
+    preselectedDate?: string,
+    preselectedSlotId?: string
   ) => string;
 
   sendBookingRequest: (
@@ -131,6 +176,9 @@ const getInitialData = () => {
         conversations: parsed.conversations || mockConversations,
         messages: parsed.messages || { 'conv-1': mockMessages },
         quotations: parsed.quotations || mockQuotations,
+        availabilitySlots: parsed.availabilitySlots || mockAvailabilitySlots,
+        availabilityBlocks: parsed.availabilityBlocks || mockAvailabilityBlocks,
+        workingHours: parsed.workingHours || defaultWorkingHours,
       };
     }
   } catch {
@@ -147,6 +195,9 @@ const getInitialData = () => {
     conversations: mockConversations,
     messages: { 'conv-1': mockMessages },
     quotations: mockQuotations,
+    availabilitySlots: mockAvailabilitySlots,
+    availabilityBlocks: mockAvailabilityBlocks,
+    workingHours: defaultWorkingHours,
   };
 };
 
@@ -162,6 +213,9 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
   conversations: initialData.conversations,
   messages: initialData.messages,
   quotations: initialData.quotations,
+  availabilitySlots: initialData.availabilitySlots,
+  availabilityBlocks: initialData.availabilityBlocks,
+  workingHours: initialData.workingHours,
   activeConversationId: initialData.conversations[0]?.id || null,
   pendingBookingContext: null,
 
@@ -430,10 +484,180 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
     return true;
   },
 
+  // Availability & Scheduling Actions
+  addAvailabilitySlot: (slotData) => {
+    set((state) => {
+      const newSlot: AvailabilitySlot = {
+        ...slotData,
+        id: `slot-${Date.now()}`,
+        confirmedCount: 0,
+        pendingHoldCount: 0,
+      };
+      const availabilitySlots = [...state.availabilitySlots, newSlot];
+      const newState = { ...state, availabilitySlots };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { availabilitySlots };
+    });
+  },
+
+  updateAvailabilitySlot: (updatedSlot) => {
+    set((state) => {
+      const availabilitySlots = state.availabilitySlots.map((s) =>
+        s.id === updatedSlot.id ? updatedSlot : s
+      );
+      const newState = { ...state, availabilitySlots };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { availabilitySlots };
+    });
+  },
+
+  deleteAvailabilitySlot: (slotId) => {
+    const { availabilitySlots, bookings } = get();
+    const slot = availabilitySlots.find((s) => s.id === slotId);
+    if (!slot) return false;
+
+    // Guard: Prevent deletion if there is an active confirmed booking for this slot
+    const hasConfirmedBooking = bookings.some(
+      (b) => b.slotId === slotId && b.status === 'confirmed'
+    );
+    if (hasConfirmedBooking) {
+      return false;
+    }
+
+    set((state) => {
+      const filteredSlots = state.availabilitySlots.filter((s) => s.id !== slotId);
+      const newState = { ...state, availabilitySlots: filteredSlots };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { availabilitySlots: filteredSlots };
+    });
+    return true;
+  },
+
+  duplicateAvailabilitySlot: (slotId, newDate) => {
+    const { availabilitySlots } = get();
+    const sourceSlot = availabilitySlots.find((s) => s.id === slotId);
+    if (!sourceSlot) return;
+
+    set((state) => {
+      const duplicated: AvailabilitySlot = {
+        ...sourceSlot,
+        id: `slot-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+        date: newDate || sourceSlot.date,
+        confirmedCount: 0,
+        pendingHoldCount: 0,
+        status: 'available',
+      };
+      const updated = [...state.availabilitySlots, duplicated];
+      const newState = { ...state, availabilitySlots: updated };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { availabilitySlots: updated };
+    });
+  },
+
+  createRecurringSlots: (config) => {
+    const { availabilitySlots } = get();
+    const start = new Date(config.startDate);
+    const end = new Date(config.endDate);
+    const generated: AvailabilitySlot[] = [];
+
+    // Iterate through dates from start to end
+    const curr = new Date(start);
+    while (curr <= end) {
+      const dayOfWeek = curr.getDay(); // 0-6
+      if (config.weekdays.includes(dayOfWeek)) {
+        const y = curr.getFullYear();
+        const m = String(curr.getMonth() + 1).padStart(2, '0');
+        const d = String(curr.getDate()).padStart(2, '0');
+        const dateStr = `${y}-${m}-${d}`;
+
+        // Check if a slot with identical start and end time already exists for this professional
+        const exists = availabilitySlots.some(
+          (s) =>
+            s.professionalId === config.professionalId &&
+            s.date === dateStr &&
+            s.startTime === config.startTime &&
+            s.endTime === config.endTime
+        );
+
+        if (!exists) {
+          generated.push({
+            id: `slot-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+            professionalId: config.professionalId,
+            serviceId: config.serviceId,
+            title: config.title,
+            date: dateStr,
+            startTime: config.startTime,
+            endTime: config.endTime,
+            capacity: config.capacity,
+            confirmedCount: 0,
+            pendingHoldCount: 0,
+            priceOverride: config.priceOverride,
+            bufferMinutes: config.bufferMinutes || 30,
+            status: 'available',
+            slotType: config.slotType,
+          });
+        }
+      }
+      curr.setDate(curr.getDate() + 1);
+    }
+
+    if (generated.length > 0) {
+      set((state) => {
+        const updated = [...state.availabilitySlots, ...generated];
+        const newState = { ...state, availabilitySlots: updated };
+        localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+        return { availabilitySlots: updated };
+      });
+    }
+
+    return generated.length;
+  },
+
+  updateWorkingHours: (professionalId, rules) => {
+    set((state) => {
+      const filtered = state.workingHours.filter((r) => r.professionalId !== professionalId);
+      const updated = [...filtered, ...rules];
+      const newState = { ...state, workingHours: updated };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { workingHours: updated };
+    });
+  },
+
+  addAvailabilityBlock: (blockData) => {
+    set((state) => {
+      const newBlock: AvailabilityBlock = {
+        ...blockData,
+        id: `block-${Date.now()}`,
+      };
+      const updated = [...state.availabilityBlocks, newBlock];
+      const newState = { ...state, availabilityBlocks: updated };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { availabilityBlocks: updated };
+    });
+  },
+
+  updateAvailabilityBlock: (block) => {
+    set((state) => {
+      const updated = state.availabilityBlocks.map((b) => (b.id === block.id ? block : b));
+      const newState = { ...state, availabilityBlocks: updated };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { availabilityBlocks: updated };
+    });
+  },
+
+  deleteAvailabilityBlock: (blockId) => {
+    set((state) => {
+      const updated = state.availabilityBlocks.filter((b) => b.id !== blockId);
+      const newState = { ...state, availabilityBlocks: updated };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { availabilityBlocks: updated };
+    });
+  },
+
   /**
    * Opens or creates a structured booking conversation between customer & professional
    */
-  initiateBookingChat: (professionalId, customer, preselectedServiceId) => {
+  initiateBookingChat: (professionalId, customer, preselectedServiceId, preselectedDate, preselectedSlotId) => {
     const { conversations, messages, bookings } = get();
     const pro = mockProfessionals.find((p) => p.id === professionalId) || mockProfessionals[0];
 
@@ -445,7 +669,12 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
     if (existing) {
       set({
         activeConversationId: existing.id,
-        pendingBookingContext: { professionalId, preselectedServiceId },
+        pendingBookingContext: {
+          professionalId,
+          preselectedServiceId,
+          preselectedDate,
+          preselectedSlotId,
+        },
       });
       return existing.id;
     }
@@ -465,7 +694,8 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
       professionalAvatar: pro.avatar,
       professionalCategory: pro.category,
       eventType: 'Event Enquiry',
-      eventDate: new Date(Date.now() + 86400000 * 20).toISOString().split('T')[0],
+      eventDate: preselectedDate || new Date(Date.now() + 86400000 * 20).toISOString().split('T')[0],
+      slotId: preselectedSlotId,
       location: pro.location,
       status: 'pending',
       selectedServiceIds: preselectedServiceId ? [preselectedServiceId] : [],
@@ -554,6 +784,9 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
             ...b,
             eventType: requestData.eventType,
             eventDate: requestData.eventDate,
+            slotId: requestData.slotId,
+            startTime: requestData.startTime,
+            endTime: requestData.endTime,
             location: requestData.eventLocation,
             guestCount: requestData.guestCount,
             selectedServiceIds: requestData.selectedServiceIds,
@@ -563,6 +796,20 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
         }
         return b;
       });
+
+      // Update slot pending hold count if slotId was selected
+      let updatedSlots = state.availabilitySlots;
+      if (requestData.slotId) {
+        updatedSlots = state.availabilitySlots.map((s) => {
+          if (s.id === requestData.slotId) {
+            return {
+              ...s,
+              pendingHoldCount: s.pendingHoldCount + 1,
+            };
+          }
+          return s;
+        });
+      }
 
       const updatedConversations = state.conversations.map((c) => {
         if (c.id === conversationId) {
@@ -579,6 +826,7 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
         ...state,
         messages: updatedMessages,
         bookings: updatedBookings,
+        availabilitySlots: updatedSlots,
         conversations: updatedConversations,
         pendingBookingContext: null, // Clear pending form after submission
       };
@@ -655,8 +903,11 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
       );
 
       const conv = state.conversations.find((c) => c.id === conversationId);
+      let targetSlotId: string | undefined;
+
       const updatedBookings = state.bookings.map((b) => {
         if (conv && (b.id === conv.bookingId || b.quotationId === quotationId)) {
+          targetSlotId = b.slotId;
           return {
             ...b,
             status: 'confirmed' as BookingStatus,
@@ -665,6 +916,25 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
         }
         return b;
       });
+
+      // Update slot confirmed capacity and status
+      let updatedSlots = state.availabilitySlots;
+      if (targetSlotId) {
+        updatedSlots = state.availabilitySlots.map((s) => {
+          if (s.id === targetSlotId) {
+            const newConfirmed = s.confirmedCount + 1;
+            const newPending = Math.max(0, s.pendingHoldCount - 1);
+            const isFullyBooked = newConfirmed >= s.capacity;
+            return {
+              ...s,
+              confirmedCount: newConfirmed,
+              pendingHoldCount: newPending,
+              status: isFullyBooked ? 'booked' : 'limited',
+            };
+          }
+          return s;
+        });
+      }
 
       const statusMsg: ChatMessage = {
         id: `msg-${Date.now()}`,
@@ -704,6 +974,7 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
         ...state,
         quotations: updatedQuotes,
         bookings: updatedBookings,
+        availabilitySlots: updatedSlots,
         messages: updatedMessages,
         conversations: updatedConversations,
       };
@@ -794,12 +1065,41 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
 
   updateBookingStatus: (bookingId, status) => {
     set((state) => {
-      const updatedBookings = state.bookings.map((b) =>
-        b.id === bookingId ? { ...b, status, updatedAt: new Date().toISOString() } : b
-      );
-      const newState = { ...state, bookings: updatedBookings };
+      let releasedSlotId: string | undefined;
+
+      const updatedBookings = state.bookings.map((b) => {
+        if (b.id === bookingId) {
+          if (status === 'cancelled' || status === 'rejected') {
+            releasedSlotId = b.slotId;
+          }
+          return { ...b, status, updatedAt: new Date().toISOString() };
+        }
+        return b;
+      });
+
+      // Release slot capacity if booking was cancelled or rejected
+      let updatedSlots = state.availabilitySlots;
+      if (releasedSlotId) {
+        updatedSlots = state.availabilitySlots.map((s) => {
+          if (s.id === releasedSlotId) {
+            const newConfirmed = Math.max(0, s.confirmedCount - 1);
+            return {
+              ...s,
+              confirmedCount: newConfirmed,
+              status: newConfirmed === 0 ? 'available' : 'limited',
+            };
+          }
+          return s;
+        });
+      }
+
+      const newState = {
+        ...state,
+        bookings: updatedBookings,
+        availabilitySlots: updatedSlots,
+      };
       localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
-      return { bookings: updatedBookings };
+      return newState;
     });
   },
 
@@ -815,6 +1115,9 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
       conversations: mockConversations,
       messages: { 'conv-1': mockMessages },
       quotations: mockQuotations,
+      availabilitySlots: mockAvailabilitySlots,
+      availabilityBlocks: mockAvailabilityBlocks,
+      workingHours: defaultWorkingHours,
       activeConversationId: mockConversations[0].id,
       pendingBookingContext: null,
     };
