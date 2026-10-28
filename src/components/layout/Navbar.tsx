@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Sparkles,
@@ -70,9 +70,7 @@ export const Navbar: React.FC = () => {
           {/* Brand Wordmark */}
           <div className="flex items-center space-x-3">
             <Link to={isCustomer ? '/' : '/dashboard'} className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-lg bg-wine flex items-center justify-center text-sand font-bold text-xl font-bold tracking-wider shadow-sm transition-transform duration-200 group-hover:scale-105">
-                S
-              </div>
+              <img src="/subakarya-logo.png" alt="Subakarya Logo" className="w-9 h-9 object-contain transition-transform duration-200 group-hover:scale-105 drop-shadow-sm" />
               <div className="flex flex-col">
                 <span className="font-bold text-2xl font-bold tracking-widest text-charcoal leading-none">
                   SOIRÉE

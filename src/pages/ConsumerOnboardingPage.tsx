@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Mail, Phone, MapPin, CheckCircle2, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
@@ -36,9 +36,7 @@ export const ConsumerOnboardingPage: React.FC = () => {
     <div className="min-h-screen bg-sand/30 flex items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-lg bg-surface-card rounded-2xl border border-border shadow-elevated p-6 sm:p-8">
         <div className="text-center mb-6">
-          <div className="w-10 h-10 rounded-xl bg-wine text-sand font-bold font-bold text-xl flex items-center justify-center mx-auto mb-2 shadow-sm">
-            S
-          </div>
+          <img src="/subakarya-logo.png" alt="Subakarya Logo" className="w-16 h-16 mx-auto object-contain mb-3 drop-shadow-md" />
           <h1 className="font-bold text-2xl font-bold text-charcoal">
             Customer Profile Registration
           </h1>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Lock, Mail, ArrowRight, ShieldCheck, Sparkles, Building2, User } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
@@ -43,9 +43,7 @@ export const LoginPage: React.FC = () => {
       <div className="w-full max-w-md bg-surface-card rounded-2xl border border-border shadow-elevated p-6 sm:p-8">
         {/* Brand Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex w-12 h-12 rounded-xl bg-wine items-center justify-center text-sand font-bold text-2xl font-bold shadow-md mb-3">
-            S
-          </div>
+          <img src="/subakarya-logo.png" alt="Subakarya Logo" className="w-20 h-20 sm:w-24 sm:h-24 mx-auto object-contain mb-3 drop-shadow-md" />
           <h1 className="font-bold text-3xl font-bold tracking-wider text-charcoal">
             SOIRÉE
           </h1>

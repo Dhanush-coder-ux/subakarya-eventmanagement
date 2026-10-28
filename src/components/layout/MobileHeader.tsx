@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Heart, Send, Sparkles, Menu } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -29,8 +29,9 @@ export const MobileHeader: React.FC = () => {
     <header className="md:hidden sticky top-0 z-30 bg-surface/95 backdrop-blur-md border-b border-border px-4 py-2.5 flex items-center justify-between">
       {/* Brand Wordmark & Mode Tag */}
       <div className="flex items-center gap-2">
-        <Link to={isCustomer ? '/' : '/dashboard'} className="font-bold text-xl tracking-wider text-charcoal">
-          SOIRÉE
+        <Link to={isCustomer ? '/' : '/dashboard'} className="flex items-center gap-2">
+          <img src="/subakarya-logo.png" alt="Subakarya" className="w-7 h-7 object-contain" />
+          <span className="font-bold text-xl tracking-wider text-charcoal leading-none">SOIRÉE</span>
         </Link>
         <button
           onClick={toggleRole}

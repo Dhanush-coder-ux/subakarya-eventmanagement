@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Sparkles, Check, ArrowRight, ShieldCheck, HeartHandshake, Briefcase } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
@@ -22,9 +22,7 @@ export const AccountTypePage: React.FC = () => {
     <div className="min-h-screen bg-sand/30 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-2xl bg-surface-card rounded-2xl border border-border shadow-elevated p-6 sm:p-8">
         <div className="text-center mb-8">
-          <div className="inline-flex w-10 h-10 rounded-xl bg-wine items-center justify-center text-sand font-bold text-xl font-bold shadow-sm mb-2">
-            S
-          </div>
+          <img src="/subakarya-logo.png" alt="Subakarya Logo" className="w-16 h-16 sm:w-20 sm:h-20 mx-auto object-contain mb-3 drop-shadow-md" />
           <h1 className="font-bold text-2xl sm:text-3xl font-bold text-charcoal">
             Choose Your Account Experience
           </h1>
