@@ -187,7 +187,7 @@ export const BookingRequestCard: React.FC<BookingRequestCardProps> = ({
     );
 
     return (
-      <div className="bg-surface-card rounded-2xl border border-wine/25 shadow-subtle p-3.5 sm:p-4 max-w-md my-2.5 transition-all text-xs text-charcoal animate-in fade-in duration-150">
+      <div className="bg-surface-card rounded-2xl border border-wine/25 shadow-subtle p-3.5 sm:p-4 w-full max-w-md my-2.5 transition-all text-xs text-charcoal animate-in fade-in duration-150">
         {/* Compact Header */}
         <div className="flex items-center justify-between pb-2.5 border-b border-border">
           <div className="flex items-center gap-2">
@@ -427,7 +427,7 @@ export const BookingRequestCard: React.FC<BookingRequestCardProps> = ({
   if (!data) return null;
 
   return (
-    <div className="bg-surface-card rounded-2xl border border-border shadow-xs p-3.5 sm:p-4 max-w-sm sm:max-w-md my-1.5 text-charcoal transition-all text-xs">
+    <div className="bg-surface-card rounded-2xl border border-border shadow-subtle p-3.5 sm:p-4 w-full max-w-sm sm:max-w-md my-1.5 text-charcoal transition-all text-xs">
       {/* Header */}
       <div className="flex items-center justify-between pb-2 border-b border-border/80">
         <div className="flex items-center gap-2">

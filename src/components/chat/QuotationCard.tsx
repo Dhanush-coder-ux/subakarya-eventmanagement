@@ -22,7 +22,7 @@ export const QuotationCard: React.FC<QuotationCardProps> = ({
   const isCustomer = userRole === 'customer';
 
   return (
-    <div className="bg-surface-card rounded-2xl border border-border shadow-elevated p-5 max-w-lg my-3 text-charcoal transition-all">
+    <div className="bg-surface-card rounded-2xl border border-border shadow-elevated p-4 sm:p-5 w-full max-w-md sm:max-w-lg my-2.5 text-charcoal transition-all">
       {/* Invoice Header */}
       <div className="flex items-start justify-between pb-4 border-b border-border">
         <div>

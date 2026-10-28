@@ -155,14 +155,14 @@ export const ChatPage: React.FC = () => {
   });
 
   return (
-    <div className="w-full h-full flex overflow-hidden bg-surface text-charcoal">
+    <div className="w-full h-full flex flex-row min-h-0 min-w-0 overflow-hidden bg-surface text-charcoal">
       {/* ============================================================ */}
       {/* 1. LEFT SIDEBAR: FIXED-WIDTH CONVERSATION LIST (Instagram DM) */}
       {/* ============================================================ */}
       <aside
         className={`${
           showMobileList ? 'flex' : 'hidden'
-        } md:flex flex-col w-full md:w-80 lg:w-[350px] shrink-0 border-r border-border bg-surface h-full z-20`}
+        } md:flex flex-col w-full md:w-80 lg:w-[350px] shrink-0 border-r border-border bg-surface h-full min-h-0 overflow-hidden z-20`}
       >
         {/* User Handle & Header */}
         <div className="h-16 px-4 border-b border-border flex items-center justify-between shrink-0 bg-surface">
@@ -185,7 +185,7 @@ export const ChatPage: React.FC = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="p-3 border-b border-border/70 bg-surface">
+        <div className="p-3 border-b border-border/70 bg-surface shrink-0">
           <div className="relative">
             <Search className="w-3.5 h-3.5 text-charcoal-muted absolute left-3 top-2.5" />
             <input
@@ -199,7 +199,7 @@ export const ChatPage: React.FC = () => {
         </div>
 
         {/* Scrollable Conversation Threads */}
-        <div className="flex-1 overflow-y-auto divide-y divide-border/40 no-scrollbar">
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain divide-y divide-border/40 no-scrollbar">
           {filteredConversations.length === 0 ? (
             <div className="p-8 text-center text-xs text-charcoal-muted space-y-2">
               <p>No active conversations found.</p>
@@ -277,12 +277,12 @@ export const ChatPage: React.FC = () => {
       <section
         className={`${
           showMobileList ? 'hidden' : 'flex'
-        } md:flex flex-col flex-1 h-full bg-surface overflow-hidden relative`}
+        } md:flex flex-col flex-1 min-w-0 h-full min-h-0 bg-surface overflow-hidden relative`}
       >
         {activeConversation ? (
           <>
             {/* Active Chat Top Header */}
-            <div className="h-16 px-4 sm:px-6 border-b border-border bg-surface flex items-center justify-between shrink-0 z-10 shadow-xs">
+            <div className="h-16 px-4 sm:px-6 border-b border-border bg-surface flex items-center justify-between shrink-0 z-10">
               <div className="flex items-center gap-3 min-w-0">
                 {/* Mobile Back Button to conversation list */}
                 <button
@@ -372,7 +372,7 @@ export const ChatPage: React.FC = () => {
             </div>
 
             {/* Scrollable Conversation Stream */}
-            <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-4 space-y-3.5">
+            <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 sm:px-8 py-4 space-y-3.5">
               {/* Draft Booking Request Card (when customer arrives with pending slot selection) */}
               {isCustomer && pendingBookingContext && (
                 <div className="flex flex-col items-start animate-in fade-in duration-200">
@@ -488,10 +488,10 @@ export const ChatPage: React.FC = () => {
                     className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
                   >
                     <div
-                      className={`max-w-sm sm:max-w-md px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-xs transition-all ${
+                      className={`max-w-sm sm:max-w-md px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-subtle transition-all break-words ${
                         isMine
-                          ? 'bg-wine text-white rounded-br-xs'
-                          : 'bg-surface-card border border-border text-charcoal rounded-bl-xs'
+                          ? 'bg-wine text-white rounded-br-sm'
+                          : 'bg-surface-card border border-border text-charcoal rounded-bl-sm'
                       }`}
                     >
                       {msg.content}

@@ -38,6 +38,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
   const [showNotifications, setShowNotifications] = useState(false);
 
   const isCustomer = accountType === 'customer';
+  const isChatRoute =
+    location.pathname.startsWith('/chat') ||
+    location.pathname.startsWith('/messages');
 
   const unreadCount = conversations.reduce((acc, conv) => {
     return acc + (isCustomer ? conv.unreadCustomerCount : conv.unreadProfessionalCount);
@@ -78,7 +81,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
 
   return (
     <>
-      <aside className="hidden md:flex flex-col fixed top-0 bottom-0 left-0 z-40 bg-surface border-r border-border w-[72px] lg:w-[245px] px-3 py-5 justify-between transition-all duration-200">
+      <aside
+        className={`hidden md:flex flex-col fixed top-0 bottom-0 left-0 z-40 bg-surface border-r border-border ${
+          isChatRoute ? 'w-[72px] px-2 py-5' : 'w-[72px] lg:w-[245px] px-3 py-5'
+        } justify-between transition-all duration-200`}
+      >
         {/* Top Logo */}
         <div className="space-y-6">
           <Link
@@ -88,14 +95,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
             <div className="w-8 h-8 rounded-lg bg-wine flex items-center justify-center text-white font-bold text-base shadow-xs flex-shrink-0 group-hover:scale-105 transition-transform">
               S
             </div>
-            <div className="hidden lg:flex flex-col">
-              <span className="font-bold text-xl tracking-wider text-charcoal leading-none">
-                SOIRÉE
-              </span>
-              <span className="text-[10px] text-wine font-semibold uppercase tracking-widest mt-0.5">
-                {isCustomer ? 'Marketplace' : 'Vendor Suite'}
-              </span>
-            </div>
+            {!isChatRoute && (
+              <div className="hidden lg:flex flex-col">
+                <span className="font-bold text-xl tracking-wider text-charcoal leading-none">
+                  SOIRÉE
+                </span>
+                <span className="text-[10px] text-wine font-semibold uppercase tracking-widest mt-0.5">
+                  {isCustomer ? 'Marketplace' : 'Vendor Suite'}
+                </span>
+              </div>
+            )}
           </Link>
 
           {/* Navigation Items */}
@@ -136,7 +145,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
                       </span>
                     )}
                   </div>
-                  <span className="hidden lg:inline truncate">{item.label}</span>
+                  {!isChatRoute && <span className="hidden lg:inline truncate">{item.label}</span>}
                 </Link>
               );
             })}
@@ -154,9 +163,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
               title="Create Content / Explore"
             >
               <PlusSquare className="w-6 h-6 stroke-[1.8px] text-charcoal flex-shrink-0" />
-              <span className="hidden lg:inline">
-                {accountType === 'professional' ? 'Create' : 'Explore'}
-              </span>
+              {!isChatRoute && (
+                <span className="hidden lg:inline">
+                  {accountType === 'professional' ? 'Create' : 'Explore'}
+                </span>
+              )}
             </button>
 
             {/* Notifications Item */}
@@ -169,7 +180,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
                 <Heart className="w-6 h-6 stroke-[1.8px] text-charcoal" />
                 <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-wine ring-2 ring-surface"></span>
               </div>
-              <span className="hidden lg:inline">Notifications</span>
+              {!isChatRoute && <span className="hidden lg:inline">Notifications</span>}
             </button>
           </nav>
         </div>
@@ -182,7 +193,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
             title="More Options"
           >
             <Menu className="w-6 h-6 stroke-[2px] flex-shrink-0" />
-            <span className="hidden lg:inline font-semibold">More</span>
+            {!isChatRoute && <span className="hidden lg:inline font-semibold">More</span>}
           </button>
 
           {/* More Flyout Menu */}
@@ -275,7 +286,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
 
       {/* Notifications Slideover/Drawer */}
       {showNotifications && (
-        <div className="hidden md:block fixed top-0 bottom-0 left-[72px] lg:left-[245px] w-80 bg-surface-card border-r border-border shadow-dropdown p-4 z-30 animate-in slide-in-from-left duration-200">
+        <div
+          className={`hidden md:block fixed top-0 bottom-0 ${
+            isChatRoute ? 'left-[72px]' : 'left-[72px] lg:left-[245px]'
+          } w-80 bg-surface-card border-r border-border shadow-dropdown p-4 z-30 animate-in slide-in-from-left duration-200`}
+        >
           <div className="flex items-center justify-between pb-3 border-b border-border">
             <h3 className="font-bold text-sm text-charcoal">Notifications</h3>
             <button

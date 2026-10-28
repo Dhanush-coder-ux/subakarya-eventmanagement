@@ -18,7 +18,13 @@ export const Layout: React.FC = () => {
     location.pathname.startsWith('/messages');
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col selection:bg-wine selection:text-white">
+    <div
+      className={`bg-surface flex flex-col selection:bg-wine selection:text-white ${
+        isChatRoute
+          ? 'fixed inset-0 h-[100dvh] h-screen overflow-hidden'
+          : 'min-h-screen'
+      }`}
+    >
       {/* Mobile Top Header (hidden on chat for true Instagram DM full-screen experience) */}
       {!isChatRoute && <MobileHeader />}
 
@@ -27,9 +33,11 @@ export const Layout: React.FC = () => {
 
       {/* Main Content Area */}
       <main
-        className={`flex-1 ${
-          accountType === 'customer' ? 'md:ml-[72px] lg:ml-[245px]' : 'md:ml-64'
-        } ${isChatRoute ? 'pb-0 h-[100dvh] overflow-hidden' : 'pb-16 md:pb-6'} transition-all duration-200`}
+        className={`flex-1 flex flex-col min-h-0 min-w-0 ${
+          isChatRoute
+            ? 'md:ml-[72px] h-full overflow-hidden'
+            : 'md:ml-[72px] lg:ml-[245px] pb-16 md:pb-6'
+        } transition-all duration-200`}
       >
         <Outlet />
       </main>
