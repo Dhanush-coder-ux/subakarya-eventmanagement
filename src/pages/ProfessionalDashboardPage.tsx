@@ -57,7 +57,7 @@ export const ProfessionalDashboardPage: React.FC = () => {
           />
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="font-serif-display text-2xl sm:text-3xl font-bold text-charcoal">
+              <h1 className="font-bold text-2xl sm:text-3xl font-bold text-charcoal">
                 {pro?.businessName || currentUser.name}
               </h1>
               {pro?.isVerified && (
@@ -144,7 +144,7 @@ export const ProfessionalDashboardPage: React.FC = () => {
             <Users className="w-4 h-4 text-wine" />
           </div>
           <span className="text-xs text-charcoal-muted">Followers</span>
-          <p className="text-xl font-bold font-serif-display text-charcoal">
+          <p className="text-xl font-bold font-bold text-charcoal">
             {(pro?.followersCount || 1240).toLocaleString()}
           </p>
         </div>
@@ -154,7 +154,7 @@ export const ProfessionalDashboardPage: React.FC = () => {
             <Grid className="w-4 h-4 text-wine" />
           </div>
           <span className="text-xs text-charcoal-muted">Posts & Reels</span>
-          <p className="text-xl font-bold font-serif-display text-charcoal">
+          <p className="text-xl font-bold font-bold text-charcoal">
             {myPosts.length + myReels.length}
           </p>
         </div>
@@ -164,7 +164,7 @@ export const ProfessionalDashboardPage: React.FC = () => {
             <Briefcase className="w-4 h-4 text-wine" />
           </div>
           <span className="text-xs text-charcoal-muted">Our Works</span>
-          <p className="text-xl font-bold font-serif-display text-wine">
+          <p className="text-xl font-bold font-bold text-wine">
             {myWorks.length}
           </p>
         </div>
@@ -174,7 +174,7 @@ export const ProfessionalDashboardPage: React.FC = () => {
             <MessageSquare className="w-4 h-4 text-wine" />
           </div>
           <span className="text-xs text-charcoal-muted">New Enquiries</span>
-          <p className="text-xl font-bold font-serif-display text-charcoal">
+          <p className="text-xl font-bold font-bold text-charcoal">
             {pendingEnquiries.length}
           </p>
         </div>
@@ -184,7 +184,7 @@ export const ProfessionalDashboardPage: React.FC = () => {
             <FileText className="w-4 h-4 text-wine" />
           </div>
           <span className="text-xs text-charcoal-muted">Pending Quotes</span>
-          <p className="text-xl font-bold font-serif-display text-charcoal">
+          <p className="text-xl font-bold font-bold text-charcoal">
             {quoteReceived.length}
           </p>
         </div>
@@ -194,7 +194,7 @@ export const ProfessionalDashboardPage: React.FC = () => {
             <CalendarCheck className="w-4 h-4 text-wine" />
           </div>
           <span className="text-xs text-charcoal-muted">Confirmed Events</span>
-          <p className="text-xl font-bold font-serif-display text-success">
+          <p className="text-xl font-bold font-bold text-success">
             {confirmedBookings.length}
           </p>
         </div>

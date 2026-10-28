@@ -115,7 +115,7 @@ export const QuotationCard: React.FC<QuotationCardProps> = ({
         )}
         <div className="flex justify-between pt-2 border-t border-border/80 text-sm font-bold text-charcoal">
           <span>Total Quotation Amount</span>
-          <span className="text-base text-wine font-serif-display font-bold">
+          <span className="text-base text-wine font-bold font-bold">
             {formatINR(quotation.totalAmount)}
           </span>
         </div>

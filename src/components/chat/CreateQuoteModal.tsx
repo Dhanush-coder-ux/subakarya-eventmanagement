@@ -311,7 +311,7 @@ export const CreateQuoteModal: React.FC<CreateQuoteModalProps> = ({
             )}
             <div className="flex justify-between pt-1 border-t border-border font-bold text-sm text-charcoal">
               <span>Final Proposal Total:</span>
-              <span className="text-wine font-serif-display text-base font-bold">
+              <span className="text-wine font-bold text-base font-bold">
                 {formatINR(totalAmount)}
               </span>
             </div>

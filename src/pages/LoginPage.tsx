@@ -43,10 +43,10 @@ export const LoginPage: React.FC = () => {
       <div className="w-full max-w-md bg-surface-card rounded-2xl border border-border shadow-elevated p-6 sm:p-8">
         {/* Brand Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex w-12 h-12 rounded-xl bg-wine items-center justify-center text-sand font-serif-display text-2xl font-bold shadow-md mb-3">
+          <div className="inline-flex w-12 h-12 rounded-xl bg-wine items-center justify-center text-sand font-bold text-2xl font-bold shadow-md mb-3">
             S
           </div>
-          <h1 className="font-serif-display text-3xl font-bold tracking-wider text-charcoal">
+          <h1 className="font-bold text-3xl font-bold tracking-wider text-charcoal">
             SOIRÉE
           </h1>
           <p className="text-xs uppercase tracking-widest text-wine font-semibold mt-1">

@@ -197,7 +197,7 @@ export const InventoryPage: React.FC = () => {
           <span className="text-[10px] uppercase font-bold tracking-wider text-wine bg-sand/60 px-2 py-0.5 rounded">
             Asset & Supply Tracking
           </span>
-          <h1 className="font-serif-display text-2xl sm:text-3xl font-bold text-charcoal mt-1">
+          <h1 className="font-bold text-2xl sm:text-3xl font-bold text-charcoal mt-1">
             Inventory & Asset Management
           </h1>
           <p className="text-xs text-charcoal-muted mt-0.5">
@@ -218,22 +218,22 @@ export const InventoryPage: React.FC = () => {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="p-4 bg-surface-card rounded-2xl border border-border shadow-xs">
           <span className="text-[11px] font-semibold text-charcoal-muted block">Total Catalog Items</span>
-          <p className="text-2xl font-bold font-serif-display text-charcoal mt-1">{myInventory.length}</p>
+          <p className="text-2xl font-bold font-bold text-charcoal mt-1">{myInventory.length}</p>
         </div>
 
         <div className="p-4 bg-surface-card rounded-2xl border border-border shadow-xs">
           <span className="text-[11px] font-semibold text-charcoal-muted block">Total Units In Stock</span>
-          <p className="text-2xl font-bold font-serif-display text-charcoal mt-1">{totalUnits}</p>
+          <p className="text-2xl font-bold font-bold text-charcoal mt-1">{totalUnits}</p>
         </div>
 
         <div className="p-4 bg-surface-card rounded-2xl border border-border shadow-xs">
           <span className="text-[11px] font-semibold text-charcoal-muted block">Available for Events</span>
-          <p className="text-2xl font-bold font-serif-display text-success mt-1">{totalAvailable}</p>
+          <p className="text-2xl font-bold font-bold text-success mt-1">{totalAvailable}</p>
         </div>
 
         <div className="p-4 bg-surface-card rounded-2xl border border-border shadow-xs">
           <span className="text-[11px] font-semibold text-charcoal-muted block">Low Stock Alerts</span>
-          <p className={`text-2xl font-bold font-serif-display mt-1 ${lowStockCount > 0 ? 'text-error' : 'text-charcoal'}`}>
+          <p className={`text-2xl font-bold font-bold mt-1 ${lowStockCount > 0 ? 'text-error' : 'text-charcoal'}`}>
             {lowStockCount}
           </p>
         </div>
@@ -621,3 +621,4 @@ export const InventoryPage: React.FC = () => {
     </div>
   );
 };
+

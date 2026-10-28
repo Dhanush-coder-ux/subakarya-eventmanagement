@@ -64,7 +64,7 @@ export const SettingsPage: React.FC = () => {
         <span className="text-[10px] uppercase font-bold tracking-wider text-wine bg-sand/60 px-2 py-0.5 rounded">
           Preferences & Sandbox Controls
         </span>
-        <h1 className="font-serif-display text-2xl sm:text-3xl font-bold text-charcoal mt-1">
+        <h1 className="font-bold text-2xl sm:text-3xl font-bold text-charcoal mt-1">
           Platform Settings & Account Switcher
         </h1>
         <p className="text-xs text-charcoal-muted mt-0.5">
@@ -261,3 +261,4 @@ export const SettingsPage: React.FC = () => {
     </div>
   );
 };
+

@@ -149,7 +149,7 @@ export const ChatPage: React.FC = () => {
           {/* Header & Search */}
           <div className="p-4 border-b border-border space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="font-serif-display text-lg font-bold text-charcoal">
+              <h2 className="font-bold text-lg font-bold text-charcoal">
                 Event Messages & Bookings
               </h2>
               <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sand text-charcoal border border-sand-dark">

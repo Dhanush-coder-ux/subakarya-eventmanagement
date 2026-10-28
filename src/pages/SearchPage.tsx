@@ -356,7 +356,7 @@ export const SearchPage: React.FC = () => {
                         <span className="text-[10px] uppercase font-bold text-wine tracking-wider bg-sand/60 px-2 py-0.5 rounded-md">
                           {srv.category}
                         </span>
-                        <span className="text-sm font-bold text-wine font-serif-display">
+                        <span className="text-sm font-bold text-wine font-bold">
                           {formatINR(srv.basePrice)}
                         </span>
                       </div>
@@ -443,3 +443,4 @@ export const SearchPage: React.FC = () => {
     </div>
   );
 };
+

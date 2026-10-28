@@ -68,7 +68,7 @@ export const BookingsPage: React.FC = () => {
           <span className="text-[10px] uppercase font-bold tracking-wider text-wine bg-sand/60 px-2 py-0.5 rounded">
             {isCustomer ? 'Customer Reservations' : 'Vendor Booking Pipeline'}
           </span>
-          <h1 className="font-serif-display text-2xl sm:text-3xl font-bold text-charcoal mt-1">
+          <h1 className="font-bold text-2xl sm:text-3xl font-bold text-charcoal mt-1">
             {isCustomer ? 'My Event Bookings' : 'Client Event Schedule & Jobs'}
           </h1>
           <p className="text-xs text-charcoal-muted mt-0.5">
@@ -197,7 +197,7 @@ export const BookingsPage: React.FC = () => {
                     <span className="text-[10px] uppercase font-bold text-charcoal-muted block">
                       Booking Value
                     </span>
-                    <span className="font-serif-display font-bold text-base sm:text-lg text-wine">
+                    <span className="font-bold font-bold text-base sm:text-lg text-wine">
                       {booking.totalAmount ? formatINR(booking.totalAmount) : 'Pending Quote'}
                     </span>
                   </div>
@@ -241,3 +241,4 @@ export const BookingsPage: React.FC = () => {
     </div>
   );
 };
+

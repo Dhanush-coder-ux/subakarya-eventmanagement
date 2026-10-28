@@ -22,10 +22,10 @@ export const AccountTypePage: React.FC = () => {
     <div className="min-h-screen bg-sand/30 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="w-full max-w-2xl bg-surface-card rounded-2xl border border-border shadow-elevated p-6 sm:p-8">
         <div className="text-center mb-8">
-          <div className="inline-flex w-10 h-10 rounded-xl bg-wine items-center justify-center text-sand font-serif-display text-xl font-bold shadow-sm mb-2">
+          <div className="inline-flex w-10 h-10 rounded-xl bg-wine items-center justify-center text-sand font-bold text-xl font-bold shadow-sm mb-2">
             S
           </div>
-          <h1 className="font-serif-display text-2xl sm:text-3xl font-bold text-charcoal">
+          <h1 className="font-bold text-2xl sm:text-3xl font-bold text-charcoal">
             Choose Your Account Experience
           </h1>
           <p className="text-xs sm:text-sm text-charcoal-muted mt-2 max-w-md mx-auto">
@@ -58,7 +58,7 @@ export const AccountTypePage: React.FC = () => {
                 </div>
               </div>
 
-              <h3 className="font-serif-display text-xl font-bold text-charcoal mb-1">
+              <h3 className="font-bold text-xl font-bold text-charcoal mb-1">
                 Customer
               </h3>
               <p className="text-xs text-charcoal-muted mb-4 leading-relaxed">
@@ -111,7 +111,7 @@ export const AccountTypePage: React.FC = () => {
                 </div>
               </div>
 
-              <h3 className="font-serif-display text-xl font-bold text-charcoal mb-1">
+              <h3 className="font-bold text-xl font-bold text-charcoal mb-1">
                 Professional / Vendor
               </h3>
               <p className="text-xs text-charcoal-muted mb-4 leading-relaxed">

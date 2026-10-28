@@ -108,7 +108,7 @@ export const ServicesPage: React.FC = () => {
               Vendor Pricing Management
             </span>
           </div>
-          <h1 className="font-serif-display text-2xl sm:text-3xl font-bold text-charcoal mt-1">
+          <h1 className="font-bold text-2xl sm:text-3xl font-bold text-charcoal mt-1">
             Services & Pricing Packages
           </h1>
           <p className="text-xs text-charcoal-muted mt-0.5">
@@ -171,7 +171,7 @@ export const ServicesPage: React.FC = () => {
                   <span className="text-[10px] uppercase tracking-wider text-charcoal-muted block">
                     Base Rate
                   </span>
-                  <span className="font-bold text-base text-wine font-serif-display">
+                  <span className="font-bold text-base text-wine font-bold">
                     {formatINR(service.basePrice)}
                   </span>
                 </div>
@@ -330,3 +330,4 @@ export const ServicesPage: React.FC = () => {
     </div>
   );
 };
+
