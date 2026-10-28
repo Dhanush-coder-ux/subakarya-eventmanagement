@@ -17,6 +17,9 @@ import {
   User,
   PlusCircle,
   AlertCircle,
+  MessageCircle,
+  SquarePen,
+  MoreVertical,
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useMarketplaceStore } from '../store/useMarketplaceStore';
@@ -92,7 +95,7 @@ export const ChatPage: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [currentMessages.length, activeConversationId]);
 
-  // Handle mobile screen back
+  // Handle mobile screen conversation switch
   const handleSelectConversation = (id: string) => {
     setActiveConversation(id);
     setShowMobileList(false);
@@ -141,7 +144,7 @@ export const ChatPage: React.FC = () => {
     declineQuotation(quoteId, activeConversationId, currentUser.name);
   };
 
-  // Filter conversations
+  // Filter conversations based on search query
   const filteredConversations = conversations.filter((c) => {
     const query = searchTerm.toLowerCase();
     return (
@@ -152,174 +155,227 @@ export const ChatPage: React.FC = () => {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-6 h-[calc(100vh-5.5rem)]">
-      <div className="bg-surface-card rounded-2xl border border-border shadow-card h-full flex overflow-hidden">
-        {/* Left Panel: Conversation List */}
-        <aside
-          className={`${
-            showMobileList ? 'flex' : 'hidden'
-          } md:flex flex-col w-full md:w-80 lg:w-96 border-r border-border bg-surface-card h-full`}
-        >
-          {/* Header & Search */}
-          <div className="p-4 border-b border-border space-y-3">
-            <div className="flex items-center justify-between">
-              <h2 className="font-bold text-lg text-charcoal">
-                Event Messages & Bookings
-              </h2>
-              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sand text-charcoal border border-sand-dark">
-                {conversations.length} Active
-              </span>
-            </div>
-
-            <div className="relative">
-              <Search className="w-3.5 h-3.5 text-charcoal-muted absolute left-3 top-2.5" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Search conversations..."
-                className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-border bg-surface text-charcoal outline-none focus:border-wine"
-              />
-            </div>
+    <div className="w-full h-full flex overflow-hidden bg-surface text-charcoal">
+      {/* ============================================================ */}
+      {/* 1. LEFT SIDEBAR: FIXED-WIDTH CONVERSATION LIST (Instagram DM) */}
+      {/* ============================================================ */}
+      <aside
+        className={`${
+          showMobileList ? 'flex' : 'hidden'
+        } md:flex flex-col w-full md:w-80 lg:w-[350px] shrink-0 border-r border-border bg-surface h-full z-20`}
+      >
+        {/* User Handle & Header */}
+        <div className="h-16 px-4 border-b border-border flex items-center justify-between shrink-0 bg-surface">
+          <div className="flex items-center gap-2">
+            <h2 className="font-bold text-base text-charcoal tracking-tight truncate max-w-[200px]">
+              {currentUser.name}
+            </h2>
+            <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-sand text-wine border border-sand-dark">
+              {isCustomer ? 'Customer' : 'Vendor'}
+            </span>
           </div>
 
-          {/* Conversations Scrollable List */}
-          <div className="flex-1 overflow-y-auto divide-y divide-border/60">
-            {filteredConversations.length === 0 ? (
-              <div className="p-8 text-center text-xs text-charcoal-muted">
-                No active conversations found.
-              </div>
-            ) : (
-              filteredConversations.map((conv) => {
-                const isSelected = conv.id === activeConversationId;
-                const otherPartyName = isCustomer ? conv.professionalName : conv.customerName;
-                const otherPartyAvatar = isCustomer ? conv.professionalAvatar : conv.customerAvatar;
-                const otherPartyCategory = isCustomer ? conv.professionalCategory : 'Customer';
+          <button
+            onClick={() => navigate('/search')}
+            className="p-1.5 rounded-full hover:bg-sand/40 text-charcoal transition-colors"
+            title="Explore professionals"
+          >
+            <SquarePen className="w-4 h-4 text-charcoal-muted hover:text-wine" />
+          </button>
+        </div>
 
-                return (
-                  <div
-                    key={conv.id}
-                    onClick={() => handleSelectConversation(conv.id)}
-                    className={`p-3.5 cursor-pointer transition-colors flex items-start gap-3 ${
-                      isSelected
-                        ? 'bg-sand/50 border-l-4 border-wine'
-                        : 'hover:bg-sand/20'
-                    }`}
-                  >
+        {/* Search Bar */}
+        <div className="p-3 border-b border-border/70 bg-surface">
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 text-charcoal-muted absolute left-3 top-2.5" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search messages..."
+              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-border bg-sand/25 text-charcoal placeholder:text-charcoal-muted/70 outline-none focus:border-wine/50 focus:bg-surface transition-all"
+            />
+          </div>
+        </div>
+
+        {/* Scrollable Conversation Threads */}
+        <div className="flex-1 overflow-y-auto divide-y divide-border/40 no-scrollbar">
+          {filteredConversations.length === 0 ? (
+            <div className="p-8 text-center text-xs text-charcoal-muted space-y-2">
+              <p>No active conversations found.</p>
+              <Link
+                to="/search"
+                className="text-wine font-semibold hover:underline block text-xs"
+              >
+                Browse event professionals
+              </Link>
+            </div>
+          ) : (
+            filteredConversations.map((conv) => {
+              const isSelected = conv.id === activeConversationId;
+              const otherPartyName = isCustomer ? conv.professionalName : conv.customerName;
+              const otherPartyAvatar = isCustomer ? conv.professionalAvatar : conv.customerAvatar;
+              const otherPartyCategory = isCustomer ? conv.professionalCategory : 'Customer';
+              const unread = isCustomer ? conv.unreadCustomerCount : conv.unreadProfessionalCount;
+
+              return (
+                <div
+                  key={conv.id}
+                  onClick={() => handleSelectConversation(conv.id)}
+                  className={`px-4 py-3 cursor-pointer transition-all flex items-center gap-3 select-none ${
+                    isSelected
+                      ? 'bg-sand/40 border-l-4 border-wine'
+                      : 'hover:bg-sand/20'
+                  }`}
+                >
+                  {/* Avatar */}
+                  <div className="relative shrink-0">
                     <img
                       src={otherPartyAvatar}
                       alt={otherPartyName}
-                      className="w-11 h-11 rounded-full object-cover ring-1 ring-border flex-shrink-0"
+                      className="w-12 h-12 rounded-full object-cover ring-1 ring-border"
                     />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-0.5">
-                        <h4 className="text-xs font-bold text-charcoal truncate">
-                          {otherPartyName}
-                        </h4>
-                        <span className="text-[10px] text-charcoal-light flex-shrink-0">
-                          {formatTime(conv.lastMessageAt)}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-wine font-medium truncate mb-1">
-                        {otherPartyCategory}
-                      </p>
-                      <p className="text-xs text-charcoal-muted line-clamp-1 leading-snug">
+                    {unread > 0 && (
+                      <span className="absolute bottom-0 right-0 w-3 h-3 bg-wine border-2 border-surface rounded-full" />
+                    )}
+                  </div>
+
+                  {/* Thread info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-0.5">
+                      <h4 className="text-xs sm:text-sm font-semibold text-charcoal truncate">
+                        {otherPartyName}
+                      </h4>
+                      <span className="text-[10px] text-charcoal-muted shrink-0 ml-1">
+                        {formatTime(conv.lastMessageAt)}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-1">
+                      <p className="text-xs text-charcoal-muted line-clamp-1 leading-snug truncate">
                         {conv.lastMessage}
                       </p>
+                      {unread > 0 && (
+                        <span className="w-2 h-2 rounded-full bg-wine shrink-0" />
+                      )}
                     </div>
+
+                    <span className="text-[10px] font-medium text-wine block truncate mt-0.5">
+                      {otherPartyCategory}
+                    </span>
                   </div>
-                );
-              })
-            )}
-          </div>
-        </aside>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </aside>
 
-        {/* Right Panel: Active Conversation View */}
-        <section
-          className={`${
-            showMobileList ? 'hidden' : 'flex'
-          } md:flex flex-col flex-1 h-full bg-surface relative`}
-        >
-          {activeConversation ? (
-            <>
-              {/* Top Chat Header */}
-              <div className="p-3.5 sm:p-4 border-b border-border bg-surface-card flex items-center justify-between shadow-subtle z-10">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setShowMobileList(true)}
-                    className="md:hidden p-1.5 rounded-lg border border-border text-charcoal hover:bg-sand/30"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
+      {/* ============================================================ */}
+      {/* 2. RIGHT-SIDE ACTIVE CHAT: OCCUPIES ENTIRE REMAINING WIDTH  */}
+      {/* ============================================================ */}
+      <section
+        className={`${
+          showMobileList ? 'hidden' : 'flex'
+        } md:flex flex-col flex-1 h-full bg-surface overflow-hidden relative`}
+      >
+        {activeConversation ? (
+          <>
+            {/* Active Chat Top Header */}
+            <div className="h-16 px-4 sm:px-6 border-b border-border bg-surface flex items-center justify-between shrink-0 z-10 shadow-xs">
+              <div className="flex items-center gap-3 min-w-0">
+                {/* Mobile Back Button to conversation list */}
+                <button
+                  type="button"
+                  onClick={() => setShowMobileList(true)}
+                  className="md:hidden p-1.5 -ml-1 rounded-full text-charcoal hover:bg-sand/40 transition-colors shrink-0"
+                  title="Back to conversations"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
 
-                  <img
-                    src={
-                      isCustomer
-                        ? activeConversation.professionalAvatar
-                        : activeConversation.customerAvatar
-                    }
-                    alt={
-                      isCustomer
-                        ? activeConversation.professionalName
-                        : activeConversation.customerName
-                    }
-                    className="w-9 h-9 rounded-full object-cover ring-1 ring-wine/30"
-                  />
+                <img
+                  src={
+                    isCustomer
+                      ? activeConversation.professionalAvatar
+                      : activeConversation.customerAvatar
+                  }
+                  alt={
+                    isCustomer
+                      ? activeConversation.professionalName
+                      : activeConversation.customerName
+                  }
+                  className="w-10 h-10 rounded-full object-cover ring-1 ring-border shrink-0"
+                />
 
-                  <div>
-                    <h3 className="text-xs sm:text-sm font-bold text-charcoal leading-tight">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-sm font-bold text-charcoal truncate leading-tight">
                       {isCustomer
                         ? activeConversation.professionalName
                         : activeConversation.customerName}
                     </h3>
-                    <p className="text-[11px] text-charcoal-muted flex items-center gap-1.5">
-                      <span>
-                        {isCustomer ? activeConversation.professionalCategory : 'Customer'}
-                      </span>
-                      {associatedBooking && (
-                        <>
-                          <span>•</span>
-                          <span
-                            className={`font-semibold capitalize ${
-                              associatedBooking.status === 'confirmed'
-                                ? 'text-success'
-                                : 'text-wine'
-                            }`}
-                          >
-                            Status: {associatedBooking.status.replace('_', ' ')}
-                          </span>
-                        </>
-                      )}
-                    </p>
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                   </div>
-                </div>
-
-                {/* Top Action Buttons */}
-                <div className="flex items-center gap-2">
-                  {!isCustomer ? (
-                    <button
-                      onClick={() => setShowQuoteModal(true)}
-                      className="px-3 py-1.5 rounded-xl bg-wine hover:bg-wine-deep text-white text-xs font-bold flex items-center gap-1.5 shadow-subtle transition-all active:scale-95"
-                    >
-                      <PlusCircle className="w-3.5 h-3.5" />
-                      <span>Create Quotation</span>
-                    </button>
-                  ) : (
-                    <Link
-                      to={`/professionals/${activeConversation.professionalId}/availability`}
-                      className="px-3 py-1.5 rounded-lg border border-border hover:bg-sand/30 text-xs font-semibold text-charcoal flex items-center gap-1.5"
-                    >
-                      <Calendar className="w-3.5 h-3.5 text-wine" />
-                      <span>Check Slots</span>
-                    </Link>
-                  )}
+                  <p className="text-[11px] text-charcoal-muted flex items-center gap-1.5 mt-0.5 truncate">
+                    <span>
+                      {isCustomer ? activeConversation.professionalCategory : 'Customer Enquiry'}
+                    </span>
+                    {associatedBooking && (
+                      <>
+                        <span>•</span>
+                        <span
+                          className={`font-semibold capitalize text-[10px] px-1.5 py-0.2 rounded ${
+                            associatedBooking.status === 'confirmed'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : 'bg-sand text-wine'
+                          }`}
+                        >
+                          {associatedBooking.status.replace('_', ' ')}
+                        </span>
+                      </>
+                    )}
+                  </p>
                 </div>
               </div>
 
-              {/* Messages Timeline */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-                {/* Prefilled Structured Booking Request Draft Card for Customer */}
-                {isCustomer && pendingBookingContext && (
+              {/* Action Buttons in Header */}
+              <div className="flex items-center gap-2 shrink-0">
+                {!isCustomer ? (
+                  <button
+                    onClick={() => setShowQuoteModal(true)}
+                    className="px-3.5 py-1.5 rounded-full bg-wine hover:bg-wine-deep text-white text-xs font-bold flex items-center gap-1.5 shadow-subtle transition-all active:scale-95"
+                  >
+                    <PlusCircle className="w-3.5 h-3.5" />
+                    <span>Create Quotation</span>
+                  </button>
+                ) : (
+                  <>
+                    <Link
+                      to={`/professionals/${activeConversation.professionalId}/availability`}
+                      className="px-3 py-1.5 rounded-full border border-wine text-wine hover:bg-wine/10 text-xs font-bold flex items-center gap-1.5 transition-all"
+                    >
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">Check Slots</span>
+                    </Link>
+
+                    <Link
+                      to={`/profile/${activeConversation.professionalId}`}
+                      className="p-2 rounded-full border border-border hover:bg-sand/30 text-charcoal transition-colors"
+                      title="View Profile"
+                    >
+                      <User className="w-4 h-4 text-charcoal-muted hover:text-charcoal" />
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Scrollable Conversation Stream */}
+            <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-4 space-y-3.5">
+              {/* Draft Booking Request Card (when customer arrives with pending slot selection) */}
+              {isCustomer && pendingBookingContext && (
+                <div className="flex flex-col items-start animate-in fade-in duration-200">
                   <BookingRequestCard
                     isFormMode={true}
                     professionalName={pendingBookingContext.professionalName}
@@ -351,143 +407,152 @@ export const ChatPage: React.FC = () => {
                       )
                     }
                   />
-                )}
+                </div>
+              )}
 
-                {/* Messages Loop */}
-                {currentMessages.map((msg) => {
-                  const isMine = msg.senderId === currentUser.id;
+              {/* Messages Stream */}
+              {currentMessages.map((msg) => {
+                const isMine = msg.senderId === currentUser.id;
 
-                  // Render System Message
-                  if (msg.type === 'system') {
-                    return (
-                      <div key={msg.id} className="text-center my-3">
-                        <span className="inline-block px-3 py-1 rounded-full bg-sand/60 border border-sand-dark text-[11px] text-charcoal font-medium">
-                          {msg.content}
-                        </span>
-                      </div>
-                    );
-                  }
+                // 1. System Notification Message
+                if (msg.type === 'system') {
+                  return (
+                    <div key={msg.id} className="text-center my-3">
+                      <span className="inline-block px-3 py-1 rounded-full bg-sand/60 border border-border text-[11px] text-charcoal-muted font-medium">
+                        {msg.content}
+                      </span>
+                    </div>
+                  );
+                }
 
-                  // Render Booking Request Card Message
-                  if (msg.type === 'booking_request' && msg.bookingRequest) {
-                    return (
-                      <div
-                        key={msg.id}
-                        className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
-                      >
-                        <div className="text-[10px] text-charcoal-muted mb-1 px-1">
-                          {msg.senderName} • {formatTime(msg.createdAt)}
-                        </div>
-                        <BookingRequestCard
-                          isFormMode={false}
-                          data={msg.bookingRequest}
-                          defaultCustomerId={msg.bookingRequest.customerId}
-                          defaultCustomerName={msg.bookingRequest.customerName}
-                          defaultCustomerPhone={msg.bookingRequest.customerPhone}
-                          professionalServices={proServices}
-                          isProfessionalView={!isCustomer}
-                          onOpenQuotationModal={() => setShowQuoteModal(true)}
-                        />
-                      </div>
-                    );
-                  }
-
-                  // Render Official Quotation Card Message
-                  if (msg.type === 'quotation' && msg.quotation) {
-                    return (
-                      <div
-                        key={msg.id}
-                        className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
-                      >
-                        <div className="text-[10px] text-charcoal-muted mb-1 px-1">
-                          {msg.senderName} • {formatTime(msg.createdAt)}
-                        </div>
-                        <QuotationCard
-                          quotation={msg.quotation}
-                          userRole={accountType}
-                          onAccept={handleAcceptQuote}
-                          onDecline={handleDeclineQuote}
-                        />
-                      </div>
-                    );
-                  }
-
-                  // Render Status Update Message
-                  if (msg.type === 'status_update') {
-                    return (
-                      <div key={msg.id} className="text-center my-3">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-success-light border border-success/30 text-xs font-semibold text-success shadow-xs">
-                          <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-                          <span>{msg.content}</span>
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  // Standard Text Message
+                // 2. Structured Booking Request Card Message
+                if (msg.type === 'booking_request' && msg.bookingRequest) {
                   return (
                     <div
                       key={msg.id}
                       className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
                     >
-                      <div className="text-[10px] text-charcoal-light mb-0.5 px-1">
+                      <div className="text-[10px] text-charcoal-muted mb-0.5 px-1">
                         {isMine ? 'You' : msg.senderName} • {formatTime(msg.createdAt)}
                       </div>
-                      <div
-                        className={`max-w-md px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-xs ${
-                          isMine
-                            ? 'bg-wine text-white rounded-br-none'
-                            : 'bg-surface-card border border-border text-charcoal rounded-bl-none'
-                        }`}
-                      >
-                        {msg.content}
+                      <BookingRequestCard
+                        isFormMode={false}
+                        data={msg.bookingRequest}
+                        defaultCustomerId={msg.bookingRequest.customerId}
+                        defaultCustomerName={msg.bookingRequest.customerName}
+                        defaultCustomerPhone={msg.bookingRequest.customerPhone}
+                        professionalServices={proServices}
+                        isProfessionalView={!isCustomer}
+                        onOpenQuotationModal={() => setShowQuoteModal(true)}
+                      />
+                    </div>
+                  );
+                }
+
+                // 3. Official Quotation Card Message
+                if (msg.type === 'quotation' && msg.quotation) {
+                  return (
+                    <div
+                      key={msg.id}
+                      className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
+                    >
+                      <div className="text-[10px] text-charcoal-muted mb-0.5 px-1">
+                        {msg.senderName} • {formatTime(msg.createdAt)}
+                      </div>
+                      <QuotationCard
+                        quotation={msg.quotation}
+                        userRole={accountType}
+                        onAccept={handleAcceptQuote}
+                        onDecline={handleDeclineQuote}
+                      />
+                    </div>
+                  );
+                }
+
+                // 4. Status Update Message
+                if (msg.type === 'status_update') {
+                  return (
+                    <div key={msg.id} className="text-center my-3">
+                      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 shadow-xs">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        <span>{msg.content}</span>
                       </div>
                     </div>
                   );
-                })}
+                }
 
-                <div ref={messagesEndRef} />
-              </div>
+                // 5. Standard Text Message (Instagram DM Bubble Style)
+                return (
+                  <div
+                    key={msg.id}
+                    className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
+                  >
+                    <div
+                      className={`max-w-sm sm:max-w-md px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-xs transition-all ${
+                        isMine
+                          ? 'bg-wine text-white rounded-br-xs'
+                          : 'bg-surface-card border border-border text-charcoal rounded-bl-xs'
+                      }`}
+                    >
+                      {msg.content}
+                    </div>
+                    <span className="text-[10px] text-charcoal-muted mt-0.5 px-1">
+                      {formatTime(msg.createdAt)}
+                    </span>
+                  </div>
+                );
+              })}
 
-              {/* Message Composer */}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Fixed Message Input at Bottom (Instagram Pill Style) */}
+            <div className="p-3 sm:p-4 border-t border-border bg-surface shrink-0 z-10">
               <form
                 onSubmit={handleSendMessage}
-                className="p-3 sm:p-4 border-t border-border bg-surface-card flex items-center gap-2"
+                className="max-w-4xl mx-auto flex items-center gap-2.5"
               >
-                <input
-                  type="text"
-                  value={messageInput}
-                  onChange={(e) => setMessageInput(e.target.value)}
-                  placeholder="Type an enquiry message or question..."
-                  className="flex-1 px-4 py-2.5 text-xs sm:text-sm rounded-xl border border-border bg-surface text-charcoal outline-none focus:border-wine focus:ring-1 focus:ring-wine/20 transition-all placeholder:text-charcoal-light"
-                />
+                <div className="flex-1 flex items-center bg-sand/20 hover:bg-sand/30 focus-within:bg-surface focus-within:border-wine/50 border border-border rounded-full px-4 py-2 transition-all">
+                  <input
+                    type="text"
+                    value={messageInput}
+                    onChange={(e) => setMessageInput(e.target.value)}
+                    placeholder="Message..."
+                    className="flex-1 bg-transparent text-xs sm:text-sm text-charcoal placeholder:text-charcoal-muted/70 outline-none"
+                  />
+                  <Sparkles className="w-4 h-4 text-wine/60 shrink-0 ml-2" />
+                </div>
+
                 <button
                   type="submit"
                   disabled={!messageInput.trim()}
-                  className="px-4 py-2.5 rounded-xl bg-wine hover:bg-wine-deep disabled:opacity-40 text-white text-xs font-bold flex items-center gap-1.5 transition-all shadow-subtle active:scale-95"
+                  className="w-9 h-9 rounded-full bg-wine hover:bg-wine-deep disabled:opacity-40 text-white flex items-center justify-center transition-all shadow-subtle shrink-0 active:scale-95"
+                  title="Send Message"
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Send</span>
+                  <Send className="w-4 h-4" />
                 </button>
               </form>
-            </>
-          ) : (
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-charcoal-muted">
-              <FileText className="w-12 h-12 text-charcoal-light mb-3" />
-              <h3 className="font-bold text-charcoal text-base">Select or Start an Enquiry</h3>
-              <p className="text-xs max-w-sm mt-1 leading-relaxed">
-                Choose a conversation from the left, or browse event professionals and click "Check Availability" or "Book Now" to initiate a structured enquiry.
-              </p>
-              <Link
-                to="/search"
-                className="mt-4 px-4 py-2 bg-wine text-white text-xs font-bold rounded-xl hover:bg-wine-deep transition-all shadow-subtle"
-              >
-                Browse Event Professionals
-              </Link>
             </div>
-          )}
-        </section>
-      </div>
+          </>
+        ) : (
+          /* Empty State when no thread is selected (Instagram DM Style) */
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-charcoal-muted">
+            <div className="w-20 h-20 rounded-full border-2 border-wine/20 bg-sand/30 flex items-center justify-center mb-4 text-wine">
+              <MessageCircle className="w-10 h-10 stroke-[1.5px]" />
+            </div>
+            <h3 className="font-bold text-charcoal text-lg">Your Messages</h3>
+            <p className="text-xs text-charcoal-muted max-w-sm mt-1 leading-relaxed">
+              Send private messages, check availability, and submit booking requests directly to event planners, caterers, photographers, and decorators.
+            </p>
+            <Link
+              to="/search"
+              className="mt-5 px-5 py-2.5 bg-wine text-white text-xs font-bold rounded-full hover:bg-wine-deep transition-all shadow-subtle active:scale-95"
+            >
+              Explore Event Professionals
+            </Link>
+          </div>
+        )}
+      </section>
 
       {/* Professional Create Quotation Modal */}
       {showQuoteModal && activeConversation && (
