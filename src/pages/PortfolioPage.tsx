@@ -128,9 +128,9 @@ export const PortfolioPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="bg-surface-card rounded-2xl border border-border p-6 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-surface-card rounded-2xl border border-border p-4 sm:p-6 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 sm:gap-4">
         <div>
           <span className="text-[10px] uppercase font-bold tracking-wider text-wine bg-sand/60 px-2 py-0.5 rounded">
             Portfolio & Discovery Content
@@ -143,7 +143,7 @@ export const PortfolioPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto no-scrollbar pb-1 shrink-0">
           <button
             onClick={() => setModalType('post')}
             className="px-3.5 py-2 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
@@ -169,7 +169,7 @@ export const PortfolioPage: React.FC = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-border">
+      <div className="flex items-center gap-1 sm:gap-2 border-b border-border overflow-x-auto no-scrollbar pb-1">
         <button
           onClick={() => setActiveTab('posts')}
           className={`flex items-center gap-2 px-5 py-2.5 text-xs font-bold uppercase tracking-wider border-b-2 transition-all ${
@@ -233,7 +233,7 @@ export const PortfolioPage: React.FC = () => {
 
       {/* Reels Section */}
       {activeTab === 'reels' && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
           {proReels.map((reel) => (
             <div key={reel.id} className="bg-charcoal rounded-2xl overflow-hidden aspect-[9/16] relative shadow-card group">
               <img src={reel.thumbnailUrl} alt={reel.caption} className="w-full h-full object-cover" />

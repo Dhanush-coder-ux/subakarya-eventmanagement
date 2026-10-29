@@ -87,16 +87,16 @@ export const ProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-200">
+    <div className="w-full max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-6 sm:space-y-8 animate-in fade-in duration-200">
       {/* 1. Instagram Profile Header */}
-      <header className="flex flex-col sm:flex-row items-center sm:items-start gap-8 sm:gap-14 pb-4">
+      <header className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-10 pb-2">
         {/* Avatar */}
         <div className="relative group">
           <div className="p-1 rounded-full bg-gradient-to-tr from-sand-dark via-wine to-sand ring-2 ring-transparent">
             <img
               src={professional?.avatar || customer?.avatar || currentUser.avatar}
               alt=""
-              className="w-24 h-24 sm:w-36 sm:h-36 rounded-full object-cover border-4 border-surface"
+              className="w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 rounded-full object-cover border-4 border-surface shadow-sm"
             />
           </div>
         </div>
@@ -238,7 +238,7 @@ export const ProfilePage: React.FC = () => {
       </header>
 
       {/* 2. Instagram Story Highlights Circles */}
-      <div className="flex items-center gap-6 overflow-x-auto no-scrollbar py-2">
+      <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar py-2">
         {storyHighlights.map((hl) => (
           <div key={hl.title} className="flex flex-col items-center flex-shrink-0 cursor-pointer group">
             <div className="p-1 rounded-full border border-border group-hover:border-wine transition-colors">
@@ -307,7 +307,7 @@ export const ProfilePage: React.FC = () => {
               <p className="text-sm font-semibold">No posts published yet.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-1 sm:gap-4">
+            <div className="grid grid-cols-3 gap-1 sm:gap-3 md:gap-4">
               {userPosts.map((post) => (
                 <div
                   key={post.id}

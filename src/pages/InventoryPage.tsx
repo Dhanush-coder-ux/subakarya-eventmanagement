@@ -190,9 +190,9 @@ export const InventoryPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div className="w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="bg-surface-card rounded-2xl border border-border p-6 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-surface-card rounded-2xl border border-border p-4 sm:p-6 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 sm:gap-4">
         <div>
           <span className="text-[10px] uppercase font-bold tracking-wider text-wine bg-sand/60 px-2 py-0.5 rounded">
             Asset & Supply Tracking
@@ -207,7 +207,7 @@ export const InventoryPage: React.FC = () => {
 
         <button
           onClick={handleOpenAdd}
-          className="px-4 py-2.5 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
+          className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Add Inventory Item</span>
@@ -240,7 +240,7 @@ export const InventoryPage: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-surface-card rounded-2xl border border-border p-4 shadow-subtle flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="bg-surface-card rounded-2xl border border-border p-3.5 sm:p-4 shadow-subtle flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div className="relative w-full sm:w-80">
           <Search className="w-4 h-4 text-charcoal-muted absolute left-3 top-2.5" />
           <input
@@ -252,7 +252,7 @@ export const InventoryPage: React.FC = () => {
           />
         </div>
 
-        <div className="flex items-center gap-1.5 w-full sm:w-auto">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 w-full sm:w-auto shrink-0">
           {(['all', 'asset', 'consumable'] as const).map((t) => (
             <button
               key={t}
@@ -272,7 +272,7 @@ export const InventoryPage: React.FC = () => {
       {/* Inventory Table */}
       <div className="bg-surface-card rounded-2xl border border-border shadow-card overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left text-xs min-w-[640px]">
             <thead className="bg-surface-muted text-charcoal-muted font-bold uppercase tracking-wider text-[10px] border-b border-border">
               <tr>
                 <th className="py-3 px-4">Item & Code</th>

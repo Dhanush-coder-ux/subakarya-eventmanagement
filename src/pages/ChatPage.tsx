@@ -282,7 +282,7 @@ export const ChatPage: React.FC = () => {
         {activeConversation ? (
           <>
             {/* Active Chat Top Header */}
-            <div className="h-16 px-4 sm:px-6 border-b border-border bg-surface flex items-center justify-between shrink-0 z-10">
+            <div className="h-16 px-3.5 sm:px-6 border-b border-border bg-surface flex items-center justify-between shrink-0 z-10 gap-2">
               <div className="flex items-center gap-3 min-w-0">
                 {/* Mobile Back Button to conversation list */}
                 <button
@@ -507,7 +507,7 @@ export const ChatPage: React.FC = () => {
             </div>
 
             {/* Fixed Message Input at Bottom (Instagram Pill Style) */}
-            <div className="p-3 sm:p-4 border-t border-border bg-surface shrink-0 z-10">
+            <div className="p-2.5 sm:p-4 border-t border-border bg-surface shrink-0 z-10">
               <form
                 onSubmit={handleSendMessage}
                 className="max-w-4xl mx-auto flex items-center gap-2.5"

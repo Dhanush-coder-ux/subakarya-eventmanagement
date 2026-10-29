@@ -49,45 +49,43 @@ export const CalendarDayView: React.FC<CalendarDayViewProps> = ({
   const daySlots = slots.filter((s) => s.date === selectedDate);
   const dayBookings = bookings.filter((b) => b.eventDate === selectedDate);
 
-  const dayBlocks = blocks.filter(
-    (b) => selectedDate >= b.startDate && selectedDate <= b.endDate
-  );
+  // Check if day is blocked
+  const dayBlocks = blocks.filter((b) => {
+    return selectedDate >= b.startDate && selectedDate <= b.endDate;
+  });
   const isDayBlocked = dayBlocks.length > 0;
 
-  // Formatted date string
-  const d = new Date(selectedDate);
-  const formattedDayTitle = isNaN(d.getTime())
-    ? selectedDate
-    : d.toLocaleDateString('en-IN', {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-      });
+  const dateObj = new Date(selectedDate);
+  const formattedDayTitle = dateObj.toLocaleDateString('en-IN', {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 
   return (
-    <div className="space-y-6">
-      {/* Day Navigation & Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-surface-card p-4 rounded-xl border border-border shadow-subtle">
-        <div className="flex items-center gap-3">
+    <div className="space-y-4 sm:space-y-6">
+      {/* Date Header Strip */}
+      <div className="bg-surface-card border border-border rounded-2xl p-4 sm:p-5 shadow-subtle flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 sm:gap-4">
+        <div className="flex items-center justify-between sm:justify-start gap-2 sm:gap-4">
           <button
             onClick={() => onChangeDate(-1)}
-            className="p-2 border border-border rounded-lg hover:bg-sand/40 text-charcoal transition-colors"
+            className="p-2 border border-border rounded-lg hover:bg-sand/40 text-charcoal transition-colors active:scale-95 shrink-0"
             title="Previous Day"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <div>
-            <h2 className="text-lg font-bold text-charcoal">{formattedDayTitle}</h2>
-            <div className="flex items-center gap-2 text-xs text-charcoal-muted mt-0.5">
-              <span>{daySlots.length} availability slots</span>
+          <div className="text-center sm:text-left min-w-0">
+            <h2 className="text-base sm:text-lg font-bold text-charcoal truncate">{formattedDayTitle}</h2>
+            <div className="flex items-center justify-center sm:justify-start gap-2 text-[11px] sm:text-xs text-charcoal-muted mt-0.5">
+              <span>{daySlots.length} slots</span>
               <span>•</span>
-              <span>{dayBookings.length} bookings scheduled</span>
+              <span>{dayBookings.length} bookings</span>
             </div>
           </div>
           <button
             onClick={() => onChangeDate(1)}
-            className="p-2 border border-border rounded-lg hover:bg-sand/40 text-charcoal transition-colors"
+            className="p-2 border border-border rounded-lg hover:bg-sand/40 text-charcoal transition-colors active:scale-95 shrink-0"
             title="Next Day"
           >
             <ChevronRight className="w-4 h-4" />
@@ -96,22 +94,22 @@ export const CalendarDayView: React.FC<CalendarDayViewProps> = ({
 
         <button
           onClick={onAddSlot}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-wine text-white text-xs font-semibold rounded-lg hover:bg-wine-deep transition-colors shadow-subtle"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-wine text-white text-xs font-semibold rounded-xl hover:bg-wine-deep transition-colors shadow-subtle active:scale-95 shrink-0"
         >
           <Plus className="w-4 h-4" />
-          Add Slot for this Day
+          <span>Add Slot for this Day</span>
         </button>
       </div>
 
       {/* Block Warning if any */}
       {isDayBlocked && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3 text-red-900">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-3.5 sm:p-4 flex items-start gap-3 text-red-900">
           <Ban className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
-          <div>
+          <div className="min-w-0">
             <h4 className="text-sm font-semibold">Date Blocked from Bookings</h4>
             <div className="text-xs text-red-700 mt-1 space-y-1">
               {dayBlocks.map((b) => (
-                <div key={b.id}>
+                <div key={b.id} className="truncate">
                   <span className="font-medium uppercase tracking-wide">[{b.category}]</span>{' '}
                   {b.reason ? b.reason : 'No reason specified'}{' '}
                   {b.startTime && `(${b.startTime} - ${b.endTime || 'end of day'})`}
@@ -123,169 +121,148 @@ export const CalendarDayView: React.FC<CalendarDayViewProps> = ({
       )}
 
       {/* Slots & Associated Bookings Timeline */}
-      <div className="space-y-4">
+      <div className="space-y-3.5 sm:space-y-4">
         {daySlots.length === 0 ? (
-          <div className="bg-surface-card border border-border border-dashed rounded-xl p-12 text-center">
+          <div className="bg-surface-card border border-border border-dashed rounded-xl p-8 sm:p-12 text-center">
             <Clock className="w-10 h-10 text-charcoal-muted mx-auto mb-3 opacity-40" />
-            <h3 className="text-base font-semibold text-charcoal">No slots configured for this date</h3>
-            <p className="text-xs text-charcoal-muted mt-1 max-w-sm mx-auto">
+            <h3 className="text-sm sm:text-base font-semibold text-charcoal">No slots configured for this date</h3>
+            <p className="text-xs text-charcoal-muted mt-1 max-w-sm mx-auto leading-relaxed">
               Customers won't be able to book you on this date unless you configure availability slots or accept custom date requests.
             </p>
             <button
               onClick={onAddSlot}
-              className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-wine text-white text-xs font-semibold rounded-lg hover:bg-wine-deep transition-colors"
+              className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-wine text-white text-xs font-semibold rounded-lg hover:bg-wine-deep transition-colors active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              Create Slot
+              <span>Create Slot</span>
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4">
-            {daySlots.map((slot) => {
-              const remaining = slot.capacity - slot.confirmedCount;
-              const slotBookings = dayBookings.filter((b) => b.slotId === slot.id);
+          daySlots.map((slot) => {
+            const slotBookings = dayBookings.filter((b) => b.slotId === slot.id);
+            const remaining = slot.capacity - slot.confirmedCount;
 
-              return (
-                <div
-                  key={slot.id}
-                  className="bg-surface-card border border-border rounded-xl p-5 shadow-subtle hover:border-wine/40 transition-all"
-                >
-                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
-                    <div className="space-y-1.5">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <SlotStatusIndicator status={slot.status} remainingCapacity={remaining} />
-                        <span className="text-xs font-bold text-wine bg-wine/10 px-2 py-0.5 rounded">
-                          {slot.startTime} – {slot.endTime}
-                        </span>
-                        {slot.serviceCategory && (
-                          <span className="text-xs text-charcoal-muted border border-border px-2 py-0.5 rounded bg-sand/30">
-                            {slot.serviceCategory}
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="text-base font-bold text-charcoal">{slot.title}</h3>
-                      {slot.notes && (
-                        <p className="text-xs text-charcoal-muted">{slot.notes}</p>
-                      )}
+            return (
+              <div
+                key={slot.id}
+                className="bg-surface-card border border-border rounded-2xl p-4 sm:p-5 shadow-subtle hover:border-wine/40 transition-all space-y-3 sm:space-y-4"
+              >
+                {/* Slot Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3">
+                  <div
+                    onClick={() => onSelectSlot(slot)}
+                    className="cursor-pointer group flex-1 min-w-0"
+                  >
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                      <span className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-charcoal">
+                        <Clock className="w-4 h-4 text-wine shrink-0" />
+                        <span>{slot.startTime} – {slot.endTime}</span>
+                      </span>
+
+                      <SlotStatusIndicator
+                        status={slot.status}
+                        remainingCapacity={remaining}
+                        totalCapacity={slot.capacity}
+                        compact={true}
+                      />
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <h3 className="text-sm sm:text-base font-bold text-charcoal group-hover:text-wine transition-colors mt-1 truncate">
+                      {slot.title}
+                    </h3>
+
+                    {slot.notes && (
+                      <p className="text-xs text-charcoal-muted mt-0.5 line-clamp-1">{slot.notes}</p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-border/50 shrink-0">
+                    {slot.priceOverride && (
+                      <span className="text-xs sm:text-sm font-bold text-wine">
+                        {formatINR(slot.priceOverride)}
+                      </span>
+                    )}
+
+                    <div className="flex items-center gap-1">
                       {onDuplicateSlot && (
                         <button
                           onClick={() => onDuplicateSlot(slot)}
-                          className="p-1.5 border border-border rounded-lg text-charcoal-muted hover:text-charcoal hover:bg-sand/40 transition-colors"
+                          className="p-1.5 rounded-lg border border-border hover:bg-sand/30 text-charcoal transition-colors active:scale-95"
                           title="Duplicate Slot"
                         >
-                          <Copy className="w-4 h-4" />
+                          <Copy className="w-3.5 h-3.5" />
                         </button>
                       )}
                       {onDeleteSlot && (
                         <button
-                          onClick={() => {
-                            if (slot.confirmedCount > 0) {
-                              alert('Cannot delete slot with confirmed bookings.');
-                              return;
-                            }
-                            if (confirm('Delete this availability slot?')) {
-                              onDeleteSlot(slot.id);
-                            }
-                          }}
-                          className="p-1.5 border border-border rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+                          onClick={() => onDeleteSlot(slot.id)}
+                          className="p-1.5 rounded-lg border border-border hover:bg-red-50 text-red-600 transition-colors active:scale-95"
                           title="Delete Slot"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       )}
-                      <button
-                        onClick={() => onSelectSlot(slot)}
-                        className="px-3 py-1.5 border border-border rounded-lg text-xs font-medium text-charcoal hover:bg-sand/40 transition-colors"
-                      >
-                        Inspect
-                      </button>
                     </div>
                   </div>
+                </div>
 
-                  {/* Slot Details Bar */}
-                  <div className="mt-4 pt-3 border-t border-border/70 flex flex-wrap items-center gap-4 text-xs text-charcoal-muted">
-                    <div className="flex items-center gap-1.5">
-                      <Users className="w-3.5 h-3.5 text-wine" />
-                      <span>
-                        Capacity:{' '}
-                        <strong className="text-charcoal">
-                          {slot.confirmedCount} / {slot.capacity} booked
-                        </strong>
-                      </span>
-                    </div>
+                {/* Bookings inside this slot */}
+                {slotBookings.length > 0 && (
+                  <div className="pt-3 border-t border-border/70 space-y-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-charcoal-muted block">
+                      Confirmed / Pending Client Bookings ({slotBookings.length})
+                    </span>
 
-                    {slot.priceOverride ? (
-                      <div className="flex items-center gap-1.5">
-                        <IndianRupee className="w-3.5 h-3.5 text-wine" />
-                        <span>
-                          Price:{' '}
-                          <strong className="text-charcoal">{formatINR(slot.priceOverride)}</strong>
-                        </span>
-                      </div>
-                    ) : null}
-
-                    {slot.durationMinutes && (
-                      <div className="flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-wine" />
-                        <span>Duration: {slot.durationMinutes} mins</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Associated Bookings in this slot */}
-                  {slotBookings.length > 0 && (
-                    <div className="mt-4 pt-3 border-t border-border/70">
-                      <h5 className="text-xs font-semibold text-charcoal uppercase tracking-wider mb-2">
-                        Bookings in this slot ({slotBookings.length})
-                      </h5>
-                      <div className="space-y-2">
-                        {slotBookings.map((b) => (
-                          <div
-                            key={b.id}
-                            className="flex items-center justify-between p-3 rounded-lg bg-sand/30 border border-border text-xs"
-                          >
-                            <div className="space-y-0.5">
-                              <div className="font-semibold text-charcoal flex items-center gap-2">
-                                <span>{b.customerName}</span>
-                                <span className="text-[10px] bg-wine/10 text-wine px-1.5 py-0.2 rounded font-medium">
-                                  {b.eventType}
-                                </span>
-                              </div>
-                              <div className="text-charcoal-muted">
-                                {b.guestCount ? `${b.guestCount} guests • ` : ''}
-                                {formatINR(b.totalAmount || 0)}
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-2">
-                              <button
-                                onClick={() => onSelectBooking(b)}
-                                className="px-2.5 py-1 border border-border rounded text-[11px] font-medium hover:bg-surface transition-colors"
-                              >
-                                View File
-                              </button>
-                              {onOpenChat && (
-                                <button
-                                  onClick={() => onOpenChat(b)}
-                                  className="p-1.5 bg-wine text-white rounded hover:bg-wine-deep transition-colors"
-                                  title="Open Chat"
-                                >
-                                  <MessageSquare className="w-3.5 h-3.5" />
-                                </button>
-                              )}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {slotBookings.map((b) => (
+                        <div
+                          key={b.id}
+                          onClick={() => onSelectBooking(b)}
+                          className="p-3 rounded-xl bg-sand/30 border border-border/80 flex items-center justify-between gap-3 cursor-pointer hover:bg-sand/50 transition-colors"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <img
+                              src={b.customerAvatar}
+                              alt={b.customerName}
+                              className="w-8 h-8 rounded-full object-cover shrink-0"
+                            />
+                            <div className="min-w-0">
+                              <p className="text-xs font-semibold text-charcoal truncate">{b.customerName}</p>
+                              <p className="text-[11px] text-charcoal-muted truncate">{b.eventType}</p>
                             </div>
                           </div>
-                        ))}
-                      </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <span
+                              className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                                b.status === 'confirmed'
+                                  ? 'bg-success-light text-success'
+                                  : 'bg-wine-soft text-wine'
+                              }`}
+                            >
+                              {b.status}
+                            </span>
+                            {onOpenChat && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onOpenChat(b);
+                                }}
+                                className="p-1 text-charcoal-muted hover:text-wine"
+                                title="Open Chat"
+                              >
+                                <MessageSquare className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                  </div>
+                )}
+              </div>
+            );
+          })
         )}
       </div>
     </div>

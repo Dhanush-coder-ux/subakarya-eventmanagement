@@ -57,23 +57,25 @@ export const ProfessionalCalendarPage: React.FC = () => {
     return bookings.filter((b) => b.professionalId === proId);
   }, [bookings, proId]);
 
-  // Calendar State
+  // View mode
   const [viewMode, setViewMode] = useState<'month' | 'week' | 'day'>('month');
+
+  // Currently focused date
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     return new Date().toISOString().split('T')[0];
   });
 
-  // Drawer / Inspection state
-  const [selectedSlot, setSelectedSlot] = useState<AvailabilitySlot | null>(null);
+  // Selected item for drawer
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [selectedSlot, setSelectedSlot] = useState<AvailabilitySlot | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // Modals state
+  // Modals
   const [isSlotModalOpen, setIsSlotModalOpen] = useState(false);
   const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
 
-  // Month navigation helpers
+  // Navigation handlers
   const handlePrev = () => {
     const d = new Date(currentDate);
     if (viewMode === 'month') {
@@ -124,7 +126,6 @@ export const ProfessionalCalendarPage: React.FC = () => {
   // Click on booking
   const handleSelectBooking = (booking: Booking) => {
     setSelectedBooking(booking);
-    // Find slot if matched
     const matchedSlot = proSlots.find((s) => s.id === booking.slotId) || null;
     setSelectedSlot(matchedSlot);
     setIsDrawerOpen(true);
@@ -132,7 +133,6 @@ export const ProfessionalCalendarPage: React.FC = () => {
 
   // Open chat for a booking
   const handleOpenChat = (booking: Booking) => {
-    // Find conversation
     const conv = conversations.find(
       (c) =>
         c.professionalId === booking.professionalId &&
@@ -153,49 +153,49 @@ export const ProfessionalCalendarPage: React.FC = () => {
   }, [currentDate]);
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-6 animate-in fade-in duration-300">
+    <div className="w-full max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6 animate-in fade-in duration-300">
       {/* Top Bar with Navigation & Actions */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-card p-4 rounded-2xl border border-border shadow-subtle">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5 sm:gap-4 bg-surface-card p-4 sm:p-5 rounded-2xl border border-border shadow-subtle">
         {/* Navigation & Title */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 border border-border rounded-lg bg-surface p-0.5">
+        <div className="flex flex-wrap items-center justify-between sm:justify-start gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-1 border border-border rounded-lg bg-surface p-0.5 shrink-0">
             <button
               onClick={handlePrev}
-              className="p-1.5 hover:bg-sand/40 rounded text-charcoal transition-colors"
+              className="p-1.5 hover:bg-sand/40 rounded text-charcoal transition-colors active:scale-95"
               title="Previous"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={handleToday}
-              className="px-2.5 py-1 text-xs font-semibold text-charcoal hover:bg-sand/40 rounded transition-colors"
+              className="px-2.5 py-1 text-xs font-semibold text-charcoal hover:bg-sand/40 rounded transition-colors active:scale-95"
             >
               Today
             </button>
             <button
               onClick={handleNext}
-              className="p-1.5 hover:bg-sand/40 rounded text-charcoal transition-colors"
+              className="p-1.5 hover:bg-sand/40 rounded text-charcoal transition-colors active:scale-95"
               title="Next"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
 
-          <h1 className="text-lg md:text-xl font-bold text-charcoal flex items-center gap-2">
-            <CalendarIcon className="w-5 h-5 text-wine" />
-            {formattedHeaderTitle}
+          <h1 className="text-base sm:text-lg md:text-xl font-bold text-charcoal flex items-center gap-2 truncate">
+            <CalendarIcon className="w-4 h-4 sm:w-5 sm:h-5 text-wine shrink-0" />
+            <span className="truncate">{formattedHeaderTitle}</span>
           </h1>
         </div>
 
         {/* View Switcher & Action Buttons */}
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center justify-between md:justify-end gap-2 flex-wrap">
           {/* View Mode Pills */}
-          <div className="flex items-center border border-border rounded-lg bg-sand/30 p-0.5 text-xs font-semibold">
+          <div className="flex items-center border border-border rounded-lg bg-sand/30 p-0.5 text-xs font-semibold shrink-0">
             <button
               onClick={() => setViewMode('month')}
-              className={`px-3 py-1.5 rounded transition-all ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded transition-all active:scale-95 ${
                 viewMode === 'month'
-                  ? 'bg-wine text-white shadow-xs'
+                  ? 'bg-wine text-white shadow-xs font-bold'
                   : 'text-charcoal-muted hover:text-charcoal'
               }`}
             >
@@ -203,9 +203,9 @@ export const ProfessionalCalendarPage: React.FC = () => {
             </button>
             <button
               onClick={() => setViewMode('week')}
-              className={`px-3 py-1.5 rounded transition-all ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded transition-all active:scale-95 ${
                 viewMode === 'week'
-                  ? 'bg-wine text-white shadow-xs'
+                  ? 'bg-wine text-white shadow-xs font-bold'
                   : 'text-charcoal-muted hover:text-charcoal'
               }`}
             >
@@ -213,9 +213,9 @@ export const ProfessionalCalendarPage: React.FC = () => {
             </button>
             <button
               onClick={() => setViewMode('day')}
-              className={`px-3 py-1.5 rounded transition-all ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded transition-all active:scale-95 ${
                 viewMode === 'day'
-                  ? 'bg-wine text-white shadow-xs'
+                  ? 'bg-wine text-white shadow-xs font-bold'
                   : 'text-charcoal-muted hover:text-charcoal'
               }`}
             >
@@ -223,23 +223,25 @@ export const ProfessionalCalendarPage: React.FC = () => {
             </button>
           </div>
 
-          {/* Block Dates Button */}
-          <button
-            onClick={() => setIsBlockModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 border border-red-300 text-red-800 bg-red-50/60 rounded-lg text-xs font-semibold hover:bg-red-100 transition-colors"
-          >
-            <Ban className="w-3.5 h-3.5" />
-            <span>Block Dates</span>
-          </button>
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Block Dates Button */}
+            <button
+              onClick={() => setIsBlockModalOpen(true)}
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 border border-red-300 text-red-800 bg-red-50/60 rounded-lg text-xs font-semibold hover:bg-red-100 transition-colors active:scale-95"
+            >
+              <Ban className="w-3.5 h-3.5" />
+              <span>Block Dates</span>
+            </button>
 
-          {/* Add Slot Button */}
-          <button
-            onClick={() => setIsSlotModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-wine text-white rounded-lg text-xs font-semibold hover:bg-wine-deep transition-colors shadow-subtle"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Create Slot</span>
-          </button>
+            {/* Add Slot Button */}
+            <button
+              onClick={() => setIsSlotModalOpen(true)}
+              className="flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 bg-wine text-white rounded-lg text-xs font-semibold hover:bg-wine-deep transition-colors shadow-subtle active:scale-95"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create Slot</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -286,37 +288,38 @@ export const ProfessionalCalendarPage: React.FC = () => {
             onSelectSlot={handleSelectSlot}
             onSelectBooking={handleSelectBooking}
             onAddSlot={() => setIsSlotModalOpen(true)}
-            onDuplicateSlot={(s) => duplicateAvailabilitySlot(s.id)}
-            onDeleteSlot={(sId) => deleteAvailabilitySlot(sId)}
+            onDuplicateSlot={(slot) => duplicateAvailabilitySlot(slot.id)}
+            onDeleteSlot={(slotId) => deleteAvailabilitySlot(slotId)}
             onChangeDate={handleDateChangeDelta}
             onOpenChat={handleOpenChat}
           />
         )}
       </div>
 
-      {/* Booking & Slot Inspector Drawer */}
+      {/* Slide-over Drawer for Booking / Slot Details */}
       <BookingDetailsDrawer
         isOpen={isDrawerOpen}
-        onClose={() => {
-          setIsDrawerOpen(false);
-          setSelectedSlot(null);
-          setSelectedBooking(null);
-        }}
-        slot={selectedSlot}
+        onClose={() => setIsDrawerOpen(false)}
         booking={selectedBooking}
-        onOpenChat={handleOpenChat}
-        onUpdateStatus={updateBookingStatus}
+        slot={selectedSlot}
+        onOpenChat={(b) => {
+          setIsDrawerOpen(false);
+          handleOpenChat(b);
+        }}
+        onUpdateStatus={(bookingId, status) => {
+          updateBookingStatus(bookingId, status);
+        }}
       />
 
-      {/* Modal: Create Slot */}
+      {/* Slot Modal */}
       <AvailabilitySlotForm
         isOpen={isSlotModalOpen}
         onClose={() => setIsSlotModalOpen(false)}
         professionalId={proId}
         services={proServices}
         defaultDate={selectedDate}
-        onSaveSlot={(slotData) => {
-          addAvailabilitySlot(slotData);
+        onSaveSlot={(slot) => {
+          addAvailabilitySlot(slot);
           setIsSlotModalOpen(false);
         }}
         onSaveRecurring={(config) => {
@@ -325,13 +328,13 @@ export const ProfessionalCalendarPage: React.FC = () => {
         }}
       />
 
-      {/* Modal: Block Dates */}
+      {/* Block Dates Modal */}
       <AvailabilityBlockForm
         isOpen={isBlockModalOpen}
         onClose={() => setIsBlockModalOpen(false)}
         professionalId={proId}
-        onSaveBlock={(blockData) => {
-          addAvailabilityBlock(blockData);
+        onSaveBlock={(block) => {
+          addAvailabilityBlock(block);
           setIsBlockModalOpen(false);
         }}
       />
