@@ -53,7 +53,7 @@ export const AvailabilityBlockForm: React.FC<AvailabilityBlockFormProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-surface-card rounded-2xl border border-border shadow-elevated w-full max-w-md p-6">
+      <div className="bg-surface-card rounded-2xl border border-border shadow-elevated w-full max-w-md max-h-[90vh] overflow-y-auto p-6">
         <div className="flex items-center justify-between pb-3 border-b border-border">
           <div className="flex items-center gap-2">
             <ShieldAlert className="w-4 h-4 text-wine" />
@@ -80,7 +80,7 @@ export const AvailabilityBlockForm: React.FC<AvailabilityBlockFormProps> = ({
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="font-semibold text-charcoal block mb-1">Start Date</label>
               <input
@@ -117,7 +117,7 @@ export const AvailabilityBlockForm: React.FC<AvailabilityBlockFormProps> = ({
           </div>
 
           {!allDay && (
-            <div className="grid grid-cols-2 gap-3 p-3 bg-surface-muted rounded-xl border border-border">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-surface-muted rounded-xl border border-border">
               <div>
                 <label className="font-semibold text-charcoal block mb-1">Block From</label>
                 <input

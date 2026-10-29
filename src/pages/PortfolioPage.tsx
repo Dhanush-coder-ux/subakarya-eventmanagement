@@ -380,7 +380,7 @@ export const PortfolioPage: React.FC = () => {
       {/* Work Sample Modal */}
       {modalType === 'work' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-surface-card rounded-2xl border border-border shadow-elevated w-full max-w-lg p-6">
+          <div className="bg-surface-card rounded-2xl border border-border shadow-elevated w-full max-w-lg p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <h3 className="font-bold text-sm text-charcoal">Add Completed Project (Our Works)</h3>
               <button onClick={() => setModalType(null)}><X className="w-4 h-4 text-charcoal-muted" /></button>
@@ -397,7 +397,7 @@ export const PortfolioPage: React.FC = () => {
                   className="w-full px-3 py-1.5 rounded-lg border border-border bg-surface text-charcoal outline-none focus:border-wine"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="font-semibold text-charcoal block mb-1">Event Type</label>
                   <input

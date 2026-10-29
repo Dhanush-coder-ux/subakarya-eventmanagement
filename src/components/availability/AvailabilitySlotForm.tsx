@@ -136,7 +136,7 @@ export const AvailabilitySlotForm: React.FC<AvailabilitySlotFormProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-surface-card rounded-2xl border border-border shadow-elevated w-full max-w-lg p-6 max-h-[92vh] overflow-y-auto">
+      <div className="bg-surface-card rounded-2xl border border-border shadow-elevated w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 max-h-[92vh] overflow-y-auto">
         <div className="flex items-center justify-between pb-3 border-b border-border">
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-wine" />
@@ -266,7 +266,7 @@ export const AvailabilitySlotForm: React.FC<AvailabilitySlotFormProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div>
                   <label className="text-[10px] font-bold text-charcoal-muted uppercase block mb-1">
                     Start Date
@@ -294,7 +294,7 @@ export const AvailabilitySlotForm: React.FC<AvailabilitySlotFormProps> = ({
           )}
 
           {/* Times */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="font-semibold text-charcoal block mb-1">Start Time</label>
               <input
@@ -318,7 +318,7 @@ export const AvailabilitySlotForm: React.FC<AvailabilitySlotFormProps> = ({
           </div>
 
           {/* Capacity and Buffer */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="font-semibold text-charcoal block mb-1">Capacity</label>
               <input

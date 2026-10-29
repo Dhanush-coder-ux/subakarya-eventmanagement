@@ -298,7 +298,7 @@ export const BookingRequestCard: React.FC<BookingRequestCardProps> = ({
         ) : (
           /* Inline Edit Mode */
           <form onSubmit={handleFormSubmit} className="mt-2.5 space-y-2.5">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <label className="text-[10px] font-semibold text-charcoal mb-0.5 block">
                   Event Type
@@ -325,7 +325,7 @@ export const BookingRequestCard: React.FC<BookingRequestCardProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <label className="text-[10px] font-semibold text-charcoal mb-0.5 block">
                   Venue & City
@@ -353,7 +353,7 @@ export const BookingRequestCard: React.FC<BookingRequestCardProps> = ({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <label className="text-[10px] font-semibold text-charcoal mb-0.5 block">
                   Start Time

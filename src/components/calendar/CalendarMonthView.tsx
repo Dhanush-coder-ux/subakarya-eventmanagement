@@ -77,7 +77,8 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
   }
 
   return (
-    <div className="bg-surface-card border border-border rounded-xl overflow-hidden shadow-subtle">
+    <div className="bg-surface-card border border-border rounded-xl overflow-hidden shadow-subtle overflow-x-auto">
+      <div className="min-w-[620px]">
       {/* Days of week header */}
       <div className="grid grid-cols-7 border-b border-border bg-sand/30 text-center">
         {weekDays.map((wd) => (
@@ -210,6 +211,7 @@ export const CalendarMonthView: React.FC<CalendarMonthViewProps> = ({
           );
         })}
       </div>
+    </div>
     </div>
   );
 };

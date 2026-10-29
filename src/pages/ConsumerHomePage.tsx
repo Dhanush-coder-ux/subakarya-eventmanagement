@@ -36,7 +36,7 @@ export const ConsumerHomePage: React.FC = () => {
   return (
     <div className="w-full max-w-[1000px] mx-auto px-0 sm:px-4 py-2 sm:py-6 flex justify-center gap-6 lg:gap-10">
       {/* Center Feed Column (Instagram Main Stream) */}
-      <div className="w-full max-w-[480px] sm:max-w-[500px] min-w-0 flex-1">
+      <div className="w-full max-w-full sm:max-w-[500px] min-w-0 flex-1">
         {/* 1. Instagram Stories Bar (Verified Event Professionals) */}
         <div className="bg-surface-card border-b sm:border border-border sm:rounded-2xl p-3.5 mb-4 shadow-subtle overflow-hidden">
           <div className="flex items-center gap-3.5 overflow-x-auto no-scrollbar pb-1">

@@ -121,7 +121,7 @@ export const ProfessionalDashboardPage: React.FC = () => {
             style={{ width: `${completeness}%` }}
           />
         </div>
-        <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] text-charcoal-muted">
+        <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-[11px] text-charcoal-muted">
           <span className="flex items-center gap-1 text-charcoal">
             <CheckCircle2 className="w-3.5 h-3.5 text-wine" /> Personal Info (15%)
           </span>

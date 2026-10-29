@@ -266,7 +266,7 @@ export const CustomerBookingPage: React.FC = () => {
       </div>
 
       {/* Main Grid: Date & Slot Selection + Summary Card */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
         {/* Left Column (2 cols): Date, Slots, Services, Event Details */}
         <div className="lg:col-span-2 space-y-8">
           {/* 1. Date Selection via BookMyShow Date Strip */}

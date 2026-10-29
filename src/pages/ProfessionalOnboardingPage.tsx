@@ -229,7 +229,7 @@ export const ProfessionalOnboardingPage: React.FC = () => {
           </div>
 
           {/* Dynamic Section Checklist */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-3 pt-2">
             {breakdown.map((item) => (
               <div
                 key={item.section}
@@ -249,7 +249,7 @@ export const ProfessionalOnboardingPage: React.FC = () => {
         </div>
 
         {/* Wizard Container */}
-        <div className="bg-surface-card rounded-2xl border border-border shadow-elevated p-6 sm:p-8">
+        <div className="bg-surface-card rounded-2xl border border-border shadow-elevated p-4 sm:p-8">
           {/* Stepper Tabs */}
           <div className="flex items-center justify-between mb-8 overflow-x-auto pb-2 border-b border-border">
             {stepsList.map((s) => {

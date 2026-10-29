@@ -46,7 +46,8 @@ export const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
   const todayStr = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="bg-surface-card border border-border rounded-xl shadow-subtle overflow-hidden flex flex-col">
+    <div className="bg-surface-card border border-border rounded-xl shadow-subtle overflow-hidden flex flex-col overflow-x-auto">
+      <div className="min-w-[700px] flex flex-col">
       {/* Week Header */}
       <div className="grid grid-cols-8 border-b border-border bg-sand/30 text-center sticky top-0 z-10">
         <div className="p-3 border-r border-border text-[11px] font-semibold text-charcoal-muted uppercase">
@@ -196,6 +197,7 @@ export const CalendarWeekView: React.FC<CalendarWeekViewProps> = ({
           );
         })}
       </div>
+    </div>
     </div>
   );
 };

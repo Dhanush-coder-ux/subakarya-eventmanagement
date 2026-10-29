@@ -485,7 +485,7 @@ export const InventoryPage: React.FC = () => {
       {/* Add / Edit Item Modal */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-surface-card rounded-2xl border border-border shadow-elevated w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-surface-card rounded-2xl border border-border shadow-elevated w-full max-w-lg p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-border">
               <h3 className="font-bold text-base text-charcoal">
                 {selectedItem ? 'Edit Inventory Item' : 'Add New Inventory Asset'}
@@ -507,7 +507,7 @@ export const InventoryPage: React.FC = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="font-semibold text-charcoal block mb-1">SKU / Code</label>
                   <input
@@ -530,7 +530,7 @@ export const InventoryPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
                   <label className="font-semibold text-charcoal block mb-1">Inventory Type</label>
                   <select
@@ -565,7 +565,7 @@ export const InventoryPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="font-semibold text-charcoal block mb-1">Rate / Item (INR)</label>
                   <input
