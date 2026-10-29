@@ -44,7 +44,7 @@ export const Layout: React.FC = () => {
         className={`flex-1 flex flex-col min-h-0 min-w-0 ${
           isChatRoute
             ? 'md:ml-[72px] h-full overflow-hidden'
-            : 'md:ml-[72px] lg:ml-[245px] pb-16 md:pb-6'
+            : 'md:ml-[72px] lg:ml-[245px] pb-20 md:pb-6'
         } transition-all duration-200`}
       >
         <Outlet />
