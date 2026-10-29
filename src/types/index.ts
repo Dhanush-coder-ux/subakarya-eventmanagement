@@ -121,6 +121,7 @@ export interface Post {
   savesCount: number;
   isLiked?: boolean;
   isSaved?: boolean;
+  aspectRatio?: 'portrait' | 'landscape' | 'square';
   createdAt: string;
 }
 
@@ -140,6 +141,7 @@ export interface Reel {
   savesCount: number;
   isLiked?: boolean;
   isSaved?: boolean;
+  aspectRatio?: 'portrait' | 'landscape' | 'square';
   createdAt: string;
 }
 
