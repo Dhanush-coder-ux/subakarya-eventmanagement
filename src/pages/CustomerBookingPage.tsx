@@ -48,40 +48,46 @@ export const CustomerBookingPage: React.FC = () => {
 
   // Filter pro services
   const proServices = useMemo(() => {
-    if (!pro) return [];
-    return services.filter((s) => s.professionalId === pro.id);
-  }, [services, pro]);
+    if (!professionalId) return [];
+    return services.filter((s) => s.professionalId === professionalId);
+  }, [services, professionalId]);
 
-  // Selected Service
+  // Filter pro slots
+  const proSlots = useMemo(() => {
+    if (!professionalId) return [];
+    return availabilitySlots.filter((s) => s.professionalId === professionalId);
+  }, [availabilitySlots, professionalId]);
+
+  // Booking Form State
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    return new Date().toISOString().split('T')[0];
+  });
+  const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
   const [selectedServiceId, setSelectedServiceId] = useState<string | undefined>(
-    preselectedServiceId || (proServices.length > 0 ? proServices[0].id : undefined)
+    preselectedServiceId || (proServices[0]?.id || undefined)
   );
 
-  const selectedService = useMemo(() => {
-    return proServices.find((s) => s.id === selectedServiceId);
-  }, [proServices, selectedServiceId]);
-
-  // Default selected date: today
-  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
-  const [selectedDate, setSelectedDate] = useState<string>(todayStr);
-
-  // Selected Slot
-  const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
-  const [isCustomRequested, setIsCustomRequested] = useState(false);
-
-  // Event Details State
   const [eventType, setEventType] = useState('Wedding Ceremony');
   const [guestCount, setGuestCount] = useState<number>(250);
-  const [eventLocation, setEventLocation] = useState(pro?.coverageArea || 'Bangalore');
+  const [eventLocation, setEventLocation] = useState(
+    currentUser?.location || 'Madurai, Tamil Nadu'
+  );
   const [specialNotes, setSpecialNotes] = useState('');
+  const [isCustomRequested, setIsCustomRequested] = useState(false);
 
-  // Slots for this pro
-  const proSlots = useMemo(() => {
-    if (!pro) return [];
-    return availabilitySlots.filter((s) => s.professionalId === pro.id);
-  }, [availabilitySlots, pro]);
+  // Active slot object
+  const selectedSlot = useMemo(() => {
+    if (!selectedSlotId) return null;
+    return proSlots.find((s) => s.id === selectedSlotId) || null;
+  }, [proSlots, selectedSlotId]);
 
-  // Active block for this date (if any)
+  // Active service object
+  const selectedService = useMemo(() => {
+    if (!selectedServiceId) return null;
+    return proServices.find((s) => s.id === selectedServiceId) || null;
+  }, [proServices, selectedServiceId]);
+
+  // Block for selected date
   const activeBlock = useMemo(() => {
     if (!pro) return undefined;
     return availabilityBlocks.find((b) => {
@@ -93,12 +99,7 @@ export const CustomerBookingPage: React.FC = () => {
     });
   }, [availabilityBlocks, pro, selectedDate]);
 
-  // Selected slot object
-  const selectedSlot = useMemo(() => {
-    return proSlots.find((s) => s.id === selectedSlotId);
-  }, [proSlots, selectedSlotId]);
-
-  // Handle slot select
+  // Handle slot selection
   const handleSlotSelect = (slot: AvailabilitySlot) => {
     setSelectedSlotId(slot.id);
     setIsCustomRequested(false);
@@ -124,7 +125,7 @@ export const CustomerBookingPage: React.FC = () => {
   // Recovery if professional is not found
   if (!pro) {
     return (
-      <div className="max-w-md mx-auto my-24 p-8 bg-surface-card border border-border rounded-2xl text-center space-y-4 shadow-card">
+      <div className="max-w-md mx-auto my-16 p-6 sm:p-8 bg-surface-card border border-border rounded-2xl text-center space-y-4 shadow-card">
         <AlertCircle className="w-12 h-12 text-wine mx-auto" />
         <h2 className="text-lg font-bold text-charcoal">Professional Not Found</h2>
         <p className="text-xs text-charcoal-muted leading-relaxed">
@@ -132,7 +133,7 @@ export const CustomerBookingPage: React.FC = () => {
         </p>
         <Link
           to="/search"
-          className="inline-block px-5 py-2.5 bg-wine text-white text-xs font-bold rounded-xl hover:bg-wine-deep transition-all shadow-subtle"
+          className="inline-block px-5 py-2.5 bg-wine text-white text-xs font-bold rounded-xl hover:bg-wine-deep transition-all shadow-subtle active:scale-95"
         >
           Explore All Event Partners
         </Link>
@@ -158,35 +159,15 @@ export const CustomerBookingPage: React.FC = () => {
           phone: '+91 98765 43210',
         };
 
-    const extraContext = {
-      eventType,
-      guestCount,
-      location: eventLocation,
-      notes: specialNotes,
-      packagePrice: basePrice,
-      startTime: selectedSlot?.startTime || '09:00',
-      endTime: selectedSlot?.endTime || '17:00',
-      isCustomAvailabilityRequest: isCustomRequested,
-    };
+    const convId = initiateBookingChat(pro.id, customer, selectedServiceId);
 
-    // Initiate or switch to structured chat
-    const convId = initiateBookingChat(
-      pro.id,
-      customer,
-      selectedService?.id,
-      selectedDate,
-      selectedSlot?.id,
-      extraContext
-    );
-
-    // Save pending booking context explicitly with full fields
+    // Save pending context
     setPendingBookingContext({
+      professionalId: pro.id,
+      professionalName: pro.businessName,
       customerId: customer.id,
       customerName: customer.name,
       customerPhone: customer.phone,
-      professionalId: pro.id,
-      professionalName: pro.businessName,
-      professionalAvatar: pro.avatar,
       preselectedServiceId: selectedService?.id,
       selectedServiceName: selectedService?.name,
       preselectedDate: selectedDate,
@@ -207,80 +188,80 @@ export const CustomerBookingPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 animate-in fade-in duration-300">
+    <div className="w-full max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-6 animate-in fade-in duration-300">
       {/* Top back navigation */}
       <div>
         <Link
           to={`/profile/${pro.id}`}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-charcoal-muted hover:text-wine transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-charcoal-muted hover:text-wine transition-colors active:scale-95"
         >
           <ChevronLeft className="w-4 h-4" />
-          Back to {pro.businessName} profile
+          <span>Back to {pro.businessName} profile</span>
         </Link>
       </div>
 
       {/* Professional Header Banner */}
-      <div className="bg-surface-card border border-border rounded-2xl p-6 shadow-subtle flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
+      <div className="bg-surface-card border border-border rounded-2xl p-4 sm:p-6 shadow-subtle flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
+        <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
           <img
             src={pro.avatar}
             alt={pro.businessName}
-            className="w-16 h-16 md:w-20 md:h-20 rounded-2xl object-cover border border-border shadow-xs"
+            className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-2xl object-cover border border-border shadow-xs shrink-0"
           />
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-wine bg-wine/10 px-2 py-0.5 rounded">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-wine bg-wine/10 px-2 py-0.5 rounded shrink-0">
                 {pro.category}
               </span>
-              <span className="flex items-center gap-1 text-xs font-semibold text-charcoal">
+              <span className="flex items-center gap-1 text-[11px] sm:text-xs font-semibold text-charcoal shrink-0">
                 <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-                4.9 (48 verified reviews)
+                4.9 (48 reviews)
               </span>
             </div>
-            <h1 className="text-xl md:text-2xl font-bold text-charcoal mt-1">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-bold text-charcoal mt-1 truncate">
               {pro.businessName}
             </h1>
-            <div className="flex items-center gap-3 text-xs text-charcoal-muted mt-1">
-              <span className="flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-wine" />
-                {pro.coverageArea || pro.location}
+            <div className="flex items-center gap-2 sm:gap-3 text-xs text-charcoal-muted mt-0.5 flex-wrap">
+              <span className="flex items-center gap-1 shrink-0 truncate max-w-[160px] sm:max-w-none">
+                <MapPin className="w-3.5 h-3.5 text-wine shrink-0" />
+                <span className="truncate">{pro.coverageArea || pro.location}</span>
               </span>
               <span>•</span>
-              <span className="flex items-center gap-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                Verified Event Partner
+              <span className="flex items-center gap-1 shrink-0">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Verified Partner</span>
               </span>
             </div>
           </div>
         </div>
 
-        <div className="bg-sand/40 border border-border/80 rounded-xl p-3.5 text-left md:text-right shrink-0">
-          <div className="text-[11px] text-charcoal-muted uppercase tracking-wider font-semibold">
-            Starting Price
+        <div className="bg-sand/40 border border-border/80 rounded-xl p-3 sm:p-3.5 text-left md:text-right shrink-0 w-full sm:w-auto flex sm:flex-col justify-between items-center sm:items-end">
+          <div>
+            <div className="text-[10px] sm:text-[11px] text-charcoal-muted uppercase tracking-wider font-semibold">
+              Starting Price
+            </div>
+            <div className="text-base sm:text-xl font-bold text-charcoal mt-0.5">
+              {formatINR(pro.minBookingAmount || 15000)}
+            </div>
           </div>
-          <div className="text-xl font-bold text-charcoal mt-0.5">
-            {formatINR(pro.minBookingAmount || 15000)}
-          </div>
-          <div className="text-[10px] text-charcoal-muted">Per event / session</div>
+          <div className="text-[10px] text-charcoal-muted sm:mt-0.5">Per event / session</div>
         </div>
       </div>
 
       {/* Main Grid: Date & Slot Selection + Summary Card */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
         {/* Left Column (2 cols): Date, Slots, Services, Event Details */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-6 sm:space-y-8 min-w-0">
           {/* 1. Date Selection via BookMyShow Date Strip */}
-          <section className="bg-surface-card border border-border rounded-2xl p-6 shadow-subtle space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-bold text-charcoal flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-wine" />
-                  Select Date
-                </h2>
-                <p className="text-xs text-charcoal-muted mt-0.5">
-                  Choose an upcoming date across the next 3 weeks
-                </p>
-              </div>
+          <section className="bg-surface-card border border-border rounded-2xl p-4 sm:p-6 shadow-subtle space-y-3.5 sm:space-y-4">
+            <div>
+              <h2 className="text-sm sm:text-base font-bold text-charcoal flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-wine shrink-0" />
+                <span>Select Date</span>
+              </h2>
+              <p className="text-xs text-charcoal-muted mt-0.5">
+                Choose an upcoming date across the next 3 weeks
+              </p>
             </div>
 
             <DateStrip
@@ -297,17 +278,15 @@ export const CustomerBookingPage: React.FC = () => {
           </section>
 
           {/* 2. Time Slot Selection */}
-          <section className="bg-surface-card border border-border rounded-2xl p-6 shadow-subtle space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-bold text-charcoal flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-wine" />
-                  Select Available Time Slot
-                </h2>
-                <p className="text-xs text-charcoal-muted mt-0.5">
-                  Available appointment and event-day slots configured by {pro.businessName}
-                </p>
-              </div>
+          <section className="bg-surface-card border border-border rounded-2xl p-4 sm:p-6 shadow-subtle space-y-3.5 sm:space-y-4">
+            <div>
+              <h2 className="text-sm sm:text-base font-bold text-charcoal flex items-center gap-2">
+                <Clock className="w-4 h-4 text-wine shrink-0" />
+                <span>Select Available Time Slot</span>
+              </h2>
+              <p className="text-xs text-charcoal-muted mt-0.5">
+                Available appointment and event-day slots configured by {pro.businessName}
+              </p>
             </div>
 
             <TimeSlotSelector
@@ -327,7 +306,7 @@ export const CustomerBookingPage: React.FC = () => {
             />
 
             {isCustomRequested && (
-              <div className="p-3 bg-wine-soft/40 border border-wine/30 rounded-xl text-xs text-charcoal flex items-center gap-2">
+              <div className="p-3 bg-wine-soft/40 border border-wine/30 rounded-xl text-xs text-charcoal flex items-center gap-2 leading-relaxed">
                 <CheckCircle2 className="w-4 h-4 text-wine shrink-0" />
                 <span>
                   Custom availability requested for <strong>{selectedDate}</strong>. You can proceed to chat to finalize timing.
@@ -338,11 +317,11 @@ export const CustomerBookingPage: React.FC = () => {
 
           {/* 3. Service Package Selection */}
           {proServices.length > 0 && (
-            <section className="bg-surface-card border border-border rounded-2xl p-6 shadow-subtle space-y-4">
+            <section className="bg-surface-card border border-border rounded-2xl p-4 sm:p-6 shadow-subtle space-y-3.5 sm:space-y-4">
               <div>
-                <h2 className="text-base font-bold text-charcoal flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-wine" />
-                  Select Service Package
+                <h2 className="text-sm sm:text-base font-bold text-charcoal flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-wine shrink-0" />
+                  <span>Select Service Package</span>
                 </h2>
                 <p className="text-xs text-charcoal-muted mt-0.5">
                   Choose the package you would like to book or enquire about
@@ -357,14 +336,14 @@ export const CustomerBookingPage: React.FC = () => {
                       key={svc.id}
                       type="button"
                       onClick={() => setSelectedServiceId(svc.id)}
-                      className={`text-left p-4 rounded-xl border transition-all relative ${
+                      className={`text-left p-3.5 sm:p-4 rounded-xl border transition-all relative active:scale-98 ${
                         isSelected
                           ? 'border-wine bg-wine/[0.03] ring-1 ring-wine shadow-subtle'
                           : 'border-border bg-surface hover:bg-sand/30'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
-                        <div className="font-bold text-sm text-charcoal">{svc.name}</div>
+                        <div className="font-bold text-sm text-charcoal truncate">{svc.name}</div>
                         {isSelected && (
                           <CheckCircle2 className="w-4 h-4 text-wine shrink-0" />
                         )}
@@ -386,13 +365,13 @@ export const CustomerBookingPage: React.FC = () => {
           )}
 
           {/* 4. Event Details */}
-          <section className="bg-surface-card border border-border rounded-2xl p-6 shadow-subtle space-y-4">
-            <h2 className="text-base font-bold text-charcoal flex items-center gap-2">
-              <Users className="w-4 h-4 text-wine" />
-              Event Specifications
+          <section className="bg-surface-card border border-border rounded-2xl p-4 sm:p-6 shadow-subtle space-y-3.5 sm:space-y-4">
+            <h2 className="text-sm sm:text-base font-bold text-charcoal flex items-center gap-2">
+              <Users className="w-4 h-4 text-wine shrink-0" />
+              <span>Event Specifications</span>
             </h2>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
               <div>
                 <label className="block text-xs font-semibold text-charcoal mb-1">
                   Event Type
@@ -457,9 +436,9 @@ export const CustomerBookingPage: React.FC = () => {
         </div>
 
         {/* Right Column (1 col): Sticky Summary Card */}
-        <div className="lg:sticky lg:top-6 space-y-6">
-          <div className="bg-surface-card border border-border rounded-2xl p-6 shadow-subtle space-y-6">
-            <div className="pb-4 border-b border-border">
+        <div className="lg:sticky lg:top-6 space-y-4 sm:space-y-6">
+          <div className="bg-surface-card border border-border rounded-2xl p-4 sm:p-6 shadow-subtle space-y-4 sm:space-y-6">
+            <div className="pb-3 sm:pb-4 border-b border-border">
               <span className="text-[10px] font-bold uppercase tracking-wider text-wine bg-wine/10 px-2 py-0.5 rounded">
                 Booking Summary
               </span>
@@ -469,15 +448,15 @@ export const CustomerBookingPage: React.FC = () => {
             </div>
 
             {/* Selected Breakdown */}
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-charcoal-muted">Professional:</span>
-                <span className="font-semibold text-charcoal text-right">{pro.businessName}</span>
+            <div className="space-y-2.5 text-xs">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-charcoal-muted shrink-0">Professional:</span>
+                <span className="font-semibold text-charcoal text-right truncate">{pro.businessName}</span>
               </div>
 
-              <div className="flex items-center justify-between">
-                <span className="text-charcoal-muted">Selected Date:</span>
-                <span className="font-semibold text-charcoal">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-charcoal-muted shrink-0">Selected Date:</span>
+                <span className="font-semibold text-charcoal shrink-0">
                   {new Date(selectedDate).toLocaleDateString('en-IN', {
                     day: 'numeric',
                     month: 'short',
@@ -486,9 +465,9 @@ export const CustomerBookingPage: React.FC = () => {
                 </span>
               </div>
 
-              <div className="flex items-center justify-between">
-                <span className="text-charcoal-muted">Time Slot:</span>
-                <span className="font-semibold text-wine">
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-charcoal-muted shrink-0">Time Slot:</span>
+                <span className="font-semibold text-wine shrink-0 truncate">
                   {selectedSlot
                     ? `${selectedSlot.startTime} – ${selectedSlot.endTime}`
                     : isCustomRequested
@@ -498,20 +477,20 @@ export const CustomerBookingPage: React.FC = () => {
               </div>
 
               {selectedService && (
-                <div className="flex items-center justify-between">
-                  <span className="text-charcoal-muted">Package:</span>
-                  <span className="font-semibold text-charcoal text-right">{selectedService.name}</span>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-charcoal-muted shrink-0">Package:</span>
+                  <span className="font-semibold text-charcoal text-right truncate">{selectedService.name}</span>
                 </div>
               )}
 
-              <div className="flex items-center justify-between">
-                <span className="text-charcoal-muted">Event Type:</span>
-                <span className="font-semibold text-charcoal">{eventType}</span>
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-charcoal-muted shrink-0">Event Type:</span>
+                <span className="font-semibold text-charcoal truncate">{eventType}</span>
               </div>
             </div>
 
             {/* Pricing Section */}
-            <div className="pt-4 border-t border-border space-y-2 text-xs">
+            <div className="pt-3 sm:pt-4 border-t border-border space-y-2 text-xs">
               <div className="flex items-center justify-between">
                 <span className="text-charcoal-muted">Service Base Rate</span>
                 <span className="font-medium text-charcoal">{formatINR(basePrice)}</span>
@@ -522,9 +501,9 @@ export const CustomerBookingPage: React.FC = () => {
               </div>
               <div className="pt-2 border-t border-border/80 flex items-center justify-between text-sm font-bold text-charcoal">
                 <span>Estimated Total</span>
-                <span className="text-wine text-base">{formatINR(totalPrice)}</span>
+                <span className="text-wine text-base font-bold">{formatINR(totalPrice)}</span>
               </div>
-              <p className="text-[10px] text-charcoal-muted italic pt-1">
+              <p className="text-[10px] text-charcoal-muted italic pt-1 leading-normal">
                 * Final pricing will be confirmed in a detailed quotation card inside chat.
               </p>
             </div>
@@ -535,14 +514,14 @@ export const CustomerBookingPage: React.FC = () => {
                 type="button"
                 disabled={!isSelectionValid}
                 onClick={handleProceedToChat}
-                className={`w-full flex items-center justify-center gap-2 py-3 font-semibold text-xs rounded-xl transition-all shadow-subtle group ${
+                className={`w-full flex items-center justify-center gap-2 py-3 font-semibold text-xs rounded-xl transition-all shadow-subtle group active:scale-98 ${
                   isSelectionValid
-                    ? 'bg-wine text-white hover:bg-wine-deep cursor-pointer active:scale-98'
+                    ? 'bg-wine text-white hover:bg-wine-deep cursor-pointer'
                     : 'bg-sand text-charcoal-muted border border-border cursor-not-allowed opacity-60'
                 }`}
               >
                 <span>Continue to Booking Chat</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform shrink-0" />
               </button>
 
               {!isSelectionValid && (

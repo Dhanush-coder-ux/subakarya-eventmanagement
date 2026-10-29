@@ -68,7 +68,7 @@ export const DateStrip: React.FC<DateStripProps> = ({
 
   const handleScroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
-      const scrollAmount = direction === 'left' ? -260 : 260;
+      const scrollAmount = direction === 'left' ? -220 : 220;
       scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
@@ -76,18 +76,18 @@ export const DateStrip: React.FC<DateStripProps> = ({
   return (
     <div className="w-full bg-surface-card rounded-2xl border border-border p-3 sm:p-4 shadow-subtle">
       {/* Strip Navigation Header */}
-      <div className="flex items-center justify-between mb-3 px-1">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3 px-1">
         <div className="flex items-center gap-2">
-          <CalendarIcon className="w-4 h-4 text-wine" />
+          <CalendarIcon className="w-4 h-4 text-wine shrink-0" />
           <span className="text-xs font-bold text-charcoal uppercase tracking-wider">
             Select Event Date
           </span>
-          <span className="text-[11px] text-charcoal-muted hidden sm:inline">
-            (BookMyShow-Style Availability Strip)
+          <span className="text-[11px] text-charcoal-muted hidden md:inline">
+            (BookMyShow-Style Strip)
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center justify-between sm:justify-end gap-1.5 w-full sm:w-auto">
           {/* Native Date Picker Helper */}
           <input
             type="date"
@@ -98,20 +98,22 @@ export const DateStrip: React.FC<DateStripProps> = ({
             title="Pick custom date"
           />
 
-          <button
-            onClick={() => handleScroll('left')}
-            className="p-1 rounded-lg border border-border hover:bg-sand/30 text-charcoal transition-colors active:scale-95"
-            title="Scroll previous"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => handleScroll('right')}
-            className="p-1 rounded-lg border border-border hover:bg-sand/30 text-charcoal transition-colors active:scale-95"
-            title="Scroll next"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => handleScroll('left')}
+              className="p-1.5 rounded-lg border border-border hover:bg-sand/30 text-charcoal transition-colors active:scale-95"
+              title="Scroll previous"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => handleScroll('right')}
+              className="p-1.5 rounded-lg border border-border hover:bg-sand/30 text-charcoal transition-colors active:scale-95"
+              title="Scroll next"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -129,7 +131,7 @@ export const DateStrip: React.FC<DateStripProps> = ({
               type="button"
               disabled={item.isBlocked}
               onClick={() => onSelectDate(item.dateStr)}
-              className={`flex-shrink-0 flex flex-col items-center justify-between w-[64px] sm:w-[70px] h-[82px] py-2 px-1 rounded-xl transition-all duration-150 border text-center select-none ${
+              className={`shrink-0 flex flex-col items-center justify-between w-[60px] sm:w-[68px] h-[80px] sm:h-[82px] py-2 px-1 rounded-xl transition-all duration-150 border text-center select-none active:scale-95 ${
                 isSelected
                   ? 'bg-wine text-white border-wine shadow-sm scale-102 font-bold ring-2 ring-wine/30'
                   : item.isBlocked
@@ -140,21 +142,21 @@ export const DateStrip: React.FC<DateStripProps> = ({
               {/* Weekday & Today Pill */}
               <div className="flex flex-col items-center leading-none">
                 <span
-                  className={`text-[10px] font-semibold tracking-wider ${
+                  className={`text-[9px] sm:text-[10px] font-semibold tracking-wider ${
                     isSelected ? 'text-sand' : 'text-charcoal-muted'
                   }`}
                 >
                   {item.isToday ? 'TODAY' : item.weekdayShort}
                 </span>
                 <span
-                  className={`text-lg font-bold mt-1 leading-none ${
+                  className={`text-base sm:text-lg font-bold mt-1 leading-none ${
                     isSelected ? 'text-white' : 'text-charcoal'
                   }`}
                 >
                   {item.dayNum}
                 </span>
                 <span
-                  className={`text-[9px] font-medium mt-0.5 ${
+                  className={`text-[8px] sm:text-[9px] font-medium mt-0.5 ${
                     isSelected ? 'text-sand/80' : 'text-charcoal-light'
                   }`}
                 >
@@ -162,28 +164,18 @@ export const DateStrip: React.FC<DateStripProps> = ({
                 </span>
               </div>
 
-              {/* Availability Indicator Badge */}
-              <div className="w-full mt-1 flex justify-center">
+              {/* Status Indicator Dot/Pill */}
+              <div className="mt-1">
                 {item.isBlocked ? (
-                  <span className="text-[8px] font-bold text-error uppercase">Blocked</span>
+                  <span className="text-[8px] text-error font-bold uppercase">Blocked</span>
                 ) : item.statusType === 'available' ? (
-                  <span
-                    className={`inline-block w-2 h-2 rounded-full ${
-                      isSelected ? 'bg-sand' : 'bg-success'
-                    }`}
-                    title="Available Slots"
-                  />
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500" title="Available" />
                 ) : item.statusType === 'limited' ? (
-                  <span
-                    className={`inline-block w-2 h-2 rounded-full ${
-                      isSelected ? 'bg-sand' : 'bg-wine'
-                    }`}
-                    title="Filling Fast"
-                  />
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500" title="Filling Fast" />
                 ) : item.statusType === 'booked' ? (
-                  <span className="text-[8px] font-semibold text-charcoal-muted">Full</span>
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-rose-500" title="Sold Out" />
                 ) : (
-                  <span className="text-[8px] text-charcoal-light">Open</span>
+                  <span className="inline-block w-1 h-1 rounded-full bg-charcoal-light/40" />
                 )}
               </div>
             </button>
@@ -193,4 +185,3 @@ export const DateStrip: React.FC<DateStripProps> = ({
     </div>
   );
 };
-

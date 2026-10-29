@@ -36,8 +36,8 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
   // If date is completely blocked
   if (block) {
     return (
-      <div className="bg-surface-card rounded-2xl border border-error/30 p-6 text-center space-y-3">
-        <div className="w-10 h-10 rounded-full bg-error-light text-error flex items-center justify-center mx-auto">
+      <div className="bg-surface-card rounded-2xl border border-error/30 p-4 sm:p-6 text-center space-y-3">
+        <div className="w-10 h-10 rounded-full bg-error-light text-error flex items-center justify-center mx-auto shrink-0">
           <AlertCircle className="w-5 h-5" />
         </div>
         <h4 className="text-sm font-bold text-charcoal">
@@ -50,9 +50,9 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
           <button
             type="button"
             onClick={() => onRequestCustomAvailability(selectedDate)}
-            className="px-4 py-2 rounded-xl bg-sand border border-sand-dark text-charcoal text-xs font-semibold hover:bg-sand-dark/60 transition-colors inline-flex items-center gap-1.5"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-sand border border-sand-dark text-charcoal text-xs font-semibold hover:bg-sand-dark/60 transition-colors inline-flex items-center justify-center gap-1.5 active:scale-95"
           >
-            <MessageCircle className="w-3.5 h-3.5 text-wine" />
+            <MessageCircle className="w-3.5 h-3.5 text-wine shrink-0" />
             <span>Enquire about Custom Dates via Chat</span>
           </button>
         </div>
@@ -65,7 +65,7 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
 
   if (dateSlots.length === 0) {
     return (
-      <div className="bg-surface-card rounded-2xl border border-border p-6 sm:p-8 text-center space-y-3">
+      <div className="bg-surface-card rounded-2xl border border-border p-4 sm:p-8 text-center space-y-3">
         <Clock className="w-9 h-9 text-charcoal-light mx-auto" />
         <h4 className="text-sm font-bold text-charcoal">No Pre-Scheduled Slots on this Date</h4>
         <p className="text-xs text-charcoal-muted max-w-md mx-auto leading-relaxed">
@@ -75,9 +75,9 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
           <button
             type="button"
             onClick={() => onRequestCustomAvailability(selectedDate)}
-            className="px-5 py-2.5 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold transition-all shadow-xs inline-flex items-center gap-2 active:scale-95"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold transition-all shadow-xs inline-flex items-center justify-center gap-2 active:scale-95"
           >
-            <MessageCircle className="w-3.5 h-3.5" />
+            <MessageCircle className="w-3.5 h-3.5 shrink-0" />
             <span>Request Custom Timing / Date via Chat</span>
           </button>
         </div>
@@ -108,14 +108,14 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
     return (
       <div className="space-y-2.5">
         <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-charcoal-muted">
-          <Icon className="w-3.5 h-3.5 text-wine" />
+          <Icon className="w-3.5 h-3.5 text-wine shrink-0" />
           <span>{title}</span>
           <span className="text-[10px] text-charcoal-light font-normal">
             ({groupSlots.length} slot{groupSlots.length > 1 ? 's' : ''})
           </span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
           {groupSlots.map((slot) => {
             const isSelected = selectedSlotId === slot.id;
             const remaining = slot.capacity - slot.confirmedCount;
@@ -127,7 +127,7 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
                 type="button"
                 disabled={isFull}
                 onClick={() => onSelectSlot(slot)}
-                className={`p-3.5 rounded-2xl border text-left transition-all duration-150 flex flex-col justify-between select-none ${
+                className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all duration-150 flex flex-col justify-between select-none active:scale-98 ${
                   isSelected
                     ? 'border-wine bg-wine-soft/40 shadow-card ring-2 ring-wine'
                     : isFull
@@ -138,7 +138,7 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-1.5">
                     <span className="text-xs font-bold text-charcoal tracking-wide flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-wine" />
+                      <Clock className="w-3 h-3 text-wine shrink-0" />
                       <span>{slot.startTime} – {slot.endTime}</span>
                     </span>
 
@@ -177,11 +177,10 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 sm:space-y-5">
       {renderSlotGroup('Morning Sessions', Sun, morningSlots)}
       {renderSlotGroup('Afternoon Sessions', Sunset, afternoonSlots)}
       {renderSlotGroup('Evening & Night Receptions', Moon, eveningSlots)}
     </div>
   );
 };
-
