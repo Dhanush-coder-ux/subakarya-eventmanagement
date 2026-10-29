@@ -21,3 +21,4 @@ export const defaultAuthInterceptor: RequestInterceptor = (config) => {
     headers,
   };
 };
+

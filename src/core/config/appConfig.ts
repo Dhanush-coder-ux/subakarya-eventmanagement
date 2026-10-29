@@ -21,3 +21,4 @@ export const appConfig = {
     theme: 'subakarya_theme_v1',
   },
 };
+

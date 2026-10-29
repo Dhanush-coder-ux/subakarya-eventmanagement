@@ -80,3 +80,4 @@ export const vendorService = {
     useMarketplaceStore.getState().adjustInventoryStock(itemId, newTotalQuantity);
   },
 };
+

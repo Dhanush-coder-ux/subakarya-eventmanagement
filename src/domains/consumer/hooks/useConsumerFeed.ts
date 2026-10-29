@@ -31,3 +31,4 @@ export const useConsumerFeed = () => {
     toggleSavePost: consumerService.toggleSavePost,
   };
 };
+

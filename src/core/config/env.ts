@@ -6,3 +6,4 @@ export const env = {
   appName: 'Subakarya',
   appVersion: '1.0.0',
 };
+

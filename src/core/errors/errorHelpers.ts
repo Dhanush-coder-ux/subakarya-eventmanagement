@@ -7,3 +7,4 @@ export const formatErrorMessage = (error: unknown): string => {
 export const logAppError = (context: string, error: unknown): void => {
   console.error(`[Subakarya:${context}]`, error);
 };
+

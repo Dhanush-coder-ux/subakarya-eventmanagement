@@ -5,3 +5,4 @@ export { ProfessionalOnboardingPage } from '../../pages/ProfessionalOnboardingPa
 export { ServicesPage } from '../../pages/ServicesPage';
 export { InventoryPage } from '../../pages/InventoryPage';
 export { PortfolioPage } from '../../pages/PortfolioPage';
+

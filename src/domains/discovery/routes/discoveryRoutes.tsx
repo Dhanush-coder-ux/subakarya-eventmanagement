@@ -7,3 +7,4 @@ export const discoveryRoutes = [
   <Route key="discovery-search" path="/search" element={<SearchPage />} />,
   <Route key="discovery-reels" path="/reels" element={<ReelsPage />} />,
 ];
+

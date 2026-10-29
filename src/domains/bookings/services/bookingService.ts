@@ -20,3 +20,4 @@ export const bookingService = {
     return useMarketplaceStore.getState().bookings.find((b) => b.id === bookingId);
   },
 };
+

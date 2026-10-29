@@ -7,3 +7,4 @@ export const messagingRoutes = [
   <Route key="chat-conv" path="/chat/:conversationId" element={<ChatPage />} />,
   <Route key="chat-messages" path="/messages/:conversationId" element={<ChatPage />} />,
 ];
+

@@ -13,3 +13,4 @@ export const vendorRoutes = [
   <Route key="vendor-inventory" path="/inventory" element={<InventoryPage />} />,
   <Route key="vendor-portfolio" path="/portfolio" element={<PortfolioPage />} />,
 ];
+

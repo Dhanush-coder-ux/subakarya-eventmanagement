@@ -48,3 +48,4 @@ export const consumerService = {
     useMarketplaceStore.getState().toggleFollowProfessional(professionalId);
   },
 };
+

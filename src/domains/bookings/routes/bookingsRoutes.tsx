@@ -11,3 +11,4 @@ export const bookingsRoutes = [
     element={<CustomerBookingPage />}
   />,
 ];
+

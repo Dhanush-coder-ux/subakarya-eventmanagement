@@ -34,3 +34,4 @@ export const profileService = {
     return calculateProfileCompleteness(p);
   },
 };
+

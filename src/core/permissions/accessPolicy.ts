@@ -41,3 +41,4 @@ export const routePolicies: RoutePolicy[] = [
   { path: '/professional/calendar', allowedRoles: ['professional'], requiresAuth: true, redirectTo: '/' },
   { path: '/professional/bookings', allowedRoles: ['professional'], requiresAuth: true, redirectTo: '/bookings' },
 ];
+

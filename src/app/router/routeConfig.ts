@@ -42,3 +42,4 @@ export const routes = {
   vendorCalendarAlt: '/professional/calendar',
   vendorBookings: '/professional/bookings',
 } as const;
+

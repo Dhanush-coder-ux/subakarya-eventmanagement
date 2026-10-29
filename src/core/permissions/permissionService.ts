@@ -33,3 +33,4 @@ export const permissionService = {
     return { allowed: true };
   },
 };
+

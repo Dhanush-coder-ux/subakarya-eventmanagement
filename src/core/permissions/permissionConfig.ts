@@ -44,3 +44,4 @@ export const profileFeatureConfig: Record<Role, Record<AppFeature, boolean>> = {
     publicProfile: true,
   },
 };
+
