@@ -199,6 +199,9 @@ export const ProfessionalOnboardingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-sand/30 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
+        <div className="text-center mb-6">
+          <img src="/subakarya-logo.png" alt="Logo" className="w-16 h-16 mx-auto object-contain mb-3 drop-shadow-md" />
+        </div>
         {/* Dynamic Completeness Banner */}
         <div className="bg-surface-card rounded-2xl border border-border shadow-card p-4 sm:p-5 mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border/70">

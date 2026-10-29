@@ -27,7 +27,7 @@ export const AccountTypePage: React.FC = () => {
             Choose Your Account Experience
           </h1>
           <p className="text-xs sm:text-sm text-charcoal-muted mt-2 max-w-md mx-auto">
-            Select how you would like to explore the Subakarya platform. You can seamlessly switch between roles at any time in Settings.
+            Select how you would like to explore the platform. You can seamlessly switch between roles at any time in Settings.
           </p>
         </div>
 
