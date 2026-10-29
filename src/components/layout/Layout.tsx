@@ -3,6 +3,7 @@ import { Outlet, Navigate, useLocation } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { MobileHeader } from './MobileHeader';
 import { BottomNav } from './BottomNav';
+import { MobileDrawer } from './MobileDrawer';
 import { useAuthStore } from '../../store/useAuthStore';
 
 export const Layout: React.FC = () => {
@@ -44,6 +45,9 @@ export const Layout: React.FC = () => {
 
       {/* Mobile Bottom Navigation (hidden on chat so the message input bar stays pinned) */}
       {!isChatRoute && <BottomNav />}
+
+      {/* Global Responsive Mobile Drawer for Menus & Quick Role Actions */}
+      <MobileDrawer />
     </div>
   );
 };

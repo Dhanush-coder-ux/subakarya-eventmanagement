@@ -43,26 +43,36 @@ export const MobileHeader: React.FC = () => {
         </button>
       </div>
 
-      {/* Right Icons: Notifications & Chat */}
-      <div className="flex items-center gap-3">
+      {/* Right Icons: Notifications, Chat & Menu Drawer */}
+      <div className="flex items-center gap-2.5">
         <button
           onClick={() => navigate('/chat')}
           className="relative text-charcoal p-1 hover:text-wine active:scale-90 transition-transform"
+          title="Notifications"
         >
-          <Heart className="w-6 h-6 stroke-[1.8px]" />
+          <Heart className="w-5 h-5 stroke-[1.8px]" />
           <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-wine ring-2 ring-surface"></span>
         </button>
 
         <button
           onClick={() => navigate('/chat')}
           className="relative text-charcoal p-1 hover:text-wine active:scale-90 transition-transform"
+          title="Messages"
         >
-          <Send className="w-6 h-6 stroke-[1.8px]" />
+          <Send className="w-5 h-5 stroke-[1.8px]" />
           {unreadCount > 0 && (
             <span className="absolute -top-0.5 -right-1 px-1.5 py-0.2 min-w-[16px] h-4 flex items-center justify-center text-[10px] font-bold rounded-full bg-wine text-white ring-2 ring-surface">
               {unreadCount}
             </span>
           )}
+        </button>
+
+        <button
+          onClick={() => toggleMobileMenu(true)}
+          className="p-1 rounded-lg text-charcoal hover:text-wine active:scale-90 transition-transform"
+          title="Open Menu"
+        >
+          <Menu className="w-6 h-6 stroke-[2px]" />
         </button>
       </div>
     </header>

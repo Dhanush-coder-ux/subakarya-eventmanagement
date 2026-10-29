@@ -50,7 +50,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
   };
 
   return (
-    <article className="bg-surface-card border-b sm:border border-border sm:rounded-2xl shadow-subtle overflow-hidden max-w-[480px] sm:max-w-[500px] mx-auto mb-4 transition-all">
+    <article className="w-full bg-surface-card border-b sm:border border-border sm:rounded-2xl shadow-subtle overflow-hidden max-w-full sm:max-w-[500px] mx-auto mb-4 transition-all">
       {/* 1. Header: Avatar + Username + Location + More */}
       <div className="flex items-center justify-between px-3.5 py-3">
         <div className="flex items-center gap-2.5">

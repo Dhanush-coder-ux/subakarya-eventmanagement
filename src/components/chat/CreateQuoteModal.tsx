@@ -180,7 +180,7 @@ export const CreateQuoteModal: React.FC<CreateQuoteModalProps> = ({
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
           {/* Service items selection dropdown */}
           <div>
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2">
               <label className="text-xs font-bold text-charcoal uppercase tracking-wider">
                 Services & Deliverables
               </label>
