@@ -51,7 +51,7 @@ export const MobileHeader: React.FC = () => {
           </button>
         </div>
 
-        {/* Right Icons: Notifications, Chat & Menu Drawer */}
+        {/* Right Icons: Notifications, Chat, and Customer Menu Drawer */}
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => setShowNotifications(true)}
@@ -75,13 +75,16 @@ export const MobileHeader: React.FC = () => {
             )}
           </button>
 
-          <button
-            onClick={() => toggleMobileMenu(true)}
-            className="p-1 rounded-lg text-charcoal hover:text-wine active:scale-90 transition-transform"
-            title="Open Menu"
-          >
-            <Menu className="w-6 h-6 stroke-[2px]" />
-          </button>
+          {/* Show top Menu button only for Customer mode; on Vendor side, the Menu button is in the Bottom App Bar */}
+          {isCustomer && (
+            <button
+              onClick={() => toggleMobileMenu(true)}
+              className="p-1 rounded-lg text-charcoal hover:text-wine active:scale-90 transition-transform"
+              title="Open Menu"
+            >
+              <Menu className="w-6 h-6 stroke-[2px]" />
+            </button>
+          )}
         </div>
       </header>
 
