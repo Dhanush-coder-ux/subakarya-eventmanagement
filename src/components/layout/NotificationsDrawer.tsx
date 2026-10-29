@@ -111,7 +111,7 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
             className="p-1.5 rounded-full hover:bg-sand/40 text-charcoal-muted hover:text-charcoal transition-colors active:scale-95"
             title="Close"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 icon-hover-base hover:rotate-90 transition-transform" />
           </button>
         </div>
 

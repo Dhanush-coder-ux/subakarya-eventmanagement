@@ -565,7 +565,7 @@ export const ChatPage: React.FC = () => {
                   className="w-9 h-9 rounded-full bg-wine hover:bg-wine-deep disabled:opacity-40 text-white flex items-center justify-center transition-all shadow-subtle shrink-0 active:scale-95"
                   title="Send Message"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-4 h-4 icon-hover-base icon-hover-send" />
                 </button>
               </form>
             </div>

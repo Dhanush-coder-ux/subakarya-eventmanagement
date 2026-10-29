@@ -209,7 +209,7 @@ export const InventoryPage: React.FC = () => {
           onClick={handleOpenAdd}
           className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all shrink-0"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 icon-hover-base group-hover:scale-110 group-hover:rotate-90 transition-transform" />
           <span>Add Inventory Item</span>
         </button>
       </div>
@@ -374,14 +374,14 @@ export const InventoryPage: React.FC = () => {
                             className="p-1.5 rounded-md hover:bg-sand/30 text-charcoal-muted hover:text-charcoal"
                             title="Edit"
                           >
-                            <Edit3 className="w-3.5 h-3.5" />
+                            <Edit3 className="w-3.5 h-3.5 icon-hover-base hover:scale-115 hover:-rotate-12 transition-transform" />
                           </button>
                           <button
                             onClick={() => deleteInventoryItem(item.id)}
                             className="p-1.5 rounded-md hover:bg-error-light text-charcoal-muted hover:text-error"
                             title="Delete"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-3.5 h-3.5 icon-hover-base hover:scale-115 hover:rotate-12 text-error transition-transform" />
                           </button>
                         </div>
                       </td>

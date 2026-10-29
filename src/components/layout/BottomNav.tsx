@@ -51,7 +51,7 @@ export const BottomNav: React.FC = () => {
                 className="p-1.5 flex items-center justify-center transition-transform active:scale-90 text-charcoal hover:text-wine"
                 title={link.label}
               >
-                <Icon className="w-6 h-6 stroke-[1.8px]" />
+                <Icon className="w-6 h-6 stroke-[1.8px] icon-hover-base icon-hover-scale" />
               </button>
             ) : (
             <Link

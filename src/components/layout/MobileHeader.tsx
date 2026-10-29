@@ -46,7 +46,7 @@ export const MobileHeader: React.FC = () => {
             className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-sand text-charcoal border border-sand-dark flex items-center gap-1 active:scale-95"
             title="Tap to switch mode"
           >
-            <Sparkles className="w-2.5 h-2.5 text-wine" />
+            <Sparkles className="w-2.5 h-2.5 text-wine icon-hover-base icon-hover-sparkle" />
             <span>{isCustomer ? 'Customer' : 'Vendor'}</span>
           </button>
         </div>
@@ -58,7 +58,7 @@ export const MobileHeader: React.FC = () => {
             className="relative text-charcoal p-1 hover:text-wine active:scale-90 transition-transform"
             title="Notifications"
           >
-            <Heart className="w-5 h-5 stroke-[1.8px]" />
+            <Heart className="w-5 h-5 stroke-[1.8px] icon-hover-base icon-hover-heart" />
             <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-wine ring-2 ring-surface"></span>
           </button>
 
@@ -67,7 +67,7 @@ export const MobileHeader: React.FC = () => {
             className="relative text-charcoal p-1 hover:text-wine active:scale-90 transition-transform"
             title="Messages"
           >
-            <Send className="w-5 h-5 stroke-[1.8px]" />
+            <Send className="w-5 h-5 stroke-[1.8px] icon-hover-base icon-hover-send" />
             {unreadCount > 0 && (
               <span className="absolute -top-0.5 -right-1 px-1.5 py-0.2 min-w-[16px] h-4 flex items-center justify-center text-[10px] font-bold rounded-full bg-wine text-white ring-2 ring-surface">
                 {unreadCount}

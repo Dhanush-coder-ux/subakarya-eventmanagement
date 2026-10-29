@@ -84,7 +84,7 @@ export const ProfessionalCard: React.FC<ProfessionalCardProps> = ({ professional
           className="flex-1 py-2 rounded-lg bg-wine hover:bg-wine-dark text-white text-xs font-semibold tracking-wide transition-all duration-150 flex items-center justify-center gap-1 shadow-xs active:scale-95 truncate"
         >
           <span>Book Now</span>
-          <ArrowRight className="w-3 h-3 shrink-0" />
+          <ArrowRight className="w-3 h-3 shrink-0 icon-hover-base group-hover:translate-x-1 transition-transform" />
         </button>
       </div>
     </div>

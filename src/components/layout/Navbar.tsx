@@ -102,13 +102,13 @@ export const Navbar: React.FC = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-150 ${
+                  className={`group relative flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-150 ${
                     isActive
                       ? 'bg-wine text-white shadow-sm'
                       : 'text-charcoal-muted hover:text-charcoal hover:bg-sand/50'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-4 h-4 icon-hover-base group-icon-scale" />
                   <span>{link.label}</span>
                   {Boolean(link.badge) && (
                     <span
@@ -133,10 +133,10 @@ export const Navbar: React.FC = () => {
                   setShowNotifications(!showNotifications);
                   setShowUserMenu(false);
                 }}
-                className="p-2 rounded-full text-charcoal-muted hover:text-charcoal hover:bg-sand/40 relative focus:outline-none"
+                className="group p-2 rounded-full text-charcoal-muted hover:text-charcoal hover:bg-sand/40 relative focus:outline-none transition-colors"
                 title="Notifications"
               >
-                <Bell className="w-5 h-5" />
+                <Bell className="w-5 h-5 icon-hover-base group-icon-tilt" />
                 <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-wine ring-2 ring-surface"></span>
               </button>
 

@@ -116,7 +116,7 @@ export const MobileDrawer: React.FC = () => {
             className="p-1.5 rounded-lg text-charcoal hover:bg-sand/40 transition-colors"
             title="Close Menu"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5 icon-hover-base hover:rotate-90 transition-transform" />
           </button>
         </div>
 

@@ -64,3 +64,198 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+
+/* ==========================================================================
+   Subakarya Premium Icon Hover Interactions & Motion Design System
+   ========================================================================== */
+
+/* Base transition for interactive icons */
+.icon-hover-base {
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+              color 200ms ease-out,
+              stroke 200ms ease-out,
+              opacity 200ms ease-out;
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* Direct Hover Utilities */
+.icon-hover-scale:hover,
+button:hover > .icon-hover-scale,
+a:hover > .icon-hover-scale {
+  transform: scale(1.12);
+}
+
+.icon-hover-tilt:hover,
+button:hover > .icon-hover-tilt,
+a:hover > .icon-hover-tilt {
+  transform: scale(1.1) rotate(8deg);
+}
+
+.icon-hover-sparkle:hover,
+button:hover > .icon-hover-sparkle,
+a:hover > .icon-hover-sparkle {
+  transform: scale(1.14) rotate(12deg);
+}
+
+.icon-hover-gear:hover,
+button:hover > .icon-hover-gear,
+a:hover > .icon-hover-gear {
+  transform: rotate(45deg) scale(1.08);
+}
+
+.icon-hover-arrow-right:hover,
+button:hover > .icon-hover-arrow-right,
+a:hover > .icon-hover-arrow-right {
+  transform: translateX(3px);
+}
+
+.icon-hover-arrow-left:hover,
+button:hover > .icon-hover-arrow-left,
+a:hover > .icon-hover-arrow-left {
+  transform: translateX(-3px);
+}
+
+.icon-hover-arrow-up:hover,
+button:hover > .icon-hover-arrow-up,
+a:hover > .icon-hover-arrow-up {
+  transform: translateY(-2.5px);
+}
+
+.icon-hover-arrow-down:hover,
+button:hover > .icon-hover-arrow-down,
+a:hover > .icon-hover-arrow-down {
+  transform: translateY(2.5px);
+}
+
+.icon-hover-external:hover,
+button:hover > .icon-hover-external,
+a:hover > .icon-hover-external {
+  transform: translate(2px, -2px);
+}
+
+.icon-hover-send:hover,
+button:hover > .icon-hover-send,
+a:hover > .icon-hover-send {
+  transform: translate(2px, -2px) rotate(6deg);
+}
+
+.icon-hover-heart:hover,
+button:hover > .icon-hover-heart,
+a:hover > .icon-hover-heart {
+  transform: scale(1.18);
+}
+
+.icon-hover-delete:hover,
+button:hover > .icon-hover-delete,
+a:hover > .icon-hover-delete {
+  transform: scale(1.1) rotate(-6deg);
+}
+
+.icon-hover-spin-once:hover,
+button:hover > .icon-hover-spin-once,
+a:hover > .icon-hover-spin-once {
+  transform: rotate(180deg);
+}
+
+/* Parent Group Hover Utilities (Tailwind .group integration) */
+.group:hover .group-icon-scale {
+  transform: scale(1.12);
+}
+
+.group:hover .group-icon-tilt {
+  transform: scale(1.1) rotate(8deg);
+}
+
+.group:hover .group-icon-sparkle {
+  transform: scale(1.14) rotate(12deg);
+}
+
+.group:hover .group-icon-gear {
+  transform: rotate(45deg) scale(1.08);
+}
+
+.group:hover .group-icon-arrow-right {
+  transform: translateX(3.5px);
+}
+
+.group:hover .group-icon-arrow-left {
+  transform: translateX(-3.5px);
+}
+
+.group:hover .group-icon-arrow-up {
+  transform: translateY(-3px);
+}
+
+.group:hover .group-icon-arrow-down {
+  transform: translateY(3px);
+}
+
+.group:hover .group-icon-external {
+  transform: translate(2px, -2px);
+}
+
+.group:hover .group-icon-send {
+  transform: translate(2.5px, -2.5px) rotate(8deg);
+}
+
+.group:hover .group-icon-heart {
+  transform: scale(1.18);
+}
+
+.group:hover .group-icon-delete {
+  transform: scale(1.1) rotate(-6deg);
+}
+
+.group:hover .group-icon-spin-once {
+  transform: rotate(180deg);
+}
+
+/* Interactive Icon Container/Badge Hover Effect */
+.icon-box-hover {
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 200ms ease-out,
+              border-color 200ms ease-out,
+              box-shadow 200ms ease-out;
+}
+
+.group:hover .icon-box-hover,
+.icon-box-hover:hover {
+  transform: translateY(-1.5px) scale(1.04);
+}
+
+/* Accessibility: Respect Reduced Motion Preferences */
+@media (prefers-reduced-motion: reduce) {
+  .icon-hover-base,
+  .icon-hover-scale,
+  .icon-hover-tilt,
+  .icon-hover-sparkle,
+  .icon-hover-gear,
+  .icon-hover-arrow-right,
+  .icon-hover-arrow-left,
+  .icon-hover-arrow-up,
+  .icon-hover-arrow-down,
+  .icon-hover-external,
+  .icon-hover-send,
+  .icon-hover-heart,
+  .icon-hover-delete,
+  .icon-hover-spin-once,
+  .group-icon-scale,
+  .group-icon-tilt,
+  .group-icon-sparkle,
+  .group-icon-gear,
+  .group-icon-arrow-right,
+  .group-icon-arrow-left,
+  .group-icon-arrow-up,
+  .group-icon-arrow-down,
+  .group-icon-external,
+  .group-icon-send,
+  .group-icon-heart,
+  .group-icon-delete,
+  .group-icon-spin-once,
+  .icon-box-hover {
+    transition: none !important;
+    transform: none !important;
+  }
+}

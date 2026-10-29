@@ -132,7 +132,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
               aria-label="Like post"
             >
               <Heart
-                className={`w-6 h-6 transition-colors ${
+                className={`w-6 h-6 icon-hover-base icon-hover-heart transition-colors ${
                   post.isLiked ? 'fill-wine text-wine' : 'stroke-[1.8px] text-charcoal'
                 }`}
               />
@@ -143,7 +143,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
               className="text-charcoal hover:opacity-70 transition-transform active:scale-110"
               title="Message / Enquire"
             >
-              <MessageCircle className="w-6 h-6 stroke-[1.8px]" />
+              <MessageCircle className="w-6 h-6 stroke-[1.8px] icon-hover-base icon-hover-scale" />
             </button>
 
             <button
@@ -159,7 +159,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
               className="text-charcoal hover:opacity-70 transition-transform active:scale-110"
               title="Share post"
             >
-              <Send className="w-6 h-6 stroke-[1.8px]" />
+              <Send className="w-6 h-6 stroke-[1.8px] icon-hover-base icon-hover-send" />
             </button>
           </div>
 

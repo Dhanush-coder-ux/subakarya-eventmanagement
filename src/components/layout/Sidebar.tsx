@@ -122,7 +122,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
                 <Link
                   key={item.label}
                   to={item.path}
-                  className={`flex items-center gap-4 px-3 py-3 rounded-xl text-sm transition-all duration-150 ${
+                  className={`group flex items-center gap-4 px-3 py-3 rounded-xl text-sm transition-all duration-150 ${
                     isActive
                       ? 'font-bold text-wine bg-sand/50'
                       : 'text-charcoal hover:bg-sand/30 font-medium'
@@ -140,7 +140,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
                       />
                     ) : (
                       <Icon
-                        className={`w-6 h-6 ${
+                        className={`w-6 h-6 icon-hover-base group-icon-scale ${
                           isActive ? 'stroke-[2.5px] text-wine' : 'stroke-[1.8px] text-charcoal'
                         }`}
                       />
@@ -183,7 +183,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
               title="Notifications"
             >
               <div className="relative flex-shrink-0">
-                <Heart className="w-6 h-6 stroke-[1.8px] text-charcoal" />
+                <Heart className="w-6 h-6 stroke-[1.8px] text-charcoal icon-hover-base group-icon-heart" />
                 <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-wine ring-2 ring-surface"></span>
               </div>
               {!isChatRoute && <span className="hidden lg:inline">Notifications</span>}

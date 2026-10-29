@@ -85,17 +85,17 @@ export const ProfessionalDashboardPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto shrink-0">
           <Link
             to="/portfolio"
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-all active:scale-95 text-center"
+            className="group w-full sm:w-auto px-5 py-2.5 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-all active:scale-95 text-center"
           >
-            <Sparkles className="w-4 h-4 shrink-0" />
+            <Sparkles className="w-4 h-4 shrink-0 icon-hover-base group-hover:rotate-12 group-hover:scale-110 transition-transform" />
             <span>Create Post / Reel</span>
           </Link>
           <Link
             to={`/profile/${currentUser.id}`}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-border bg-surface hover:bg-sand/40 text-charcoal text-xs font-semibold flex items-center justify-center gap-2 transition-colors active:scale-95 text-center"
+            className="group w-full sm:w-auto px-5 py-2.5 rounded-xl border border-border bg-surface hover:bg-sand/40 text-charcoal text-xs font-semibold flex items-center justify-center gap-2 transition-colors active:scale-95 text-center"
           >
             <span>View Public Profile</span>
-            <ArrowRight className="w-4 h-4 shrink-0" />
+            <ArrowRight className="w-4 h-4 shrink-0 icon-hover-base group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
       </div>
@@ -143,8 +143,8 @@ export const ProfessionalDashboardPage: React.FC = () => {
 
       {/* 3. Primary KPI Metrics Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-        <div className="p-3.5 sm:p-4 bg-surface-card rounded-2xl border border-border shadow-xs">
-          <div className="w-8 h-8 rounded-lg bg-sand text-charcoal flex items-center justify-center mb-2">
+        <div className="group p-3.5 sm:p-4 bg-surface-card rounded-2xl border border-border shadow-xs hover:border-wine/40 hover:shadow-subtle transition-all duration-200">
+          <div className="w-8 h-8 rounded-lg bg-sand text-charcoal flex items-center justify-center mb-2 icon-box-hover group-hover:bg-sand-tint transition-all">
             <Users className="w-4 h-4 text-wine" />
           </div>
           <span className="text-[11px] text-charcoal-muted">Followers</span>
@@ -153,8 +153,8 @@ export const ProfessionalDashboardPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="p-3.5 sm:p-4 bg-surface-card rounded-2xl border border-border shadow-xs">
-          <div className="w-8 h-8 rounded-lg bg-sand text-charcoal flex items-center justify-center mb-2">
+        <div className="group p-3.5 sm:p-4 bg-surface-card rounded-2xl border border-border shadow-xs hover:border-wine/40 hover:shadow-subtle transition-all duration-200">
+          <div className="w-8 h-8 rounded-lg bg-sand text-charcoal flex items-center justify-center mb-2 icon-box-hover group-hover:bg-sand-tint transition-all">
             <Grid className="w-4 h-4 text-wine" />
           </div>
           <span className="text-[11px] text-charcoal-muted">Posts & Reels</span>
@@ -163,32 +163,32 @@ export const ProfessionalDashboardPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="p-3.5 sm:p-4 bg-surface-card rounded-2xl border border-border shadow-xs">
-          <div className="w-8 h-8 rounded-lg bg-sand text-charcoal flex items-center justify-center mb-2">
+        <div className="group p-3.5 sm:p-4 bg-surface-card rounded-2xl border border-border shadow-xs hover:border-wine/40 hover:shadow-subtle transition-all duration-200">
+          <div className="w-8 h-8 rounded-lg bg-sand text-charcoal flex items-center justify-center mb-2 icon-box-hover group-hover:bg-sand-tint transition-all">
             <CalendarCheck className="w-4 h-4 text-wine" />
           </div>
           <span className="text-[11px] text-charcoal-muted">Pending Quotes</span>
           <p className="text-lg sm:text-xl font-bold text-wine mt-0.5">{pendingEnquiries.length}</p>
         </div>
 
-        <div className="p-3.5 sm:p-4 bg-surface-card rounded-2xl border border-border shadow-xs">
-          <div className="w-8 h-8 rounded-lg bg-sand text-charcoal flex items-center justify-center mb-2">
+        <div className="group p-3.5 sm:p-4 bg-surface-card rounded-2xl border border-border shadow-xs hover:border-wine/40 hover:shadow-subtle transition-all duration-200">
+          <div className="w-8 h-8 rounded-lg bg-sand text-charcoal flex items-center justify-center mb-2 icon-box-hover group-hover:bg-sand-tint transition-all">
             <TrendingUp className="w-4 h-4 text-wine" />
           </div>
           <span className="text-[11px] text-charcoal-muted">Confirmed Events</span>
           <p className="text-lg sm:text-xl font-bold text-success mt-0.5">{confirmedBookings.length}</p>
         </div>
 
-        <div className="p-3.5 sm:p-4 bg-surface-card rounded-2xl border border-border shadow-xs">
-          <div className="w-8 h-8 rounded-lg bg-sand text-charcoal flex items-center justify-center mb-2">
+        <div className="group p-3.5 sm:p-4 bg-surface-card rounded-2xl border border-border shadow-xs hover:border-wine/40 hover:shadow-subtle transition-all duration-200">
+          <div className="w-8 h-8 rounded-lg bg-sand text-charcoal flex items-center justify-center mb-2 icon-box-hover group-hover:bg-sand-tint transition-all">
             <Package className="w-4 h-4 text-wine" />
           </div>
           <span className="text-[11px] text-charcoal-muted">Inventory Items</span>
           <p className="text-lg sm:text-xl font-bold text-charcoal mt-0.5">{myInventory.length}</p>
         </div>
 
-        <div className="p-3.5 sm:p-4 bg-surface-card rounded-2xl border border-border shadow-xs">
-          <div className="w-8 h-8 rounded-lg bg-sand text-charcoal flex items-center justify-center mb-2">
+        <div className="group p-3.5 sm:p-4 bg-surface-card rounded-2xl border border-border shadow-xs hover:border-wine/40 hover:shadow-subtle transition-all duration-200">
+          <div className="w-8 h-8 rounded-lg bg-sand text-charcoal flex items-center justify-center mb-2 icon-box-hover group-hover:bg-sand-tint transition-all">
             <Briefcase className="w-4 h-4 text-wine" />
           </div>
           <span className="text-[11px] text-charcoal-muted">Past Works</span>

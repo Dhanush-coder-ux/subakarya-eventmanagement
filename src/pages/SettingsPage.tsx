@@ -234,7 +234,7 @@ export const SettingsPage: React.FC = () => {
       {/* Reset Demo State & Disclaimer */}
       <div className="bg-surface-card rounded-2xl border border-border p-6 shadow-card space-y-4">
         <h2 className="text-sm font-bold uppercase tracking-wider text-charcoal flex items-center gap-2">
-          <RotateCcw className="w-4 h-4 text-wine" />
+          <RotateCcw className="w-4 h-4 icon-hover-base group-hover:rotate-180 transition-transform duration-500 text-wine" />
           <span>Reset Prototype State</span>
         </h2>
         <p className="text-xs text-charcoal-muted leading-relaxed">

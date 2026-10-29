@@ -221,7 +221,7 @@ export const PortfolioPage: React.FC = () => {
                 <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs text-charcoal-muted">
                   <span>{post.likesCount} likes</span>
                   <button onClick={() => deletePost(post.id)} className="text-error hover:underline flex items-center gap-1">
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-3.5 h-3.5 icon-hover-base hover:scale-115 hover:rotate-12 text-error transition-transform" />
                     <span>Delete</span>
                   </button>
                 </div>

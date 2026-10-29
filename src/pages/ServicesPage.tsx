@@ -120,7 +120,7 @@ export const ServicesPage: React.FC = () => {
           onClick={handleOpenAdd}
           className="px-4 py-2.5 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 icon-hover-base group-hover:scale-110 group-hover:rotate-90 transition-transform" />
           <span>Add New Package</span>
         </button>
       </div>

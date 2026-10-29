@@ -152,7 +152,7 @@ export const SearchPage: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
           {/* Input field */}
           <div className="relative flex-1 w-full min-w-0">
-            <Search className="w-4 h-4 text-charcoal-muted absolute left-3.5 top-3" />
+            <Search className="w-4 h-4 text-charcoal-muted absolute left-3.5 top-3 icon-hover-base icon-hover-tilt" />
             <input
               type="text"
               value={searchTerm}
