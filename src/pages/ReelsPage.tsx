@@ -195,7 +195,7 @@ export const ReelsPage: React.FC = () => {
                 isPlaying ? 'opacity-95' : 'opacity-70'
               }`}
             />
-            {/* Dark Gradient Overlay for Readability */}
+           
             <div className="absolute inset-0 bg-gradient-to-b from-charcoal/50 via-transparent to-charcoal/90" />
 
             {/* Center Play/Pause Indicator if paused */}
