@@ -295,7 +295,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
         <div
           className={`hidden md:block fixed top-0 bottom-0 ${
             isChatRoute ? 'left-[72px]' : 'left-[72px] lg:left-[245px]'
-          } w-80 bg-surface-card border-r border-border shadow-dropdown p-4 z-30 animate-in slide-in-from-left duration-200`}
+          } w-80 bg-surface-card border-r border-border shadow-dropdown p-4 z-30 animate-in slide-in-from-left duration-200 overflow-y-auto`}
         >
           <div className="flex items-center justify-between pb-3 border-b border-border">
             <h3 className="font-bold text-sm text-charcoal">Notifications</h3>
@@ -306,25 +306,72 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
               Close
             </button>
           </div>
-          <div className="mt-3 space-y-3">
-            <div className="p-2.5 rounded-xl bg-sand/30 text-xs flex items-start gap-2.5">
-              <CheckCircle2 className="w-4 h-4 text-wine flex-shrink-0 mt-0.5" />
+          <div className="mt-3 space-y-2.5">
+            <div
+              onClick={() => {
+                setShowNotifications(false);
+                navigate('/bookings');
+              }}
+              className="p-3 rounded-xl bg-sand/30 hover:bg-sand/50 text-xs flex items-start gap-2.5 cursor-pointer transition-all active:scale-98 border border-sand-dark/40"
+            >
+              <CheckCircle2 className="w-4 h-4 text-wine shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-charcoal">Quotation Sent</p>
+                <p className="font-semibold text-charcoal">Quotation Received</p>
                 <p className="text-[11px] text-charcoal-muted">
                   Lumière Cinematic Studios issued an itemized quote for Nov 15.
                 </p>
-                <span className="text-[10px] text-charcoal-light">20m ago</span>
+                <span className="text-[10px] text-charcoal-light mt-1 block">25m ago • Tap to view booking</span>
               </div>
             </div>
-            <div className="p-2.5 rounded-xl bg-surface-muted text-xs flex items-start gap-2.5">
-              <Heart className="w-4 h-4 text-wine flex-shrink-0 mt-0.5" />
+
+            <div
+              onClick={() => {
+                setShowNotifications(false);
+                navigate('/bookings');
+              }}
+              className="p-3 rounded-xl bg-sand/20 hover:bg-sand/40 text-xs flex items-start gap-2.5 cursor-pointer transition-all active:scale-98 border border-border"
+            >
+              <CalendarCheck className="w-4 h-4 text-wine shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-charcoal">New Like</p>
+                <p className="font-semibold text-charcoal">Booking Confirmed</p>
+                <p className="text-[11px] text-charcoal-muted">
+                  Your event slot has been officially confirmed by vendor.
+                </p>
+                <span className="text-[10px] text-charcoal-light mt-1 block">2h ago • Tap to view status</span>
+              </div>
+            </div>
+
+            <div
+              onClick={() => {
+                setShowNotifications(false);
+                navigate('/reels');
+              }}
+              className="p-3 rounded-xl bg-surface-muted hover:bg-sand/30 text-xs flex items-start gap-2.5 cursor-pointer transition-all active:scale-98 border border-border"
+            >
+              <Heart className="w-4 h-4 text-wine shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-charcoal">Post Saved & Liked</p>
                 <p className="text-[11px] text-charcoal-muted">
                   Rohan Mehta saved your traditional mandap post.
                 </p>
-                <span className="text-[10px] text-charcoal-light">1h ago</span>
+                <span className="text-[10px] text-charcoal-light mt-1 block">5h ago • Tap to view media</span>
+              </div>
+            </div>
+
+            <div
+              onClick={() => {
+                setShowNotifications(false);
+                navigate('/chat');
+              }}
+              className="p-3 rounded-xl bg-surface-muted hover:bg-sand/30 text-xs flex items-start gap-2.5 cursor-pointer transition-all active:scale-98 border border-border"
+            >
+              <Send className="w-4 h-4 text-wine shrink-0 mt-0.5" />
+              <div>
+                <p className="font-semibold text-charcoal">New Message</p>
+                <p className="text-[11px] text-charcoal-muted">
+                  Priya Sharma sent you a message regarding ceremony timeline.
+                </p>
+                <span className="text-[10px] text-charcoal-light mt-1 block">12h ago • Tap to chat</span>
               </div>
             </div>
           </div>
