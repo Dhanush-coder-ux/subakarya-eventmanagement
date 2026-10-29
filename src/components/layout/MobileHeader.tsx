@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Sparkles,
+  Building2,
+  UserCheck,
   Heart,
   Send,
   Menu,
@@ -46,7 +47,7 @@ export const MobileHeader: React.FC = () => {
             className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-sand text-charcoal border border-sand-dark flex items-center gap-1 active:scale-95"
             title="Tap to switch mode"
           >
-            <Sparkles className="w-2.5 h-2.5 text-wine icon-hover-base icon-hover-sparkle" />
+            {isCustomer ? <UserCheck className="w-2.5 h-2.5 text-wine" /> : <Building2 className="w-2.5 h-2.5 text-wine" />}
             <span>{isCustomer ? 'Customer' : 'Vendor'}</span>
           </button>
         </div>

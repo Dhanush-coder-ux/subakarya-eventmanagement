@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, IndianRupee, Sparkles, Send, Calendar } from 'lucide-react';
+import { X, Plus, Trash2, IndianRupee, FileCheck, Send, Calendar } from 'lucide-react';
 import { Quotation, QuoteItem, ServiceItem, InventoryItem, BookingRequestData } from '../../types';
 import { formatINR, calculateServiceCost } from '../../utils';
 
@@ -157,7 +157,7 @@ export const CreateQuoteModal: React.FC<CreateQuoteModalProps> = ({
         <div className="p-4 sm:p-5 border-b border-border flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-wine text-white flex items-center justify-center font-bold">
-              <Sparkles className="w-4 h-4" />
+              <FileCheck className="w-4 h-4" />
             </div>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-charcoal">

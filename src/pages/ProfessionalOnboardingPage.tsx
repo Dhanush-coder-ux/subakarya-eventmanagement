@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   User,
   Building2,
-  Sparkles,
+  Tag,
   ShieldCheck,
   Image as ImageIcon,
   CheckCircle2,
@@ -190,7 +190,7 @@ export const ProfessionalOnboardingPage: React.FC = () => {
   const stepsList = [
     { num: 1, title: 'Personal', icon: User },
     { num: 2, title: 'Business', icon: Building2 },
-    { num: 3, title: 'Pricing', icon: Sparkles },
+    { num: 3, title: 'Pricing', icon: Tag },
     { num: 4, title: 'Verification', icon: ShieldCheck },
     { num: 5, title: 'Portfolio', icon: ImageIcon },
     { num: 6, title: 'Review', icon: CheckCircle2 },

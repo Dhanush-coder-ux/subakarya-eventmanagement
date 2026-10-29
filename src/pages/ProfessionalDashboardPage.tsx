@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  Sparkles,
+  PlusCircle,
+  Tag,
   Users,
   Grid,
   Briefcase,
@@ -87,7 +88,7 @@ export const ProfessionalDashboardPage: React.FC = () => {
             to="/portfolio"
             className="group w-full sm:w-auto px-5 py-2.5 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-all active:scale-95 text-center"
           >
-            <Sparkles className="w-4 h-4 shrink-0 icon-hover-base group-hover:rotate-12 group-hover:scale-110 transition-transform" />
+            <PlusCircle className="w-4 h-4 shrink-0 icon-hover-base group-hover:scale-110 transition-transform" />
             <span>Create Post / Reel</span>
           </Link>
           <Link
@@ -294,7 +295,7 @@ export const ProfessionalDashboardPage: React.FC = () => {
               className="p-4 bg-surface-card rounded-2xl border border-border shadow-xs hover:border-wine/40 transition-all group"
             >
               <div className="w-8 h-8 rounded-lg bg-sand flex items-center justify-center mb-2 group-hover:scale-105 transition-transform">
-                <Sparkles className="w-4 h-4 text-wine" />
+                <Tag className="w-4 h-4 text-wine" />
               </div>
               <h3 className="font-bold text-charcoal text-xs sm:text-sm">Manage Pricing</h3>
               <p className="text-[11px] text-charcoal-muted mt-1">

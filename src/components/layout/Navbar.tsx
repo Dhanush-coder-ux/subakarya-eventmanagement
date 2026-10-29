@@ -1,7 +1,8 @@
 ﻿import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Sparkles,
+  Compass,
+  Tag,
   Search,
   Film,
   MessageSquare,
@@ -35,7 +36,7 @@ export const Navbar: React.FC = () => {
   const isCustomer = accountType === 'customer';
 
   const customerNavLinks = [
-    { label: 'Discover', path: '/', icon: Sparkles },
+    { label: 'Discover', path: '/', icon: Compass },
     { label: 'Reels', path: '/reels', icon: Film },
     { label: 'Search', path: '/search', icon: Search },
     { label: 'Messages', path: '/chat', icon: MessageSquare, badge: unreadCount },
@@ -45,7 +46,7 @@ export const Navbar: React.FC = () => {
   const professionalNavLinks = [
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { label: 'Portfolio', path: '/portfolio', icon: Layers },
-    { label: 'Services', path: '/services', icon: Sparkles },
+    { label: 'Services', path: '/services', icon: Tag },
     { label: 'Inventory', path: '/inventory', icon: Package },
     { label: 'Bookings', path: '/bookings', icon: CalendarCheck },
     { label: 'Messages', path: '/chat', icon: MessageSquare, badge: unreadCount },

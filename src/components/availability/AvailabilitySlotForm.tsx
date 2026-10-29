@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Clock, Calendar, Sparkles, Check, AlertCircle, Plus } from 'lucide-react';
+import { X, Clock, Calendar, Check, AlertCircle, Plus } from 'lucide-react';
 import { AvailabilitySlot, ServiceItem, AvailabilityModelType } from '../../types';
 
 interface AvailabilitySlotFormProps {

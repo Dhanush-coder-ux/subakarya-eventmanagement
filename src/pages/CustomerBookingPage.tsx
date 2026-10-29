@@ -12,7 +12,7 @@ import {
   MapPin,
   Star,
   CheckCircle2,
-  Sparkles,
+  Tag,
   ArrowRight,
   ShieldCheck,
   Users,
@@ -320,7 +320,7 @@ export const CustomerBookingPage: React.FC = () => {
             <section className="bg-surface-card border border-border rounded-2xl p-4 sm:p-6 shadow-subtle space-y-3.5 sm:space-y-4">
               <div>
                 <h2 className="text-sm sm:text-base font-bold text-charcoal flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-wine shrink-0" />
+                  <Tag className="w-4 h-4 text-wine shrink-0" />
                   <span>Select Service Package</span>
                 </h2>
                 <p className="text-xs text-charcoal-muted mt-0.5">

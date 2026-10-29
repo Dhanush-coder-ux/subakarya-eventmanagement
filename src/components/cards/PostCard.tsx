@@ -9,7 +9,7 @@ import {
   MapPin,
   Calendar,
   ArrowRight,
-  Sparkles,
+  MessageSquareQuote,
 } from 'lucide-react';
 import { Post } from '../../types';
 import { useMarketplaceStore } from '../../store/useMarketplaceStore';
@@ -215,7 +215,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
           className="mt-3 w-full py-2 px-3 rounded-xl bg-sand/50 hover:bg-sand border border-sand-dark text-xs font-bold text-charcoal flex items-center justify-between transition-colors"
         >
           <span className="flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-wine" />
+            <MessageSquareQuote className="w-3.5 h-3.5 text-wine" />
             <span>Enquire or Request Custom Quote</span>
           </span>
           <ArrowRight className="w-3.5 h-3.5 text-wine" />

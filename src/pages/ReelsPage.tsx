@@ -12,7 +12,6 @@ import {
   ArrowUpRight,
   Music,
   MapPin,
-  Sparkles,
   Maximize2,
   Minimize2,
   Smartphone,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { CheckCircle2, MapPin, Sparkles, ArrowRight } from 'lucide-react';
+import { CheckCircle2, MapPin, ArrowRight } from 'lucide-react';
 import { ProfessionalProfile } from '../../types';
 import { formatINR } from '../../utils';
 import { useMarketplaceStore } from '../../store/useMarketplaceStore';

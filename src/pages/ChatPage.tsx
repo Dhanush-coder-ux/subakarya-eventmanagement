@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link, useParams } from 'react-router-dom';
 import {
   Send,
-  Sparkles,
   Search,
   ChevronLeft,
   Calendar,
@@ -556,7 +555,7 @@ export const ChatPage: React.FC = () => {
                     placeholder="Message..."
                     className="flex-1 bg-transparent text-xs sm:text-sm text-charcoal placeholder:text-charcoal-muted/70 outline-none"
                   />
-                  <Sparkles className="w-4 h-4 text-wine/60 shrink-0 ml-2" />
+                  
                 </div>
 
                 <button

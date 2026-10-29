@@ -4,7 +4,6 @@ import {
   Sunset,
   Moon,
   Clock,
-  Sparkles,
   Calendar,
   AlertCircle,
   ArrowRight,

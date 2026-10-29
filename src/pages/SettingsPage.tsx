@@ -4,7 +4,6 @@ import {
   Settings as SettingsIcon,
   RotateCcw,
   User,
-  Sparkles,
   ShieldCheck,
   CheckCircle2,
   AlertCircle,

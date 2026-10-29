@@ -1,6 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, Lock, Mail, ArrowRight, ShieldCheck, Sparkles, Building2, User } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, ArrowRight, ShieldCheck, Briefcase, Building2, User } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 
 export const LoginPage: React.FC = () => {
@@ -80,7 +80,7 @@ export const LoginPage: React.FC = () => {
               onClick={() => handleQuickDemo('professional', 'pro-1')}
               className="py-2 px-2.5 rounded-lg bg-surface border border-border hover:border-wine hover:bg-wine-soft/50 text-[11px] font-semibold text-charcoal flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-xs"
             >
-              <Sparkles className="w-3.5 h-3.5 text-wine" />
+              <Briefcase className="w-3.5 h-3.5 text-wine" />
               <span>Vendor Demo</span>
             </button>
           </div>

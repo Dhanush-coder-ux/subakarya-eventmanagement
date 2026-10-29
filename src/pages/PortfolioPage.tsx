@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Sparkles,
   Plus,
   Image as ImageIcon,
   Film,

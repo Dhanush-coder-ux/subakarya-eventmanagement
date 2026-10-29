@@ -16,7 +16,7 @@ import {
   Package,
   Settings,
   Menu,
-  Sparkles,
+  Tag,
   LogOut,
   RotateCcw,
   CheckCircle2,
@@ -95,7 +95,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
 
   // Secondary tools housed cleanly inside the "More / Management" popover
   const professionalMoreTools = [
-    { label: 'Services & Packages', path: '/services', icon: Sparkles, desc: 'Manage event rates & inclusions' },
+    { label: 'Services & Packages', path: '/services', icon: Tag, desc: 'Manage event rates & inclusions' },
     { label: 'Inventory & Gear', path: '/inventory', icon: Package, desc: 'Track equipment & stock levels' },
     { label: 'Availability Rules', path: '/professional/availability', icon: Clock, desc: 'Set working hours & blocked dates' },
     { label: 'Portfolio Content', path: '/portfolio', icon: Layers, desc: 'Manage showcase posts & reels' },

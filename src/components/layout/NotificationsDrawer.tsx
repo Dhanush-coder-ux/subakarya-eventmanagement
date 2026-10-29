@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   Calendar,
   MessageSquare,
-  Sparkles,
   ArrowRight,
   ShieldCheck,
   Bell,

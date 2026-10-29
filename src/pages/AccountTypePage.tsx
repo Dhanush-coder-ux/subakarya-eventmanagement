@@ -1,6 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { User, Sparkles, Check, ArrowRight, ShieldCheck, HeartHandshake, Briefcase } from 'lucide-react';
+import { User, Check, ArrowRight, ShieldCheck, HeartHandshake, Briefcase } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { Role } from '../types';
 

@@ -14,7 +14,7 @@ import {
   Edit3,
   Trash2,
   ExternalLink,
-  Sparkles,
+  Tag, PackageSearch,
   Heart,
   Play,
   Settings,
@@ -292,7 +292,7 @@ export const ProfilePage: React.FC = () => {
               activeTab === 'services' ? 'border-charcoal text-charcoal' : 'border-transparent text-charcoal-muted hover:text-charcoal'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5" />
+            <Tag className="w-3.5 h-3.5" />
             <span>Packages ({proServices.length})</span>
           </button>
         )}
@@ -424,7 +424,7 @@ export const ProfilePage: React.FC = () => {
         <div className="space-y-4">
           {proServices.length === 0 ? (
             <div className="py-16 text-center text-charcoal-muted">
-              <Sparkles className="w-10 h-10 mx-auto mb-2 opacity-40 text-wine" />
+              <PackageSearch className="w-10 h-10 mx-auto mb-2 opacity-40 text-wine" />
               <p className="text-sm font-semibold">No service packages published yet.</p>
             </div>
           ) : (

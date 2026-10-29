@@ -5,7 +5,6 @@ import {
   X,
   SlidersHorizontal,
   MapPin,
-  Sparkles,
   ArrowRight,
   TrendingUp,
   Tag,

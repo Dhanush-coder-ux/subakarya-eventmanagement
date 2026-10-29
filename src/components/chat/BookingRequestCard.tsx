@@ -4,7 +4,7 @@ import {
   MapPin,
   Users,
   IndianRupee,
-  Sparkles,
+  Tag,
   CheckCircle2,
   Send,
   Clock,
@@ -233,7 +233,7 @@ export const BookingRequestCard: React.FC<BookingRequestCardProps> = ({
 
               <div className="flex items-center justify-between pt-1 border-t border-border/50 text-[11px]">
                 <span className="text-charcoal-muted truncate flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-wine shrink-0" />
+                  <Tag className="w-3 h-3 text-wine shrink-0" />
                   <span className="truncate">{matchedService ? matchedService.name : eventType}</span>
                 </span>
                 <span className="font-bold text-charcoal shrink-0">
