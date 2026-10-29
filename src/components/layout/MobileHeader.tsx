@@ -31,7 +31,6 @@ export const MobileHeader: React.FC = () => {
       <div className="flex items-center gap-2">
         <Link to={isCustomer ? '/' : '/dashboard'} className="flex items-center gap-2">
           <img src="/subakarya-logo.png" alt="Subakarya" className="w-7 h-7 object-contain" />
-          <span className="font-bold text-xl tracking-wider text-charcoal leading-none">SUBAKARYA</span>
         </Link>
         <button
           onClick={toggleRole}
