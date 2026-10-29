@@ -82,20 +82,20 @@ export const ProfessionalDashboardPage: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 w-full md:w-auto shrink-0">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto shrink-0">
           <Link
             to="/portfolio"
-            className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs transition-all active:scale-95 text-center"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold flex items-center justify-center gap-2 shadow-xs transition-all active:scale-95 text-center"
           >
-            <Sparkles className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Create Post / Reel</span>
+            <Sparkles className="w-4 h-4 shrink-0" />
+            <span>Create Post / Reel</span>
           </Link>
           <Link
             to={`/profile/${currentUser.id}`}
-            className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl border border-border hover:bg-sand/40 text-charcoal text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors active:scale-95 text-center"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-border bg-surface hover:bg-sand/40 text-charcoal text-xs font-semibold flex items-center justify-center gap-2 transition-colors active:scale-95 text-center"
           >
-            <span className="truncate">View Public Profile</span>
-            <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+            <span>View Public Profile</span>
+            <ArrowRight className="w-4 h-4 shrink-0" />
           </Link>
         </div>
       </div>
