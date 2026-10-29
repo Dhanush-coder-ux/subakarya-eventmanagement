@@ -7,12 +7,17 @@ import { MobileDrawer } from './MobileDrawer';
 import { useAuthStore } from '../../store/useAuthStore';
 
 export const Layout: React.FC = () => {
-  const { isLoggedIn, accountType } = useAuthStore();
+  const { isLoggedIn } = useAuthStore();
   const location = useLocation();
 
   if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
+
+  // Active chat thread route (when an actual conversationId is selected in URL)
+  const isSpecificChatConversation =
+    (location.pathname.startsWith('/chat/') && location.pathname !== '/chat') ||
+    location.pathname.startsWith('/messages/');
 
   const isChatRoute =
     location.pathname.startsWith('/chat') ||
@@ -21,12 +26,14 @@ export const Layout: React.FC = () => {
   return (
     <div
       className={`bg-surface flex flex-col selection:bg-wine selection:text-white ${
-        isChatRoute
+        isSpecificChatConversation
+          ? 'fixed inset-0 h-[100dvh] h-screen overflow-hidden'
+          : isChatRoute
           ? 'fixed inset-0 h-[100dvh] h-screen overflow-hidden'
           : 'min-h-screen'
       }`}
     >
-      {/* Mobile Top Header (hidden on chat for true Instagram DM full-screen experience) */}
+      {/* Mobile Top Header (hidden only when inside an active conversation thread or full chat) */}
       {!isChatRoute && <MobileHeader />}
 
       {/* Desktop Left Sidebar */}
@@ -43,8 +50,8 @@ export const Layout: React.FC = () => {
         <Outlet />
       </main>
 
-      {/* Mobile Bottom Navigation (hidden on chat so the message input bar stays pinned) */}
-      {!isChatRoute && <BottomNav />}
+      {/* Mobile Bottom Navigation: visible on chat thread list in mobile, hidden only inside an active chat thread */}
+      {(!isSpecificChatConversation) && <BottomNav />}
 
       {/* Global Responsive Mobile Drawer for Menus & Quick Role Actions */}
       <MobileDrawer />
