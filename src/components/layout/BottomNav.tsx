@@ -37,7 +37,7 @@ export const BottomNav: React.FC = () => {
   const links = isCustomer ? customerLinks : professionalLinks;
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/98 backdrop-blur-lg border-t border-border px-4 py-2">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-sand border-t border-sand-dark shadow-elevated px-4 py-2">
       <div className="flex items-center justify-between max-w-sm mx-auto">
         {links.map((link) => {
           const Icon = link.icon;
@@ -64,8 +64,8 @@ export const BottomNav: React.FC = () => {
                 <img
                   src={currentUser.avatar}
                   alt={currentUser.name}
-                  className={`w-7 h-7 rounded-full object-cover ring-2 ${
-                    isActive ? 'ring-wine' : 'ring-border'
+                  className={`w-7 h-7 rounded-full object-cover ring-2 transition-all ${
+                    isActive ? 'ring-wine shadow-xs' : 'ring-sand-dark'
                   }`}
                 />
               ) : (
