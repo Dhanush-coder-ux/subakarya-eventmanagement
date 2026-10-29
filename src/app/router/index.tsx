@@ -140,7 +140,7 @@ export const AppRouter: React.FC = () => {
         <Route path="/professional/bookings" element={<BookingsPage />} />
       </Route>
 
-      {/* Fallback */}
+    
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
