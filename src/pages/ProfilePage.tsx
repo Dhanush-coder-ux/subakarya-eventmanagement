@@ -31,9 +31,9 @@ export const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
 
   const { currentUser, allProfessionals, allCustomers, updateProfessionalProfile } = useAuthStore();
-  const { posts, reels, works, services, deletePost, deleteReel, deleteWork, initiateBookingChat } = useMarketplaceStore();
+  const { posts, reels, works, services, reposts, deletePost, deleteReel, deleteWork, initiateBookingChat } = useMarketplaceStore();
 
-  const [activeTab, setActiveTab] = useState<'posts' | 'reels' | 'works' | 'services'>('posts');
+  const [activeTab, setActiveTab] = useState<'posts' | 'reels' | 'works' | 'services' | 'reposts'>('posts');
   const [isFollowing, setIsFollowing] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
@@ -48,6 +48,7 @@ export const ProfilePage: React.FC = () => {
   const userReels = reels.filter((r) => r.professionalId === targetId);
   const userWorks = works.filter((w) => w.professionalId === targetId);
   const proServices = services.filter((s) => s.professionalId === targetId);
+  const userReposts = reposts.filter((r) => r.customerId === targetId && r.status === 'PUBLISHED');
 
   const followersCount = (professional?.followersCount || 120) + (isFollowing ? 1 : 0);
   const postsCount = userPosts.length;

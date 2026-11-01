@@ -1,7 +1,8 @@
-﻿import { create } from 'zustand';
+import { create } from 'zustand';
 import {
   Post,
   Reel,
+  ReelComment,
   WorkSample,
   ServiceItem,
   InventoryItem,
@@ -17,9 +18,47 @@ import {
   AvailabilityBlock,
   AvailabilityModelType,
   PendingBookingContext,
+  RepostRequest,
+  Repost,
+  UserActivity,
+  ProductOrder,
+  CustomerBillingDetails,
+  ProfessionalBankDetails,
+  NotificationCategoryPreferences,
+  OrderStatus,
+  DeliveryStatus,
+  VendorBusinessMode,
+  CommissionRule,
+  FinancialTransaction,
+  VendorPayout,
+  Subscription,
+  SubscriptionPaymentRecord,
+  Refund,
+  VendorBankAccount,
+  BillingFrequency,
 } from '../types';
+import {
+  mockRepostRequests,
+  mockReposts,
+  mockActivities,
+  mockProductOrders,
+  mockCustomerBilling,
+  mockProfessionalBank,
+  defaultNotificationPreferences,
+} from '../data/mockReposts';
+import {
+  defaultCommissionRules,
+  mockFinancialTransactions,
+  mockVendorPayouts,
+  mockSubscriptions,
+  mockSubscriptionInvoices,
+  mockRefunds,
+  mockVendorBankAccount,
+  mockAvailableSubscriptionPlans,
+} from '../data/mockFinancialData';
+import { FinancialService } from '../services/financialService';
 import { mockPosts } from '../data/mockPosts';
-import { mockReels } from '../data/mockReels';
+import { mockReels, mockReelComments } from '../data/mockReels';
 import { mockWorks } from '../data/mockWorks';
 import { mockServices } from '../data/mockServices';
 import { mockInventory } from '../data/mockInventory';
@@ -37,6 +76,7 @@ const MARKETPLACE_STORAGE_KEY = 'subakarya_marketplace_data_v1';
 interface MarketplaceState {
   posts: Post[];
   reels: Reel[];
+  reelComments: ReelComment[];
   works: WorkSample[];
   services: ServiceItem[];
   inventory: InventoryItem[];
@@ -50,6 +90,62 @@ interface MarketplaceState {
   activeConversationId: string | null;
   pendingBookingContext: PendingBookingContext | null;
 
+  // Repost Experience & Settings State
+  repostRequests: RepostRequest[];
+  reposts: Repost[];
+  activities: UserActivity[];
+  orders: ProductOrder[];
+  customerBilling: CustomerBillingDetails;
+  professionalBank: ProfessionalBankDetails;
+  notificationPreferences: NotificationCategoryPreferences;
+  blockedUserIds: string[];
+  mutedUserIds: string[];
+  isPrivateProfile: boolean;
+
+  // Vendor Business Mode
+  businessMode: VendorBusinessMode;
+  setBusinessMode: (mode: VendorBusinessMode) => void;
+
+  // Financial State
+  financialTransactions: FinancialTransaction[];
+  commissionRules: CommissionRule[];
+  payouts: VendorPayout[];
+  subscriptions: Subscription[];
+  subscriptionInvoices: SubscriptionPaymentRecord[];
+  refunds: Refund[];
+  vendorBankAccount: VendorBankAccount;
+
+  // Financial Actions
+  requestPayout: (amount: number, bankAccountId: string) => { success: boolean; message: string; payout?: VendorPayout };
+  updateCommissionRule: (ruleId: string, percentage: number) => void;
+  updateVendorBankAccount: (details: Partial<VendorBankAccount>) => void;
+  processRefund: (refundId: string) => { success: boolean; message: string };
+  addMockTransaction: (transaction: Omit<FinancialTransaction, 'id' | 'createdAt'>) => FinancialTransaction;
+  upgradeSubscription: (planId: string, frequency: BillingFrequency) => void;
+
+  // Repost Actions
+  createRepostRequest: (data: Omit<RepostRequest, 'id' | 'status' | 'createdAt' | 'updatedAt'>) => RepostRequest;
+  approveRepostRequest: (requestId: string) => Repost | null;
+  rejectRepostRequest: (requestId: string, reason?: string) => boolean;
+  revokeRepostPermission: (requestId: string) => boolean;
+  removeRepostByCustomer: (repostId: string) => boolean;
+
+  // Activity Actions
+  addActivity: (activity: Omit<UserActivity, 'id' | 'createdAt'>) => void;
+  removeActivity: (activityId: string) => void;
+
+  // Orders Actions
+  addOrder: (order: Omit<ProductOrder, 'id' | 'orderNumber' | 'orderDate'>) => ProductOrder;
+  updateOrderStatus: (orderId: string, status: OrderStatus, deliveryStatus?: DeliveryStatus) => void;
+
+  // Account & Preferences Actions
+  updateCustomerBilling: (details: Partial<CustomerBillingDetails>) => void;
+  updateProfessionalBank: (details: Partial<ProfessionalBankDetails>) => void;
+  toggleNotificationPreference: (key: keyof NotificationCategoryPreferences) => void;
+  toggleBlockUser: (userId: string) => void;
+  toggleMuteUser: (userId: string) => void;
+  toggleProfilePrivacy: () => void;
+
   // Actions
   setActiveConversation: (id: string | null) => void;
   setPendingBookingContext: (ctx: PendingBookingContext | null) => void;
@@ -60,6 +156,9 @@ interface MarketplaceState {
   toggleLikeReel: (reelId: string) => void;
   toggleSaveReel: (reelId: string, customerId?: string) => void;
   toggleFollowProfessional: (professionalId: string) => void;
+  addReelComment: (reelId: string, text: string, user: { id: string; name: string; avatar: string }) => void;
+  deleteReelComment: (commentId: string) => void;
+  toggleLikeReelComment: (commentId: string) => void;
 
   // Posts & Reels Management
   createPost: (post: Omit<Post, 'id' | 'createdAt' | 'likesCount' | 'savesCount'>) => void;
@@ -154,6 +253,7 @@ const getInitialData = () => {
       return {
         posts: parsed.posts || mockPosts,
         reels: parsed.reels || mockReels,
+        reelComments: parsed.reelComments || mockReelComments,
         works: parsed.works || mockWorks,
         services: parsed.services || mockServices,
         inventory: parsed.inventory || mockInventory,
@@ -164,6 +264,24 @@ const getInitialData = () => {
         availabilitySlots: parsed.availabilitySlots || mockAvailabilitySlots,
         availabilityBlocks: parsed.availabilityBlocks || mockAvailabilityBlocks,
         workingHours: parsed.workingHours || defaultWorkingHours,
+        repostRequests: parsed.repostRequests || mockRepostRequests,
+        reposts: parsed.reposts || mockReposts,
+        activities: parsed.activities || mockActivities,
+        orders: parsed.orders || mockProductOrders,
+        customerBilling: parsed.customerBilling || mockCustomerBilling,
+        professionalBank: parsed.professionalBank || mockProfessionalBank,
+        notificationPreferences: parsed.notificationPreferences || defaultNotificationPreferences,
+        blockedUserIds: parsed.blockedUserIds || [],
+        mutedUserIds: parsed.mutedUserIds || [],
+        isPrivateProfile: parsed.isPrivateProfile ?? false,
+        businessMode: parsed.businessMode || 'BOOKING_BASED',
+        financialTransactions: parsed.financialTransactions || mockFinancialTransactions,
+        commissionRules: parsed.commissionRules || defaultCommissionRules,
+        payouts: parsed.payouts || mockVendorPayouts,
+        subscriptions: parsed.subscriptions || mockSubscriptions,
+        subscriptionInvoices: parsed.subscriptionInvoices || mockSubscriptionInvoices,
+        refunds: parsed.refunds || mockRefunds,
+        vendorBankAccount: parsed.vendorBankAccount || mockVendorBankAccount,
       };
     }
   } catch {
@@ -173,6 +291,7 @@ const getInitialData = () => {
   return {
     posts: mockPosts,
     reels: mockReels,
+    reelComments: mockReelComments,
     works: mockWorks,
     services: mockServices,
     inventory: mockInventory,
@@ -183,6 +302,24 @@ const getInitialData = () => {
     availabilitySlots: mockAvailabilitySlots,
     availabilityBlocks: mockAvailabilityBlocks,
     workingHours: defaultWorkingHours,
+    repostRequests: mockRepostRequests,
+    reposts: mockReposts,
+    activities: mockActivities,
+    orders: mockProductOrders,
+    customerBilling: mockCustomerBilling,
+    professionalBank: mockProfessionalBank,
+    notificationPreferences: defaultNotificationPreferences,
+    blockedUserIds: [],
+    mutedUserIds: [],
+    isPrivateProfile: false,
+    businessMode: 'BOOKING_BASED' as VendorBusinessMode,
+    financialTransactions: mockFinancialTransactions,
+    commissionRules: defaultCommissionRules,
+    payouts: mockVendorPayouts,
+    subscriptions: mockSubscriptions,
+    subscriptionInvoices: mockSubscriptionInvoices,
+    refunds: mockRefunds,
+    vendorBankAccount: mockVendorBankAccount,
   };
 };
 
@@ -191,6 +328,7 @@ const initialData = getInitialData();
 export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
   posts: initialData.posts,
   reels: initialData.reels,
+  reelComments: initialData.reelComments,
   works: initialData.works,
   services: initialData.services,
   inventory: initialData.inventory,
@@ -203,6 +341,32 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
   workingHours: initialData.workingHours,
   activeConversationId: initialData.conversations[0]?.id || null,
   pendingBookingContext: null,
+  repostRequests: initialData.repostRequests,
+  reposts: initialData.reposts,
+  activities: initialData.activities,
+  orders: initialData.orders,
+  customerBilling: initialData.customerBilling,
+  professionalBank: initialData.professionalBank,
+  notificationPreferences: initialData.notificationPreferences,
+  blockedUserIds: initialData.blockedUserIds,
+  mutedUserIds: initialData.mutedUserIds,
+  isPrivateProfile: initialData.isPrivateProfile,
+  businessMode: initialData.businessMode,
+  financialTransactions: initialData.financialTransactions,
+  commissionRules: initialData.commissionRules,
+  payouts: initialData.payouts,
+  subscriptions: initialData.subscriptions,
+  subscriptionInvoices: initialData.subscriptionInvoices,
+  refunds: initialData.refunds,
+  vendorBankAccount: initialData.vendorBankAccount,
+
+  setBusinessMode: (mode: VendorBusinessMode) => {
+    set((state) => {
+      const newState = { ...state, businessMode: mode };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { businessMode: mode };
+    });
+  },
 
   setActiveConversation: (id) => set({ activeConversationId: id }),
 
@@ -289,8 +453,88 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
     });
   },
 
-  toggleFollowProfessional: (_professionalId) => {
-    // In a multi-user context, we update followers
+  toggleFollowProfessional: (professionalId: string) => {
+    set((state) => {
+      const reels = state.reels.map((r) => {
+        if (r.professionalId === professionalId) {
+          return {
+            ...r,
+            isFollowing: !r.isFollowing,
+          };
+        }
+        return r;
+      });
+      const newState = { ...state, reels };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { reels };
+    });
+  },
+
+  addReelComment: (reelId, text, user) => {
+    set((state) => {
+      const newComment: ReelComment = {
+        id: `rc-${Date.now()}`,
+        reelId,
+        userId: user.id,
+        userName: user.name,
+        userAvatar: user.avatar,
+        text,
+        createdAt: 'Just now',
+        likesCount: 0,
+        isLiked: false,
+      };
+      const reelComments = [newComment, ...state.reelComments];
+      const reels = state.reels.map((r) => {
+        if (r.id === reelId) {
+          return {
+            ...r,
+            commentsCount: (r.commentsCount || 0) + 1,
+          };
+        }
+        return r;
+      });
+      const newState = { ...state, reelComments, reels };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { reelComments, reels };
+    });
+  },
+
+  deleteReelComment: (commentId) => {
+    set((state) => {
+      const targetComment = state.reelComments.find((c) => c.id === commentId);
+      const reelComments = state.reelComments.filter((c) => c.id !== commentId);
+      const reels = state.reels.map((r) => {
+        if (targetComment && r.id === targetComment.reelId) {
+          return {
+            ...r,
+            commentsCount: Math.max(0, (r.commentsCount || 1) - 1),
+          };
+        }
+        return r;
+      });
+      const newState = { ...state, reelComments, reels };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { reelComments, reels };
+    });
+  },
+
+  toggleLikeReelComment: (commentId) => {
+    set((state) => {
+      const reelComments = state.reelComments.map((c) => {
+        if (c.id === commentId) {
+          const isLiked = !c.isLiked;
+          return {
+            ...c,
+            isLiked,
+            likesCount: isLiked ? c.likesCount + 1 : Math.max(0, c.likesCount - 1),
+          };
+        }
+        return c;
+      });
+      const newState = { ...state, reelComments };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return { reelComments };
+    });
   },
 
   createPost: (postData) => {
@@ -1116,6 +1360,521 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
     });
   },
 
+
+  createRepostRequest: (data) => {
+    const newRequest: RepostRequest = {
+      ...data,
+      id: 'rep-req-' + Date.now(),
+      status: 'PENDING',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    set((state) => {
+      const updatedRequests = [newRequest, ...state.repostRequests];
+      const newState = {
+        ...state,
+        repostRequests: updatedRequests,
+      };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+
+    return newRequest;
+  },
+
+  approveRepostRequest: (requestId: string) => {
+    const { repostRequests, reposts } = get();
+    const target = repostRequests.find((r) => r.id === requestId);
+    if (!target) return null;
+
+    // Check if duplicate repost exists
+    const existing = reposts.find((r) => r.requestId === requestId || (r.originalReelId === target.originalReelId && r.customerId === target.customerId && r.status === 'PUBLISHED'));
+    if (existing) {
+      return existing;
+    }
+
+    const newRepost: Repost = {
+      id: 'repost-' + Date.now(),
+      requestId: target.id,
+      customerId: target.customerId,
+      customerName: target.customerName,
+      customerAvatar: target.customerAvatar,
+      customerUsername: target.customerUsername,
+      professionalId: target.professionalId,
+      professionalName: target.professionalName,
+      professionalAvatar: target.professionalAvatar,
+      originalReelId: target.originalReelId,
+      experienceText: target.experienceText,
+      rating: target.rating,
+      additionalMedia: target.additionalMedia,
+      publishedAt: new Date().toISOString(),
+      status: 'PUBLISHED',
+    };
+
+    const newActivity: UserActivity = {
+      id: 'act-' + Date.now(),
+      userId: target.customerId,
+      activityType: 'repost',
+      referenceId: target.originalReelId,
+      referenceType: 'repost',
+      title: `Reposted reel from ${target.professionalName}`,
+      thumbnailUrl: target.originalReelThumbnail,
+      professionalId: target.professionalId,
+      professionalName: target.professionalName,
+      createdAt: new Date().toISOString(),
+    };
+
+    set((state) => {
+      const updatedRequests = state.repostRequests.map((r) =>
+        r.id === requestId
+          ? { ...r, status: 'APPROVED' as const, updatedAt: new Date().toISOString() }
+          : r
+      );
+      const updatedReposts = [newRepost, ...state.reposts];
+      const updatedActivities = [newActivity, ...state.activities];
+
+      const newState = {
+        ...state,
+        repostRequests: updatedRequests,
+        reposts: updatedReposts,
+        activities: updatedActivities,
+      };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+
+    return newRepost;
+  },
+
+  rejectRepostRequest: (requestId: string, reason?: string) => {
+    set((state) => {
+      const updatedRequests = state.repostRequests.map((r) =>
+        r.id === requestId
+          ? {
+              ...r,
+              status: 'REJECTED' as const,
+              rejectionReason: reason || 'Not approved by creator at this time.',
+              updatedAt: new Date().toISOString(),
+            }
+          : r
+      );
+
+      const newState = {
+        ...state,
+        repostRequests: updatedRequests,
+      };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+    return true;
+  },
+
+  revokeRepostPermission: (requestId: string) => {
+    set((state) => {
+      const req = state.repostRequests.find((r) => r.id === requestId);
+      const updatedRequests = state.repostRequests.map((r) =>
+        r.id === requestId
+          ? { ...r, status: 'REVOKED' as const, updatedAt: new Date().toISOString() }
+          : r
+      );
+      const updatedReposts = state.reposts.map((rp) =>
+        rp.requestId === requestId || (req && rp.originalReelId === req.originalReelId && rp.customerId === req.customerId)
+          ? { ...rp, status: 'REVOKED' as const }
+          : rp
+      );
+
+      const newState = {
+        ...state,
+        repostRequests: updatedRequests,
+        reposts: updatedReposts,
+      };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+    return true;
+  },
+
+  removeRepostByCustomer: (repostId: string) => {
+    set((state) => {
+      const targetRepost = state.reposts.find((r) => r.id === repostId);
+      const updatedReposts = state.reposts.map((rp) =>
+        rp.id === repostId ? { ...rp, status: 'REMOVED' as const } : rp
+      );
+      const updatedRequests = state.repostRequests.map((req) =>
+        targetRepost && req.id === targetRepost.requestId
+          ? { ...req, status: 'REMOVED_BY_CUSTOMER' as const, updatedAt: new Date().toISOString() }
+          : req
+      );
+      const updatedActivities = state.activities.filter(
+        (a) => targetRepost && !(a.activityType === 'repost' && a.referenceId === targetRepost.originalReelId)
+      );
+
+      const newState = {
+        ...state,
+        reposts: updatedReposts,
+        repostRequests: updatedRequests,
+        activities: updatedActivities,
+      };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+    return true;
+  },
+
+  addActivity: (activity) => {
+    const newAct: UserActivity = {
+      ...activity,
+      id: 'act-' + Date.now(),
+      createdAt: new Date().toISOString(),
+    };
+    set((state) => {
+      const newState = {
+        ...state,
+        activities: [newAct, ...state.activities],
+      };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+  },
+
+  removeActivity: (activityId: string) => {
+    set((state) => {
+      const updated = state.activities.filter((a) => a.id !== activityId);
+      const newState = { ...state, activities: updated };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+  },
+
+  addOrder: (orderData) => {
+    const newOrder: ProductOrder = {
+      ...orderData,
+      id: 'ord-' + Date.now(),
+      orderNumber: 'SB-ORD-' + new Date().getFullYear() + '-' + Math.floor(1000 + Math.random() * 9000),
+      orderDate: new Date().toISOString(),
+    };
+
+    set((state) => {
+      const updatedOrders = [newOrder, ...state.orders];
+      const newState = { ...state, orders: updatedOrders };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+
+    return newOrder;
+  },
+
+  updateOrderStatus: (orderId, status, deliveryStatus) => {
+    set((state) => {
+      const updatedOrders = state.orders.map((ord) => {
+        if (ord.id === orderId) {
+          return {
+            ...ord,
+            orderStatus: status,
+            deliveryStatus: deliveryStatus || ord.deliveryStatus,
+          };
+        }
+        return ord;
+      });
+      const newState = { ...state, orders: updatedOrders };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+  },
+
+  updateCustomerBilling: (details) => {
+    set((state) => {
+      const updatedBilling = { ...state.customerBilling, ...details };
+      const newState = { ...state, customerBilling: updatedBilling };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+  },
+
+  updateProfessionalBank: (details) => {
+    set((state) => {
+      const updatedBank = { ...state.professionalBank, ...details };
+      const newState = { ...state, professionalBank: updatedBank };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+  },
+
+  toggleNotificationPreference: (key) => {
+    set((state) => {
+      const updated = {
+        ...state.notificationPreferences,
+        [key]: !state.notificationPreferences[key],
+      };
+      const newState = { ...state, notificationPreferences: updated };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+  },
+
+  toggleBlockUser: (userId: string) => {
+    set((state) => {
+      const isBlocked = state.blockedUserIds.includes(userId);
+      const updated = isBlocked
+        ? state.blockedUserIds.filter((id) => id !== userId)
+        : [...state.blockedUserIds, userId];
+      const newState = { ...state, blockedUserIds: updated };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+  },
+
+  toggleMuteUser: (userId: string) => {
+    set((state) => {
+      const isMuted = state.mutedUserIds.includes(userId);
+      const updated = isMuted
+        ? state.mutedUserIds.filter((id) => id !== userId)
+        : [...state.mutedUserIds, userId];
+      const newState = { ...state, mutedUserIds: updated };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+  },
+
+  toggleProfilePrivacy: () => {
+    set((state) => {
+      const newState = { ...state, isPrivateProfile: !state.isPrivateProfile };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+  },
+
+  requestPayout: (amount, bankAccountId) => {
+    const { financialTransactions, payouts, refunds, vendorBankAccount } = get();
+    const summary = FinancialService.calculateFinancialSummary(
+      financialTransactions,
+      payouts,
+      refunds,
+      'this_year'
+    );
+
+    const validation = FinancialService.validatePayoutRequest(amount, summary.availableBalance);
+    if (!validation.valid) {
+      return { success: false, message: validation.error || 'Invalid payout request.' };
+    }
+
+    const newPayoutId = `payo-${Date.now()}`;
+    const newPayout: VendorPayout = {
+      id: newPayoutId,
+      vendorId: vendorBankAccount.vendorId || 'pro-1',
+      amount,
+      bankAccountId,
+      bankName: vendorBankAccount.bankName,
+      maskedAccount: vendorBankAccount.maskedAccountNumber,
+      status: 'PAID',
+      requestedAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+      utrReference: `CMS-ACH-${Math.floor(100000 + Math.random() * 900000)}`,
+      notes: 'Disbursed to default settlement account.',
+    };
+
+    const newTransaction: FinancialTransaction = {
+      id: `txn-${Date.now()}`,
+      vendorId: vendorBankAccount.vendorId || 'pro-1',
+      transactionType: 'PAYOUT',
+      referenceId: newPayoutId,
+      description: `Disbursed Payout to ${vendorBankAccount.bankName}`,
+      grossAmount: amount,
+      commissionAmount: 0,
+      netAmount: -amount,
+      currency: 'INR',
+      status: 'COMPLETED',
+      createdAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+      metadata: {
+        category: 'Vendor Settlement',
+        paymentMethod: 'NEFT / RTGS Transfer',
+        invoiceNumber: newPayout.utrReference,
+      },
+    };
+
+    set((state) => {
+      const updatedPayouts = [newPayout, ...state.payouts];
+      const updatedTxns = [newTransaction, ...state.financialTransactions];
+      const newState = {
+        ...state,
+        payouts: updatedPayouts,
+        financialTransactions: updatedTxns,
+      };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+
+    return {
+      success: true,
+      message: `Payout of ₹${amount.toLocaleString('en-IN')} successfully initiated and disbursed to ${vendorBankAccount.bankName}!`,
+      payout: newPayout,
+    };
+  },
+
+  updateCommissionRule: (ruleId, percentage) => {
+    set((state) => {
+      const updatedRules = state.commissionRules.map((r) =>
+        r.id === ruleId ? { ...r, commissionPercentage: Math.max(0, Math.min(100, percentage)) } : r
+      );
+      const newState = { ...state, commissionRules: updatedRules };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+  },
+
+  updateVendorBankAccount: (details) => {
+    set((state) => {
+      const updatedBank = { ...state.vendorBankAccount, ...details };
+      const newState = { ...state, vendorBankAccount: updatedBank };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+  },
+
+  processRefund: (refundId) => {
+    const { refunds, financialTransactions } = get();
+    const targetRefund = refunds.find((r) => r.id === refundId);
+    if (!targetRefund) {
+      return { success: false, message: 'Refund record not found.' };
+    }
+    if (targetRefund.status === 'COMPLETED') {
+      return { success: false, message: 'This refund has already been completed.' };
+    }
+
+    const updatedRefund: Refund = {
+      ...targetRefund,
+      status: 'COMPLETED',
+      completedAt: new Date().toISOString(),
+    };
+
+    const reversalTxn: FinancialTransaction = {
+      id: `txn-ref-${Date.now()}`,
+      vendorId: targetRefund.vendorId,
+      transactionType: 'CUSTOMER_REFUND',
+      referenceId: targetRefund.referenceId,
+      description: `Refund Reversal: ${targetRefund.reason}`,
+      grossAmount: targetRefund.refundAmount,
+      commissionAmount: targetRefund.commissionAdjustment,
+      netAmount: -targetRefund.netAdjustment,
+      currency: 'INR',
+      status: 'COMPLETED',
+      createdAt: new Date().toISOString(),
+      completedAt: new Date().toISOString(),
+      metadata: {
+        category: 'Refund Reversal',
+        customerName: targetRefund.customerName,
+        invoiceNumber: `REF-CRN-${Math.floor(1000 + Math.random() * 9000)}`,
+      },
+    };
+
+    set((state) => {
+      const updatedRefunds = state.refunds.map((r) =>
+        r.id === refundId ? updatedRefund : r
+      );
+      const updatedTxns = [reversalTxn, ...state.financialTransactions];
+      const newState = {
+        ...state,
+        refunds: updatedRefunds,
+        financialTransactions: updatedTxns,
+      };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+
+    return {
+      success: true,
+      message: `Refund of ₹${targetRefund.refundAmount.toLocaleString('en-IN')} successfully processed with commission reversal.`,
+    };
+  },
+
+  addMockTransaction: (transaction) => {
+    const newTxn: FinancialTransaction = {
+      ...transaction,
+      id: `txn-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+    };
+
+    set((state) => {
+      const updatedTxns = [newTxn, ...state.financialTransactions];
+      const newState = { ...state, financialTransactions: updatedTxns };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+
+    return newTxn;
+  },
+
+  upgradeSubscription: (planId, frequency) => {
+    const targetPlan = mockAvailableSubscriptionPlans.find((p) => p.id === planId);
+    if (!targetPlan) return;
+
+    const price = frequency === 'annual' ? Math.round(targetPlan.price * 10) : targetPlan.price;
+    const now = new Date();
+    const nextDate = new Date(now.getTime() + (frequency === 'annual' ? 365 : 30) * 86400000);
+
+    const updatedSub: Subscription = {
+      id: `sub-${Date.now()}`,
+      vendorId: 'pro-1',
+      planId: targetPlan.id,
+      planName: targetPlan.name,
+      amount: price,
+      billingFrequency: frequency,
+      startDate: now.toISOString(),
+      nextBillingDate: nextDate.toISOString(),
+      status: 'ACTIVE',
+      paymentMethodPlaceholder: 'Auto-Debit HDFC •••• 5591',
+      features: targetPlan.features,
+    };
+
+    const newInvoice: SubscriptionPaymentRecord = {
+      id: `sub-inv-${Date.now()}`,
+      subscriptionId: updatedSub.id,
+      planName: targetPlan.name,
+      billingPeriod: `${now.toLocaleDateString('en-GB')} – ${nextDate.toLocaleDateString('en-GB')}`,
+      paymentDate: now.toISOString(),
+      amount: price,
+      paymentMethod: 'Auto-Debit HDFC •••• 5591',
+      status: 'SUCCESS',
+      invoiceNumber: `SUB-INV-${now.getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`,
+    };
+
+    const subTxn: FinancialTransaction = {
+      id: `txn-sub-${Date.now()}`,
+      vendorId: 'pro-1',
+      transactionType: 'SUBSCRIPTION_PAYMENT',
+      referenceId: newInvoice.invoiceNumber,
+      description: `Subscription: ${targetPlan.name} (${frequency})`,
+      grossAmount: price,
+      commissionAmount: 0,
+      netAmount: -price,
+      currency: 'INR',
+      status: 'COMPLETED',
+      createdAt: now.toISOString(),
+      completedAt: now.toISOString(),
+      metadata: {
+        category: 'Subscription Billing',
+        invoiceNumber: newInvoice.invoiceNumber,
+        paymentMethod: 'Auto-Debit HDFC •••• 5591',
+      },
+    };
+
+    set((state) => {
+      const updatedSubscriptions = [updatedSub];
+      const updatedInvoices = [newInvoice, ...state.subscriptionInvoices];
+      const updatedTxns = [subTxn, ...state.financialTransactions];
+      const newState = {
+        ...state,
+        subscriptions: updatedSubscriptions,
+        subscriptionInvoices: updatedInvoices,
+        financialTransactions: updatedTxns,
+      };
+      localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(newState));
+      return newState;
+    });
+  },
+
   resetMarketplaceData: () => {
     localStorage.removeItem(MARKETPLACE_STORAGE_KEY);
     const resetState = {
@@ -1133,6 +1892,14 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
       workingHours: defaultWorkingHours,
       activeConversationId: mockConversations[0].id,
       pendingBookingContext: null,
+      businessMode: 'BOOKING_BASED' as VendorBusinessMode,
+      financialTransactions: mockFinancialTransactions,
+      commissionRules: defaultCommissionRules,
+      payouts: mockVendorPayouts,
+      subscriptions: mockSubscriptions,
+      subscriptionInvoices: mockSubscriptionInvoices,
+      refunds: mockRefunds,
+      vendorBankAccount: mockVendorBankAccount,
     };
     set(resetState);
     localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(resetState));

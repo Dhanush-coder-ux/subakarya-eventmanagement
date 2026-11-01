@@ -19,6 +19,8 @@ import {
   MessageCircle,
   SquarePen,
   MoreVertical,
+  Repeat2,
+  CalendarCheck,
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useMarketplaceStore } from '../store/useMarketplaceStore';
@@ -38,6 +40,7 @@ export const ChatPage: React.FC = () => {
     services,
     inventory,
     bookings,
+    repostRequests,
     activeConversationId,
     pendingBookingContext,
     setActiveConversation,
@@ -58,6 +61,9 @@ export const ChatPage: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const isCustomer = accountType === 'customer';
+  const pendingRepostCount = repostRequests.filter(
+    (r) => r.professionalId === currentUser.id && r.status === 'PENDING'
+  ).length;
 
   // Sync conversationId from URL parameter if provided
   useEffect(() => {
@@ -201,6 +207,36 @@ export const ChatPage: React.FC = () => {
             <SquarePen className="w-4 h-4 text-charcoal-muted hover:text-wine" />
           </button>
         </div>
+
+
+        {/* Distinct 3 Inbox Areas for Vendors */}
+        {!isCustomer && (
+          <div className="px-3 pt-2.5 pb-1 bg-surface shrink-0">
+            <div className="grid grid-cols-3 gap-1 p-1 bg-surface-muted rounded-xl border border-border">
+              <div className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-[11px] font-bold bg-white text-wine shadow-xs border border-border">
+                <MessageCircle className="w-3 h-3 text-wine" />
+                <span>Chats</span>
+              </div>
+              <Link
+                to="/bookings"
+                className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-[11px] font-medium text-charcoal-muted hover:text-charcoal hover:bg-sand/30 transition-colors"
+              >
+                <CalendarCheck className="w-3 h-3 text-charcoal-muted" />
+                <span>Bookings</span>
+              </Link>
+              <Link
+                to="/professional/repost-requests"
+                className="flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-[11px] font-medium text-charcoal-muted hover:text-charcoal hover:bg-sand/30 transition-colors relative"
+              >
+                <Repeat2 className="w-3 h-3 text-charcoal-muted" />
+                <span>Reposts</span>
+                {pendingRepostCount > 0 && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-wine absolute top-1 right-1" />
+                )}
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Search Bar */}
         <div className="p-3 border-b border-border/70 bg-surface shrink-0">

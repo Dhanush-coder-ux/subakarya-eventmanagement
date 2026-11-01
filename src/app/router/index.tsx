@@ -23,6 +23,7 @@ import { SettingsPage } from '../../pages/SettingsPage';
 import { CustomerBookingPage } from '../../pages/CustomerBookingPage';
 import { ProfessionalAvailabilityPage } from '../../pages/ProfessionalAvailabilityPage';
 import { ProfessionalCalendarPage } from '../../pages/ProfessionalCalendarPage';
+import { ProfessionalRepostRequestsPage } from '../../pages/ProfessionalRepostRequestsPage';
 
 // Main Home Switcher component based on active role
 const HomeRouteSwitcher: React.FC = () => {
@@ -61,6 +62,9 @@ export const AppRouter: React.FC = () => {
         <Route path="/profile/:id" element={<ProfilePage />} />
         <Route path="/bookings" element={<BookingsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings/:section" element={<SettingsPage />} />
+        <Route path="/professional/repost-requests" element={<ProfessionalRepostRequestsPage />} />
+        <Route path="/professional/repost-requests/:requestId" element={<ProfessionalRepostRequestsPage />} />
 
         {/* Customer Booking & Availability Exploration */}
         <Route
@@ -138,6 +142,9 @@ export const AppRouter: React.FC = () => {
           }
         />
         <Route path="/professional/bookings" element={<BookingsPage />} />
+        <Route path="/products" element={<Navigate to="/inventory" replace />} />
+        <Route path="/orders" element={<Navigate to="/settings/orders" replace />} />
+        <Route path="/returns" element={<Navigate to="/settings/account-bank" replace />} />
       </Route>
 
     

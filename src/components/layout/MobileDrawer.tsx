@@ -19,6 +19,11 @@ import {
   LogOut,
   PlusSquare,
   ShieldCheck,
+  Repeat2,
+  Store,
+  CreditCard,
+  RotateCcw,
+  ClipboardList,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useMarketplaceStore } from '../../store/useMarketplaceStore';
@@ -37,14 +42,46 @@ export const MobileDrawer: React.FC = () => {
     allProfessionals,
     logout,
   } = useAuthStore();
-  const { conversations } = useMarketplaceStore();
+  const { conversations, repostRequests, businessMode } = useMarketplaceStore();
 
   if (!isMobileMenuOpen) return null;
 
   const isCustomer = accountType === 'customer';
+  const isOrderBased = businessMode === 'ORDER_BASED';
+  const pendingRepostCount = repostRequests.filter(
+    (r) => r.professionalId === currentUser.id && r.status === 'PENDING'
+  ).length;
+
   const unreadCount = conversations.reduce((acc, conv) => {
     return acc + (isCustomer ? conv.unreadCustomerCount : conv.unreadProfessionalCount);
   }, 0);
+
+  const bookingVendorNavItems = [
+    { label: 'Vendor Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { label: 'Client Calendar', path: '/professional/calendar', icon: Calendar },
+    { label: 'Availability Slots', path: '/professional/availability', icon: Clock },
+    { label: 'Booking Requests', path: '/bookings', icon: CalendarCheck },
+    { label: 'Repost Requests', path: '/professional/repost-requests', icon: Repeat2, badge: pendingRepostCount },
+    { label: 'Services Catalog', path: '/services', icon: Tag },
+    { label: 'Financial Dashboard', path: '/settings/account-bank', icon: CreditCard },
+    { label: 'Operating Mode', path: '/settings/business-mode', icon: Store },
+    { label: 'Messages', path: '/chat', icon: Send, badge: unreadCount },
+    { label: 'Public Profile', path: `/profile/${currentUser.id}`, icon: User },
+    { label: 'Settings', path: '/settings', icon: Settings },
+  ];
+
+  const orderVendorNavItems = [
+    { label: 'Seller Dashboard', path: '/dashboard', icon: LayoutDashboard },
+    { label: 'Products & Inventory', path: '/inventory', icon: Package },
+    { label: 'Orders Management', path: '/settings/orders', icon: ClipboardList },
+    { label: 'Returns & Refunds', path: '/settings/account-bank', icon: RotateCcw },
+    { label: 'Repost Requests', path: '/professional/repost-requests', icon: Repeat2, badge: pendingRepostCount },
+    { label: 'Financial Dashboard', path: '/settings/account-bank', icon: CreditCard },
+    { label: 'Operating Mode', path: '/settings/business-mode', icon: Store },
+    { label: 'Messages', path: '/chat', icon: Send, badge: unreadCount },
+    { label: 'Public Profile', path: `/profile/${currentUser.id}`, icon: User },
+    { label: 'Settings', path: '/settings', icon: Settings },
+  ];
 
   const navItems = isCustomer
     ? [
@@ -56,18 +93,9 @@ export const MobileDrawer: React.FC = () => {
         { label: 'Profile', path: `/profile/${currentUser.id}`, icon: User },
         { label: 'Account Settings', path: '/settings', icon: Settings },
       ]
-    : [
-        { label: 'Vendor Dashboard', path: '/dashboard', icon: LayoutDashboard },
-        { label: 'Client Calendar', path: '/professional/calendar', icon: Calendar },
-        { label: 'Availability Slots', path: '/professional/availability', icon: Clock },
-        { label: 'Booking Requests', path: '/bookings', icon: CalendarCheck },
-        { label: 'Services Catalog', path: '/services', icon: Tag },
-        { label: 'Inventory Assets', path: '/inventory', icon: Package },
-        { label: 'Portfolio Works', path: '/portfolio', icon: Layers },
-        { label: 'Messages', path: '/chat', icon: Send, badge: unreadCount },
-        { label: 'Public Profile', path: `/profile/${currentUser.id}`, icon: User },
-        { label: 'Settings', path: '/settings', icon: Settings },
-      ];
+    : isOrderBased
+    ? orderVendorNavItems
+    : bookingVendorNavItems;
 
   const handleRoleToggle = (newRole: 'customer' | 'professional') => {
     setAccountType(newRole);
