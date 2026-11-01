@@ -1,6 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, Lock, Mail, ArrowRight, ShieldCheck, Briefcase, Building2, User } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail, ArrowRight, ShieldCheck, User, Sparkles } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 
 export const LoginPage: React.FC = () => {
@@ -25,17 +25,14 @@ export const LoginPage: React.FC = () => {
     }
 
     setErrorMessage('');
-    // Route to account-type selection to fulfill the flow
-    navigate('/account-type');
+    // Normal authentication: Always log into personal account directly
+    login(email);
+    navigate('/');
   };
 
-  const handleQuickDemo = (role: 'customer' | 'professional', specificId?: string) => {
-    login(undefined, role, specificId);
-    if (role === 'customer') {
-      navigate('/');
-    } else {
-      navigate('/dashboard');
-    }
+  const handleQuickDemoLogin = (userId?: string) => {
+    login(undefined, undefined, userId);
+    navigate('/');
   };
 
   return (
@@ -43,45 +40,38 @@ export const LoginPage: React.FC = () => {
       <div className="w-full max-w-md bg-surface-card rounded-2xl border border-border shadow-elevated p-6 sm:p-8">
         {/* Brand Header */}
         <div className="text-center mb-6">
-          <img src="/subakarya-logo.png" alt="Subakarya Logo" className="w-20 h-20 sm:w-24 sm:h-24 mx-auto object-contain mb-3 drop-shadow-md" />
-          
+          <img
+            src="/subakarya-logo.png"
+            alt="Subakarya Logo"
+            className="w-20 h-20 sm:w-24 sm:h-24 mx-auto object-contain mb-3 drop-shadow-md"
+          />
           <p className="text-xs uppercase tracking-widest text-wine font-semibold mt-1">
             Premium Event Services Marketplace
           </p>
-          <h2 className="text-sm text-charcoal-muted mt-3">
-            Sign in to curate, discover, and book extraordinary event professionals
+          <h2 className="text-sm text-charcoal-muted mt-2">
+            Sign in to explore verified professionals, view reels, and book services
           </h2>
         </div>
 
-        {/* Demo Disclaimer Pill */}
+        {/* Informative notice */}
         <div className="mb-5 p-2.5 rounded-xl bg-sand/50 border border-sand-dark/60 text-[11px] text-charcoal-muted flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-wine flex-shrink-0" />
-          <span>Frontend prototype demonstration. No real credentials required.</span>
+          <span>Single account access. You can activate or switch to professional mode anytime in Settings.</span>
         </div>
 
-        {/* Quick Demo Access Bar */}
-        <div className="mb-6 p-3 bg-surface-muted rounded-xl border border-border/80">
+        {/* Quick Demo Login Option */}
+        <div className="mb-5 p-3 bg-surface-muted rounded-xl border border-border/80">
           <span className="text-[10px] font-bold uppercase tracking-wider text-charcoal-muted block mb-2 text-center">
-            Instant Demo Logins
+            One-Click Demo Access
           </span>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('customer', 'cust-1')}
-              className="py-2 px-2.5 rounded-lg bg-surface border border-border hover:border-wine hover:bg-wine-soft/50 text-[11px] font-semibold text-charcoal flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-xs"
-            >
-              <User className="w-3.5 h-3.5 text-wine" />
-              <span>Customer Demo</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('professional', 'pro-1')}
-              className="py-2 px-2.5 rounded-lg bg-surface border border-border hover:border-wine hover:bg-wine-soft/50 text-[11px] font-semibold text-charcoal flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-xs"
-            >
-              <Briefcase className="w-3.5 h-3.5 text-wine" />
-              <span>Vendor Demo</span>
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => handleQuickDemoLogin()}
+            className="w-full py-2 px-3 rounded-lg bg-surface border border-border hover:border-wine hover:bg-wine-soft/40 text-xs font-semibold text-charcoal flex items-center justify-center gap-2 transition-all active:scale-95 shadow-xs"
+          >
+            <User className="w-3.5 h-3.5 text-wine" />
+            <span>Sign In as Priya Sharma (Personal Account)</span>
+          </button>
         </div>
 
         {/* Login Form */}
@@ -137,7 +127,7 @@ export const LoginPage: React.FC = () => {
             </label>
             <button
               type="button"
-              onClick={() => alert('Demo notice: In this prototype, you can use any email or the quick demo buttons.')}
+              onClick={() => alert('Demo notice: Any email or password can be used in this prototype.')}
               className="text-wine hover:underline font-medium text-[11px]"
             >
               Forgot password?
@@ -154,16 +144,16 @@ export const LoginPage: React.FC = () => {
             type="submit"
             className="w-full py-2.5 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold tracking-wider transition-all duration-150 shadow-sm flex items-center justify-center gap-2 active:scale-98"
           >
-            <span>Continue to Marketplace</span>
+            <span>Sign In to Personal Account</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </form>
 
-        {/* Footer Link */}
+        {/* Footer Link to Register */}
         <div className="mt-6 pt-5 border-t border-border/80 text-center text-xs text-charcoal-muted">
           <span>Don't have an account? </span>
           <Link
-            to="/account-type"
+            to="/register"
             className="font-bold text-wine hover:underline"
           >
             Create an Account

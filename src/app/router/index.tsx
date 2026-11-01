@@ -6,6 +6,7 @@ import { ProtectedRoute, RoleRouteGuard } from './routeGuards';
 
 // Pages
 import { LoginPage } from '../../pages/LoginPage';
+import { RegisterPage } from '../../pages/RegisterPage';
 import { AccountTypePage } from '../../pages/AccountTypePage';
 import { ConsumerOnboardingPage } from '../../pages/ConsumerOnboardingPage';
 import { ProfessionalOnboardingPage } from '../../pages/ProfessionalOnboardingPage';
@@ -39,7 +40,9 @@ export const AppRouter: React.FC = () => {
     <Routes>
       {/* Auth & Onboarding Routes */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
       <Route path="/account-type" element={<AccountTypePage />} />
+      <Route path="/onboarding/personal" element={<ConsumerOnboardingPage />} />
       <Route path="/onboarding/customer" element={<ConsumerOnboardingPage />} />
       <Route path="/onboarding/professional" element={<ProfessionalOnboardingPage />} />
 

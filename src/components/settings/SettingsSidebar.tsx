@@ -17,8 +17,10 @@ import {
   Tag,
   Clock,
   Store,
+  Sparkles,
 } from 'lucide-react';
 import { Role } from '../../types';
+import { useAuthStore } from '../../store/useAuthStore';
 import { useMarketplaceStore } from '../../store/useMarketplaceStore';
 import { SettingsMenuItem, SettingsItemConfig } from './SettingsMenuItem';
 
@@ -38,10 +40,13 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
   unreadOrdersCount = 0,
 }) => {
   const isCustomer = accountType === 'customer';
+  const { userAccount } = useAuthStore();
   const { businessMode } = useMarketplaceStore();
   const isOrderBased = businessMode === 'ORDER_BASED';
 
-  // Grouped Navigation for Customer
+  const hasProfessionalProfile = Boolean(userAccount.professionalProfile);
+
+  // Grouped Navigation for Personal / Customer
   const customerSections: { category: string; items: SettingsItemConfig[] }[] = [
     {
       category: 'Interaction',
@@ -53,16 +58,16 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
           description: 'Likes, comments, saves & reposts',
         },
         {
+          id: 'saved',
+          label: 'Saved Content',
+          icon: Bookmark,
+          description: 'Personal moodboard & bookmarks',
+        },
+        {
           id: 'reposts',
           label: 'Repost Activity',
           icon: Repeat2,
           description: 'Experience submissions & statuses',
-        },
-        {
-          id: 'saved',
-          label: 'Saved Content',
-          icon: Bookmark,
-          description: 'Inspiration gallery',
         },
       ],
     },
@@ -70,16 +75,16 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
       category: 'Orders & Bookings',
       items: [
         {
-          id: 'orders',
-          label: 'My Orders',
-          icon: Package,
-          description: 'Product & gear rental orders',
-        },
-        {
           id: 'bookings',
           label: 'My Bookings',
           icon: CalendarCheck,
           description: 'Event requests & reservations',
+        },
+        {
+          id: 'orders',
+          label: 'My Orders',
+          icon: Package,
+          description: 'Product & gear rental orders',
         },
         {
           id: 'account-bank',
@@ -96,11 +101,11 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
           id: 'account',
           label: 'Account Information',
           icon: User,
-          description: 'Personal details & verification',
+          description: 'Personal details & credentials',
         },
         {
           id: 'privacy',
-          label: 'Privacy and Security',
+          label: 'Privacy & Security',
           icon: Shield,
           description: 'Password, blocked & visibility',
         },
@@ -113,6 +118,30 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
       ],
     },
     {
+      category: 'Professional Upgrade',
+      items: hasProfessionalProfile
+        ? [
+            {
+              id: 'switch-pro',
+              label: 'Switch to Professional',
+              icon: Store,
+              badge: 'Active',
+              badgeVariant: 'wine',
+              description: 'Open your business workspace',
+            },
+          ]
+        : [
+            {
+              id: 'become-pro',
+              label: 'Become a Professional',
+              icon: Sparkles,
+              badge: 'Upgrade',
+              badgeVariant: 'wine',
+              description: 'Monetize event services & gear',
+            },
+          ],
+    },
+    {
       category: 'Preferences',
       items: [
         {
@@ -123,9 +152,9 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
         },
         {
           id: 'switch',
-          label: 'Switch Account Type',
+          label: 'Switch Account & Sandbox',
           icon: RefreshCw,
-          description: 'Toggle between customer & vendor',
+          description: 'Test personas & reset state',
         },
         {
           id: 'logout',
@@ -224,6 +253,17 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
           ],
     },
     {
+      category: 'Experience Switching',
+      items: [
+        {
+          id: 'switch-personal',
+          label: 'Switch to Personal Experience',
+          icon: User,
+          description: 'Browse marketplace without losing business data',
+        },
+      ],
+    },
+    {
       category: 'Account & Security',
       items: [
         {
@@ -253,7 +293,7 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
         },
         {
           id: 'switch',
-          label: 'Switch Account Type',
+          label: 'Switch Persona & Sandbox',
           icon: RefreshCw,
         },
         {

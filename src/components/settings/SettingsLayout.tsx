@@ -31,7 +31,7 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const { section: urlSection } = useParams<{ section?: string }>();
-  const { accountType, currentUser } = useAuthStore();
+  const { accountType, currentUser, switchExperience } = useAuthStore();
   const { repostRequests, orders, businessMode } = useMarketplaceStore();
 
   const isCustomer = accountType === 'customer';
@@ -55,6 +55,20 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
   ).length;
 
   const handleSelectSection = (sectionId: string) => {
+    if (sectionId === 'become-pro') {
+      navigate('/onboarding/professional');
+      return;
+    }
+    if (sectionId === 'switch-pro') {
+      switchExperience('PROFESSIONAL');
+      navigate('/dashboard');
+      return;
+    }
+    if (sectionId === 'switch-personal') {
+      switchExperience('PERSONAL');
+      navigate('/');
+      return;
+    }
     if (sectionId === 'logout') {
       navigate('/settings/switch');
       return;

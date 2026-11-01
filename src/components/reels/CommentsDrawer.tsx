@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   X,
   Send,
@@ -6,9 +6,13 @@ import {
   Trash2,
   MessageCircle,
   Sparkles,
+  CornerDownRight,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useMarketplaceStore } from '../../store/useMarketplaceStore';
+import { ReelComment } from '../../types';
 
 interface CommentsDrawerProps {
   isOpen: boolean;
@@ -38,20 +42,72 @@ export const CommentsDrawer: React.FC<CommentsDrawerProps> = ({
   } = useMarketplaceStore();
 
   const [newCommentText, setNewCommentText] = useState('');
+  const [replyingTo, setReplyingTo] = useState<{
+    commentId: string;
+    userName: string;
+  } | null>(null);
+  const [expandedReplies, setExpandedReplies] = useState<Record<string, boolean>>({});
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
-  const currentComments = reelComments.filter((c) => c.reelId === reelId);
+  // Filter all comments for this reel
+  const reelLevelComments = reelComments.filter((c) => c.reelId === reelId);
+
+  // Separate top-level comments and map their replies
+  const topLevelComments = reelLevelComments.filter((c) => !c.parentId);
+
+  const getRepliesForComment = (parentId: string): ReelComment[] => {
+    return reelLevelComments.filter((c) => c.parentId === parentId);
+  };
+
+  const handleStartReply = (parentCommentId: string, targetUserName: string) => {
+    setReplyingTo({ commentId: parentCommentId, userName: targetUserName });
+    // Expand replies for this comment
+    setExpandedReplies((prev) => ({ ...prev, [parentCommentId]: true }));
+    // Focus the input
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
+  };
+
+  const handleCancelReply = () => {
+    setReplyingTo(null);
+  };
+
+  const toggleRepliesExpansion = (commentId: string) => {
+    setExpandedReplies((prev) => ({
+      ...prev,
+      [commentId]: !prev[commentId],
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCommentText.trim()) return;
 
-    addReelComment(reelId, newCommentText.trim(), {
-      id: currentUser.id,
-      name: currentUser.name,
-      avatar: currentUser.avatar,
-    });
+    if (replyingTo) {
+      addReelComment(
+        reelId,
+        newCommentText.trim(),
+        {
+          id: currentUser.id,
+          name: currentUser.name,
+          avatar: currentUser.avatar,
+        },
+        replyingTo.commentId,
+        replyingTo.userName
+      );
+      setExpandedReplies((prev) => ({ ...prev, [replyingTo.commentId]: true }));
+      setReplyingTo(null);
+    } else {
+      addReelComment(reelId, newCommentText.trim(), {
+        id: currentUser.id,
+        name: currentUser.name,
+        avatar: currentUser.avatar,
+      });
+    }
 
     setNewCommentText('');
   };
@@ -62,12 +118,12 @@ export const CommentsDrawer: React.FC<CommentsDrawerProps> = ({
       data-scrollable="true"
     >
       {/* Header */}
-      <div className="p-4 border-b border-border bg-surface-card flex items-center justify-between shrink-0">
+      <div className="p-3.5 sm:p-4 border-b border-border bg-surface-card flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
           <MessageCircle className="w-4 h-4 text-wine" />
           <h3 className="font-bold text-sm text-charcoal">Comments</h3>
           <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sand text-charcoal border border-sand-dark">
-            {currentComments.length}
+            {reelLevelComments.length}
           </span>
         </div>
 
@@ -98,7 +154,7 @@ export const CommentsDrawer: React.FC<CommentsDrawerProps> = ({
         </div>
 
         {/* User Comments */}
-        {currentComments.length === 0 ? (
+        {topLevelComments.length === 0 ? (
           <div className="py-12 text-center text-charcoal-muted space-y-2">
             <div className="w-12 h-12 rounded-full bg-sand/60 text-wine flex items-center justify-center mx-auto">
               <Sparkles className="w-5 h-5" />
@@ -107,65 +163,210 @@ export const CommentsDrawer: React.FC<CommentsDrawerProps> = ({
             <p className="text-[11px]">Start the conversation by sharing your thoughts!</p>
           </div>
         ) : (
-          currentComments.map((comment) => {
+          topLevelComments.map((comment) => {
             const isMyComment = comment.userId === currentUser.id;
+            const replies = getRepliesForComment(comment.id);
+            const areRepliesExpanded = expandedReplies[comment.id] ?? false;
+
             return (
-              <div key={comment.id} className="pt-3 flex items-start justify-between gap-3 group">
-                <div className="flex items-start gap-3 min-w-0 flex-1">
-                  <img
-                    src={comment.userAvatar}
-                    alt={comment.userName}
-                    className="w-8 h-8 rounded-full object-cover ring-1 ring-border shrink-0 mt-0.5"
-                  />
-                  <div className="min-w-0 flex-1 text-xs">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-charcoal truncate">{comment.userName}</span>
-                      <span className="text-[10px] text-charcoal-muted">{comment.createdAt}</span>
+              <div key={comment.id} className="pt-3 space-y-2.5">
+                {/* Main Comment Row */}
+                <div className="flex items-start justify-between gap-3 group">
+                  <div className="flex items-start gap-3 min-w-0 flex-1">
+                    <img
+                      src={comment.userAvatar}
+                      alt={comment.userName}
+                      className="w-8 h-8 rounded-full object-cover ring-1 ring-border shrink-0 mt-0.5"
+                    />
+                    <div className="min-w-0 flex-1 text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-charcoal truncate">{comment.userName}</span>
+                        <span className="text-[10px] text-charcoal-muted">{comment.createdAt}</span>
+                      </div>
+                      <p className="text-charcoal leading-relaxed mt-0.5 text-xs break-words">
+                        {comment.text}
+                      </p>
+
+                      {/* Reply Button & Actions */}
+                      <div className="flex items-center gap-3 mt-1.5 text-[11px]">
+                        <button
+                          type="button"
+                          onClick={() => handleStartReply(comment.id, comment.userName)}
+                          className="font-semibold text-charcoal-muted hover:text-wine transition-colors flex items-center gap-1"
+                        >
+                          <CornerDownRight className="w-3 h-3" />
+                          <span>Reply</span>
+                        </button>
+
+                        {isMyComment && (
+                          <button
+                            type="button"
+                            onClick={() => deleteReelComment(comment.id)}
+                            className="text-charcoal-muted hover:text-error transition-colors text-[10px]"
+                            title="Delete your comment"
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-charcoal leading-relaxed mt-0.5 text-xs break-words">
-                      {comment.text}
-                    </p>
+                  </div>
+
+                  {/* Comment Like Action */}
+                  <div className="flex items-center gap-1 shrink-0 pt-0.5">
+                    <button
+                      type="button"
+                      onClick={() => toggleLikeReelComment(comment.id)}
+                      className="flex flex-col items-center group/btn active:scale-125 transition-transform"
+                      title="Like comment"
+                    >
+                      <Heart
+                        className={`w-3.5 h-3.5 transition-colors ${
+                          comment.isLiked
+                            ? 'fill-wine text-wine'
+                            : 'text-charcoal-muted group-hover/btn:text-wine'
+                        }`}
+                      />
+                      {comment.likesCount > 0 && (
+                        <span className="text-[9px] text-charcoal-muted font-bold mt-0.5">
+                          {comment.likesCount}
+                        </span>
+                      )}
+                    </button>
                   </div>
                 </div>
 
-                {/* Comment Actions (Like & Delete) */}
-                <div className="flex items-center gap-1 shrink-0 pt-0.5">
-                  <button
-                    type="button"
-                    onClick={() => toggleLikeReelComment(comment.id)}
-                    className="flex flex-col items-center group/btn active:scale-125 transition-transform"
-                    title="Like comment"
-                  >
-                    <Heart
-                      className={`w-3.5 h-3.5 transition-colors ${
-                        comment.isLiked
-                          ? 'fill-wine text-wine'
-                          : 'text-charcoal-muted group-hover/btn:text-wine'
-                      }`}
-                    />
-                    {comment.likesCount > 0 && (
-                      <span className="text-[9px] text-charcoal-muted font-bold mt-0.5">
-                        {comment.likesCount}
-                      </span>
-                    )}
-                  </button>
-
-                  {isMyComment && (
+                {/* View / Hide Replies Toggle Button */}
+                {replies.length > 0 && (
+                  <div className="ml-11">
                     <button
                       type="button"
-                      onClick={() => deleteReelComment(comment.id)}
-                      className="p-1 text-charcoal-muted hover:text-error opacity-0 group-hover:opacity-100 transition-opacity"
-                      title="Delete your comment"
+                      onClick={() => toggleRepliesExpansion(comment.id)}
+                      className="text-[11px] font-bold text-wine hover:text-wine-dark flex items-center gap-1 transition-colors"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <span className="w-4 h-[1px] bg-wine/60 inline-block mr-0.5" />
+                      <span>
+                        {areRepliesExpanded
+                          ? 'Hide replies'
+                          : `View ${replies.length} ${replies.length === 1 ? 'reply' : 'replies'}`}
+                      </span>
+                      {areRepliesExpanded ? (
+                        <ChevronUp className="w-3 h-3" />
+                      ) : (
+                        <ChevronDown className="w-3 h-3" />
+                      )}
                     </button>
-                  )}
-                </div>
+
+                    {/* Nested Replies List */}
+                    {areRepliesExpanded && (
+                      <div className="mt-2.5 space-y-2.5 border-l-2 border-sand-dark/40 pl-3">
+                        {replies.map((reply) => {
+                          const isMyReply = reply.userId === currentUser.id;
+                          return (
+                            <div
+                              key={reply.id}
+                              className="flex items-start justify-between gap-2.5 group"
+                            >
+                              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                                <img
+                                  src={reply.userAvatar}
+                                  alt={reply.userName}
+                                  className="w-6 h-6 rounded-full object-cover ring-1 ring-border shrink-0 mt-0.5"
+                                />
+                                <div className="min-w-0 flex-1 text-xs">
+                                  <div className="flex items-center gap-1.5 flex-wrap">
+                                    <span className="font-bold text-charcoal truncate">
+                                      {reply.userName}
+                                    </span>
+                                    <span className="text-[10px] text-charcoal-muted">
+                                      {reply.createdAt}
+                                    </span>
+                                  </div>
+                                  <p className="text-charcoal leading-relaxed mt-0.5 text-[11px] break-words">
+                                    {reply.replyToUserName && (
+                                      <span className="text-wine font-semibold mr-1">
+                                        @{reply.replyToUserName}
+                                      </span>
+                                    )}
+                                    {reply.text}
+                                  </p>
+
+                                  {/* Reply Actions */}
+                                  <div className="flex items-center gap-3 mt-1 text-[10px]">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleStartReply(comment.id, reply.userName)}
+                                      className="font-semibold text-charcoal-muted hover:text-wine transition-colors"
+                                    >
+                                      Reply
+                                    </button>
+
+                                    {isMyReply && (
+                                      <button
+                                        type="button"
+                                        onClick={() => deleteReelComment(reply.id)}
+                                        className="text-charcoal-muted hover:text-error transition-colors"
+                                      >
+                                        Delete
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Like Reply */}
+                              <div className="flex items-center gap-1 shrink-0 pt-0.5">
+                                <button
+                                  type="button"
+                                  onClick={() => toggleLikeReelComment(reply.id)}
+                                  className="flex flex-col items-center group/btn active:scale-125 transition-transform"
+                                  title="Like reply"
+                                >
+                                  <Heart
+                                    className={`w-3 h-3 transition-colors ${
+                                      reply.isLiked
+                                        ? 'fill-wine text-wine'
+                                        : 'text-charcoal-muted group-hover/btn:text-wine'
+                                    }`}
+                                  />
+                                  {reply.likesCount > 0 && (
+                                    <span className="text-[8px] text-charcoal-muted font-bold mt-0.5">
+                                      {reply.likesCount}
+                                    </span>
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })
         )}
       </div>
+
+      {/* Reply Banner (shown when replying to someone) */}
+      {replyingTo && (
+        <div className="px-4 py-2 bg-sand/60 border-t border-border flex items-center justify-between text-xs text-charcoal shrink-0 animate-in slide-in-from-bottom duration-150">
+          <div className="flex items-center gap-1.5 truncate">
+            <CornerDownRight className="w-3.5 h-3.5 text-wine shrink-0" />
+            <span className="text-charcoal-muted">Replying to</span>
+            <span className="font-bold text-wine truncate">@{replyingTo.userName}</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleCancelReply}
+            className="p-1 rounded-full text-charcoal-muted hover:text-charcoal transition-colors ml-2 shrink-0"
+            title="Cancel reply"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Add Comment Input Bar */}
       <form
@@ -178,10 +379,15 @@ export const CommentsDrawer: React.FC<CommentsDrawerProps> = ({
           className="w-8 h-8 rounded-full object-cover ring-1 ring-border shrink-0"
         />
         <input
+          ref={inputRef}
           type="text"
           value={newCommentText}
           onChange={(e) => setNewCommentText(e.target.value)}
-          placeholder={`Add a comment for ${professionalName}...`}
+          placeholder={
+            replyingTo
+              ? `Reply to @${replyingTo.userName}...`
+              : `Add a comment for ${professionalName}...`
+          }
           className="flex-1 px-3 py-2 text-xs rounded-xl border border-border bg-surface text-charcoal placeholder:text-charcoal-muted/70 outline-none focus:border-wine transition-colors"
         />
         <button
@@ -198,7 +404,7 @@ export const CommentsDrawer: React.FC<CommentsDrawerProps> = ({
   // Desktop side drawer presentation
   if (isDesktopDrawer) {
     return (
-      <div className="w-80 lg:w-96 h-[80vh] max-h-[800px] rounded-2xl border border-border shadow-elevated overflow-hidden animate-in slide-in-from-right duration-200">
+      <div className="w-80 lg:w-96 h-[84vh] max-h-[860px] rounded-2xl border border-border shadow-elevated overflow-hidden animate-in slide-in-from-right duration-200">
         {content}
       </div>
     );

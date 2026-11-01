@@ -1,5 +1,22 @@
 export type Role = 'customer' | 'professional';
 
+export type AccountExperience = 'PERSONAL' | 'PROFESSIONAL';
+
+export type KYCStatus = 'NOT_SUBMITTED' | 'PENDING' | 'VERIFIED' | 'REJECTED';
+
+export type ProfessionalCategory =
+  | 'Event Organizer'
+  | 'Photographer'
+  | 'Videographer'
+  | 'Makeup Artist'
+  | 'Caterer'
+  | 'Wedding Decorator'
+  | 'Event Hall'
+  | 'DJ and Entertainment'
+  | 'Event Equipment Supplier'
+  | 'Furniture and Rental Supplier'
+  | 'Other';
+
 export type ServiceCategory =
   | 'Event Planner'
   | 'Photographer & Videographer'
@@ -8,7 +25,9 @@ export type ServiceCategory =
   | 'Makeup Artist & Hairstylist'
   | 'Decorator & Florist'
   | 'DJ, Sound & Lighting'
-  | 'Equipment Rental';
+  | 'Equipment Rental'
+  | ProfessionalCategory
+  | (string & {});
 
 export interface BaseUser {
   id: string;
@@ -21,8 +40,29 @@ export interface BaseUser {
   createdAt: string;
 }
 
+export interface PersonalProfile {
+  id?: string;
+  fullName: string;
+  username: string;
+  avatar: string;
+  bio: string;
+  location: string;
+  website?: string;
+  email?: string;
+  phone?: string;
+  followersCount?: number;
+  followingCount?: number;
+  followingIds?: string[];
+  savedPostIds?: string[];
+  savedReelIds?: string[];
+  approvedRepostIds?: string[];
+}
+
 export interface CustomerProfile extends BaseUser {
   role: 'customer';
+  username?: string;
+  bio?: string;
+  website?: string;
   savedPostIds: string[];
   savedReelIds: string[];
   followingIds: string[];
@@ -35,17 +75,42 @@ export interface VerificationInfo {
   businessRegNumber?: string;
 }
 
+export interface BankAccountDetails {
+  accountHolderName: string;
+  accountNumber: string;
+  ifscCode: string;
+  bankName: string;
+  upiId?: string;
+}
+
 export interface ProfessionalProfile extends BaseUser {
   role: 'professional';
+  professionalId?: string;
   businessName: string;
+  username?: string;
   businessType: string;
-  category: ServiceCategory;
+  category: ServiceCategory | string;
   description: string;
+  location: string;
+  contact?: string;
+  businessEmail?: string;
+  portfolioImages?: string[];
   coverageArea: string;
   experienceYears: number;
   isVerified: boolean;
   minBookingAmount?: number;
   verificationInfo: VerificationInfo;
+  kycStatus?: KYCStatus;
+  panNumber?: string;
+  panHolderName?: string;
+  legalBusinessName?: string;
+  gstin?: string;
+  identityDocumentUrl?: string;
+  verificationStatus?: 'VERIFIED' | 'UNVERIFIED' | 'PENDING' | 'REJECTED';
+  businessMode?: 'BOOKING_BASED' | 'ORDER_BASED';
+  profileCompletion?: number;
+  isActive?: boolean;
+  bankDetails?: BankAccountDetails;
   followersCount: number;
   followingIds: string[];
   // Dynamic profile completion flags
@@ -56,6 +121,17 @@ export interface ProfessionalProfile extends BaseUser {
   hasVerificationDone: boolean;
   hasPortfolioDone: boolean;
   hasAvailabilityDone: boolean;
+}
+
+export interface UserAccount {
+  id: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  personalProfile: PersonalProfile;
+  professionalProfile?: ProfessionalProfile;
+  activeExperience: AccountExperience;
+  createdAt: string;
 }
 
 export type PricingModel =
@@ -153,6 +229,8 @@ export interface ReelComment {
   createdAt: string;
   likesCount: number;
   isLiked?: boolean;
+  parentId?: string;
+  replyToUserName?: string;
 }
 
 export interface Reel {

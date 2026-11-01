@@ -1,163 +1,107 @@
-﻿import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { User, Check, ArrowRight, ShieldCheck, HeartHandshake, Briefcase } from 'lucide-react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { User, Sparkles, ArrowRight, ShieldCheck, CheckCircle } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
-import { Role } from '../types';
 
 export const AccountTypePage: React.FC = () => {
   const navigate = useNavigate();
-  const { setAccountType } = useAuthStore();
-  const [selectedRole, setSelectedRole] = useState<Role>('customer');
+  const { switchExperience } = useAuthStore();
 
-  const handleConfirm = () => {
-    setAccountType(selectedRole);
-    if (selectedRole === 'customer') {
-      navigate('/');
-    } else {
-      navigate('/dashboard');
-    }
+  const handleContinuePersonal = () => {
+    switchExperience('PERSONAL');
+    navigate('/');
+  };
+
+  const handleBecomeProfessional = () => {
+    navigate('/onboarding/professional');
   };
 
   return (
     <div className="min-h-screen bg-sand/30 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-      <div className="w-full max-w-2xl bg-surface-card rounded-2xl border border-border shadow-elevated p-6 sm:p-8">
-        <div className="text-center mb-8">
-          <img src="/subakarya-logo.png" alt="Subakarya Logo" className="w-16 h-16 sm:w-20 sm:h-20 mx-auto object-contain mb-3 drop-shadow-md" />
-          <h1 className="font-bold text-2xl sm:text-3xl font-bold text-charcoal">
-            Choose Your Account Experience
+      <div className="w-full max-w-xl bg-surface-card rounded-2xl border border-border shadow-elevated p-6 sm:p-8">
+        <div className="text-center mb-6">
+          <img
+            src="/subakarya-logo.png"
+            alt="Subakarya Logo"
+            className="w-16 h-16 mx-auto object-contain mb-3 drop-shadow-md"
+          />
+          <h1 className="text-2xl font-bold text-charcoal">
+            Unified Account Model
           </h1>
           <p className="text-xs sm:text-sm text-charcoal-muted mt-2 max-w-md mx-auto">
-            Select how you would like to explore the platform. You can seamlessly switch between roles at any time in Settings.
+            Subakarya provides all users with a single personal account. You can discover and book services immediately, or activate your professional profile at any time without creating another account.
           </p>
         </div>
 
-        {/* Account Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-          {/* Customer Selection Card */}
-          <div
-            onClick={() => setSelectedRole('customer')}
-            className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 flex flex-col justify-between ${
-              selectedRole === 'customer'
-                ? 'border-wine bg-wine-soft/40 shadow-card'
-                : 'border-border bg-surface hover:border-sand-dark hover:bg-sand/20'
-            }`}
-          >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+          {/* Option 1: Personal Experience */}
+          <div className="p-5 rounded-2xl border-2 border-wine bg-wine-soft/30 flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                  selectedRole === 'customer' ? 'bg-wine text-white' : 'bg-sand text-charcoal'
-                }`}>
-                  <User className="w-5 h-5" />
-                </div>
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${
-                  selectedRole === 'customer' ? 'bg-wine border-wine text-white' : 'border-border-dark'
-                }`}>
-                  {selectedRole === 'customer' && <Check className="w-3 h-3" />}
-                </div>
+              <div className="w-10 h-10 rounded-xl bg-wine text-white flex items-center justify-center mb-3">
+                <User className="w-5 h-5" />
               </div>
-
-              <h3 className="font-bold text-xl font-bold text-charcoal mb-1">
-                Customer
-              </h3>
-              <p className="text-xs text-charcoal-muted mb-4 leading-relaxed">
-                Plan, browse, and book premium professionals for weddings, parties, and private celebrations.
+              <h3 className="font-bold text-base text-charcoal mb-1">Personal Account</h3>
+              <p className="text-xs text-charcoal-muted mb-3">
+                Plan, browse, and book verified event professionals, save reels, and chat with vendors.
               </p>
-
-              <ul className="space-y-2 text-xs text-charcoal">
-                <li className="flex items-start gap-2">
-                  <span className="text-wine font-bold">•</span>
-                  <span>Discover verified photographers, caterers, halls, and decor</span>
+              <ul className="text-[11px] text-charcoal space-y-1.5">
+                <li className="flex items-center gap-1.5">
+                  <CheckCircle className="w-3.5 h-3.5 text-wine shrink-0" />
+                  <span>Discover top-rated vendors</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-wine font-bold">•</span>
-                  <span>Browse high-definition video reels and portfolio works</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-wine font-bold">•</span>
-                  <span>Request itemized quotations via structured chat</span>
+                <li className="flex items-center gap-1.5">
+                  <CheckCircle className="w-3.5 h-3.5 text-wine shrink-0" />
+                  <span>Manage private event bookings</span>
                 </li>
               </ul>
             </div>
-
-            <div className="mt-5 pt-3 border-t border-border/60">
-              <span className="text-[11px] font-semibold text-wine">
-                {selectedRole === 'customer' ? 'Active Selection' : 'Click to select'}
-              </span>
-            </div>
+            <button
+              type="button"
+              onClick={handleContinuePersonal}
+              className="mt-4 w-full py-2 px-3 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5"
+            >
+              <span>Explore Marketplace</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          {/* Professional / Vendor Selection Card */}
-          <div
-            onClick={() => setSelectedRole('professional')}
-            className={`p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 flex flex-col justify-between ${
-              selectedRole === 'professional'
-                ? 'border-wine bg-wine-soft/40 shadow-card'
-                : 'border-border bg-surface hover:border-sand-dark hover:bg-sand/20'
-            }`}
-          >
+          {/* Option 2: Become a Professional */}
+          <div className="p-5 rounded-2xl border border-border bg-surface hover:border-wine/50 transition-all flex flex-col justify-between">
             <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                  selectedRole === 'professional' ? 'bg-wine text-white' : 'bg-sand text-charcoal'
-                }`}>
-                  <Briefcase className="w-5 h-5" />
-                </div>
-                <div className={`w-5 h-5 rounded-full flex items-center justify-center border transition-colors ${
-                  selectedRole === 'professional' ? 'bg-wine border-wine text-white' : 'border-border-dark'
-                }`}>
-                  {selectedRole === 'professional' && <Check className="w-3 h-3" />}
-                </div>
+              <div className="w-10 h-10 rounded-xl bg-sand text-wine flex items-center justify-center mb-3">
+                <Sparkles className="w-5 h-5" />
               </div>
-
-              <h3 className="font-bold text-xl font-bold text-charcoal mb-1">
-                Professional / Vendor
-              </h3>
-              <p className="text-xs text-charcoal-muted mb-4 leading-relaxed">
-                Showcase your business, publish content, manage pricing packages, track inventory, and send quotations.
+              <h3 className="font-bold text-base text-charcoal mb-1">Become a Professional</h3>
+              <p className="text-xs text-charcoal-muted mb-3">
+                Showcase portfolio, list services or products, accept bookings, and manage earnings.
               </p>
-
-              <ul className="space-y-2 text-xs text-charcoal">
-                <li className="flex items-start gap-2">
-                  <span className="text-wine font-bold">•</span>
-                  <span>Promote services and publish reels to customer feeds</span>
+              <ul className="text-[11px] text-charcoal space-y-1.5">
+                <li className="flex items-center gap-1.5">
+                  <CheckCircle className="w-3.5 h-3.5 text-wine shrink-0" />
+                  <span>Verified KYC credentialing</span>
                 </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-wine font-bold">•</span>
-                  <span>Manage equipment inventory, rental units, and stock</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-wine font-bold">•</span>
-                  <span>Generate instant invoice quotations from customer enquiries</span>
+                <li className="flex items-center gap-1.5">
+                  <CheckCircle className="w-3.5 h-3.5 text-wine shrink-0" />
+                  <span>Booking or Order operating mode</span>
                 </li>
               </ul>
             </div>
-
-            <div className="mt-5 pt-3 border-t border-border/60">
-              <span className="text-[11px] font-semibold text-wine">
-                {selectedRole === 'professional' ? 'Active Selection' : 'Click to select'}
-              </span>
-            </div>
+            <button
+              type="button"
+              onClick={handleBecomeProfessional}
+              className="mt-4 w-full py-2 px-3 rounded-xl bg-surface border border-wine text-wine hover:bg-wine-soft/40 text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-1.5"
+            >
+              <span>Start Onboarding</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
           </div>
         </div>
 
-        {/* Action Controls */}
-        <div className="space-y-3">
-          <button
-            onClick={handleConfirm}
-            className="w-full py-3 rounded-xl bg-wine hover:bg-wine-dark text-white text-xs font-bold tracking-wider transition-all duration-150 shadow-sm flex items-center justify-center gap-2 active:scale-98"
-          >
-            <span>Proceed as {selectedRole === 'customer' ? 'Customer' : 'Professional'}</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-
-          <div className="text-center">
-            <Link
-              to={selectedRole === 'customer' ? '/onboarding/customer' : '/onboarding/professional'}
-              className="text-xs text-charcoal-muted hover:text-wine font-medium underline"
-            >
-              Or complete guided onboarding wizard
-            </Link>
-          </div>
+        <div className="text-center">
+          <p className="text-[11px] text-charcoal-muted flex items-center justify-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-wine" />
+            <span>Switch back and forth between personal and professional anytime in Settings.</span>
+          </p>
         </div>
       </div>
     </div>

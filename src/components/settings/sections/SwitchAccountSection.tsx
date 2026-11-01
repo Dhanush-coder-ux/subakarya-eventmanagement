@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
   RefreshCw,
   User,
@@ -9,6 +9,9 @@ import {
   LogOut,
   AlertCircle,
   Layers,
+  Sparkles,
+  ShieldCheck,
+  ArrowRight,
 } from 'lucide-react';
 import { useAuthStore } from '../../../store/useAuthStore';
 import { useMarketplaceStore } from '../../../store/useMarketplaceStore';
@@ -16,9 +19,10 @@ import { useMarketplaceStore } from '../../../store/useMarketplaceStore';
 export const SwitchAccountSection: React.FC = () => {
   const navigate = useNavigate();
   const {
+    userAccount,
+    activeExperience,
+    switchExperience,
     currentUser,
-    accountType,
-    setAccountType,
     switchActiveUser,
     allCustomers,
     allProfessionals,
@@ -28,11 +32,12 @@ export const SwitchAccountSection: React.FC = () => {
   const { resetMarketplaceData } = useMarketplaceStore();
 
   const [resetSuccess, setResetSuccess] = useState(false);
-  const isCustomer = accountType === 'customer';
+  const isPersonal = activeExperience === 'PERSONAL';
+  const hasProProfile = Boolean(userAccount.professionalProfile);
 
-  const handleRoleToggle = (newRole: 'customer' | 'professional') => {
-    setAccountType(newRole);
-    if (newRole === 'customer') {
+  const handleExperienceToggle = (exp: 'PERSONAL' | 'PROFESSIONAL') => {
+    switchExperience(exp);
+    if (exp === 'PERSONAL') {
       navigate('/');
     } else {
       navigate('/dashboard');
@@ -65,9 +70,9 @@ export const SwitchAccountSection: React.FC = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-150 max-w-2xl">
       <div>
-        <h2 className="text-xl font-bold text-charcoal">Switch Account Type & Sandbox Controls</h2>
+        <h2 className="text-xl font-bold text-charcoal">Account Experience & Sandbox Controls</h2>
         <p className="text-xs text-charcoal-muted mt-0.5">
-          Toggle between customer discovery and vendor management modes, test different personas, or reset the sandbox state.
+          Seamlessly transition between personal browsing and professional business management with your single unified identity.
         </p>
       </div>
 
@@ -78,19 +83,25 @@ export const SwitchAccountSection: React.FC = () => {
         </div>
       )}
 
-      {/* Account Mode Switcher */}
+      {/* Account Experience Switcher */}
       <div className="bg-surface-card rounded-2xl border border-border p-5 shadow-card space-y-4">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-charcoal flex items-center gap-2">
-          <Layers className="w-4 h-4 text-wine" />
-          <span>Active Application Role</span>
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-charcoal flex items-center gap-2">
+            <Layers className="w-4 h-4 text-wine" />
+            <span>Active Account Experience</span>
+          </h3>
+          <span className="text-[11px] text-charcoal-muted">
+            Preserves 100% of data across both modes
+          </span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          {/* Personal Experience */}
           <button
             type="button"
-            onClick={() => handleRoleToggle('customer')}
+            onClick={() => handleExperienceToggle('PERSONAL')}
             className={`p-4 rounded-xl border-2 text-left transition-all ${
-              isCustomer
+              isPersonal
                 ? 'border-wine bg-wine-soft/40 shadow-xs'
                 : 'border-border bg-surface hover:bg-sand/20'
             }`}
@@ -98,20 +109,27 @@ export const SwitchAccountSection: React.FC = () => {
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-sm text-charcoal flex items-center gap-1.5">
                 <User className="w-4 h-4 text-wine" />
-                <span>Customer Account</span>
+                <span>Personal Experience</span>
               </span>
-              {isCustomer && <CheckCircle2 className="w-4 h-4 text-wine" />}
+              {isPersonal && <CheckCircle2 className="w-4 h-4 text-wine" />}
             </div>
-            <p className="text-xs text-charcoal-muted">
-              Browse reels, discover event vendors, submit repost requests with reviews, and manage bookings.
+            <p className="text-xs text-charcoal-muted leading-relaxed">
+              Browse reels, discover verified event vendors, save moodboard inspiration, chat, and book services.
             </p>
           </button>
 
+          {/* Professional Experience */}
           <button
             type="button"
-            onClick={() => handleRoleToggle('professional')}
+            onClick={() => {
+              if (hasProProfile) {
+                handleExperienceToggle('PROFESSIONAL');
+              } else {
+                navigate('/onboarding/professional');
+              }
+            }}
             className={`p-4 rounded-xl border-2 text-left transition-all ${
-              !isCustomer
+              !isPersonal
                 ? 'border-wine bg-wine-soft/40 shadow-xs'
                 : 'border-border bg-surface hover:bg-sand/20'
             }`}
@@ -119,21 +137,41 @@ export const SwitchAccountSection: React.FC = () => {
             <div className="flex items-center justify-between mb-2">
               <span className="font-bold text-sm text-charcoal flex items-center gap-1.5">
                 <Building2 className="w-4 h-4 text-wine" />
-                <span>Professional / Vendor</span>
+                <span>Professional Experience</span>
               </span>
-              {!isCustomer && <CheckCircle2 className="w-4 h-4 text-wine" />}
+              {!isPersonal && <CheckCircle2 className="w-4 h-4 text-wine" />}
             </div>
-            <p className="text-xs text-charcoal-muted">
-              Access the separate Repost Requests Inbox, approve client syndication, manage inventory gear and quotes.
+            <p className="text-xs text-charcoal-muted leading-relaxed">
+              {hasProProfile
+                ? 'Access your vendor dashboard, schedule slots, manage bookings, catalogue inventory, and track financial earnings.'
+                : 'Click to start professional onboarding, submit KYC credentials, and activate commercial tools.'}
             </p>
           </button>
         </div>
+
+        {!hasProProfile && (
+          <div className="p-3 rounded-xl bg-sand/60 border border-sand-dark flex items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-wine shrink-0" />
+              <span className="text-charcoal font-medium">
+                Want to list your photography, catering, or event gear?
+              </span>
+            </div>
+            <Link
+              to="/onboarding/professional"
+              className="px-3 py-1.5 rounded-lg bg-wine hover:bg-wine-dark text-white font-bold text-xs shrink-0 flex items-center gap-1 shadow-xs"
+            >
+              <span>Become a Professional</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* Persona Quick Switcher */}
       <div className="bg-surface-card rounded-2xl border border-border p-5 shadow-card space-y-4">
         <div>
-          <h3 className="font-bold text-sm text-charcoal">Quick Switch Persona</h3>
+          <h3 className="font-bold text-sm text-charcoal">Quick Switch Demo Persona</h3>
           <p className="text-xs text-charcoal-muted mt-0.5">
             Test interactions between customer accounts and vendor studios.
           </p>
@@ -199,21 +237,20 @@ export const SwitchAccountSection: React.FC = () => {
             onClick={handleReset}
             className="px-4 py-2 rounded-xl border border-sand-dark bg-sand/50 hover:bg-sand text-charcoal text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
           >
-            <RotateCcw className="w-4 h-4 text-wine" />
-            <span>Restore Initial Demo Data</span>
+            <RotateCcw className="w-3.5 h-3.5 text-wine" />
+            <span>Reset Prototype State</span>
           </button>
 
           <button
             type="button"
             onClick={handleLogout}
-            className="px-4 py-2 rounded-xl bg-error hover:bg-error-dark text-white text-xs font-bold shadow-xs flex items-center justify-center gap-2 transition-colors"
+            className="px-4 py-2 rounded-xl border border-error/30 bg-error-light/40 hover:bg-error-light text-error text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
           >
-            <LogOut className="w-4 h-4" />
-            <span>Log Out Session</span>
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sign Out Session</span>
           </button>
         </div>
       </div>
     </div>
   );
 };
-

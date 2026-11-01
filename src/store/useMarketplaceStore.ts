@@ -156,7 +156,7 @@ interface MarketplaceState {
   toggleLikeReel: (reelId: string) => void;
   toggleSaveReel: (reelId: string, customerId?: string) => void;
   toggleFollowProfessional: (professionalId: string) => void;
-  addReelComment: (reelId: string, text: string, user: { id: string; name: string; avatar: string }) => void;
+  addReelComment: (reelId: string, text: string, user: { id: string; name: string; avatar: string }, parentId?: string, replyToUserName?: string) => void;
   deleteReelComment: (commentId: string) => void;
   toggleLikeReelComment: (commentId: string) => void;
 
@@ -470,7 +470,7 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
     });
   },
 
-  addReelComment: (reelId, text, user) => {
+  addReelComment: (reelId, text, user, parentId, replyToUserName) => {
     set((state) => {
       const newComment: ReelComment = {
         id: `rc-${Date.now()}`,
@@ -482,6 +482,8 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
         createdAt: 'Just now',
         likesCount: 0,
         isLiked: false,
+        parentId,
+        replyToUserName,
       };
       const reelComments = [newComment, ...state.reelComments];
       const reels = state.reels.map((r) => {
@@ -502,12 +504,19 @@ export const useMarketplaceStore = create<MarketplaceState>((set, get) => ({
   deleteReelComment: (commentId) => {
     set((state) => {
       const targetComment = state.reelComments.find((c) => c.id === commentId);
-      const reelComments = state.reelComments.filter((c) => c.id !== commentId);
+      // Delete the comment and any nested replies if it's a parent comment
+      const deletedIds = new Set<string>([commentId]);
+      state.reelComments.forEach((c) => {
+        if (c.parentId === commentId) {
+          deletedIds.add(c.id);
+        }
+      });
+      const reelComments = state.reelComments.filter((c) => !deletedIds.has(c.id));
       const reels = state.reels.map((r) => {
         if (targetComment && r.id === targetComment.reelId) {
           return {
             ...r,
-            commentsCount: Math.max(0, (r.commentsCount || 1) - 1),
+            commentsCount: Math.max(0, (r.commentsCount || deletedIds.size) - deletedIds.size),
           };
         }
         return r;

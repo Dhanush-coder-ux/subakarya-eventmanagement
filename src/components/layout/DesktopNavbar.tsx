@@ -244,8 +244,10 @@ export const DesktopNavbar: React.FC = () => {
   const navigate = useNavigate();
   const {
     currentUser,
+    userAccount,
+    activeExperience,
+    switchExperience,
     accountType,
-    setAccountType,
     switchActiveUser,
     allCustomers,
     allProfessionals,
@@ -255,7 +257,7 @@ export const DesktopNavbar: React.FC = () => {
 
   const isCustomer = accountType === 'customer';
   const isOrderBased = businessMode === 'ORDER_BASED';
-  const isSettingsActive = location.pathname.startsWith('/settings');
+  const hasProProfile = Boolean(userAccount.professionalProfile);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -341,10 +343,14 @@ export const DesktopNavbar: React.FC = () => {
     }
   };
 
-  const handleRoleToggle = (newRole: 'customer' | 'professional') => {
-    setAccountType(newRole);
+  const handleExperienceSwitch = (exp: 'PERSONAL' | 'PROFESSIONAL') => {
     setIsProfileOpen(false);
-    if (newRole === 'customer') {
+    if (exp === 'PROFESSIONAL' && !hasProProfile) {
+      navigate('/onboarding/professional');
+      return;
+    }
+    switchExperience(exp);
+    if (exp === 'PERSONAL') {
       navigate('/');
     } else {
       navigate('/dashboard');
@@ -375,7 +381,7 @@ export const DesktopNavbar: React.FC = () => {
   };
 
   return (
-    <header className="hidden md:flex h-14 bg-surface border-b border-border px-6 items-center justify-between shrink-0 z-30 select-none">
+    <header className="hidden md:flex sticky top-0 z-30 h-14 bg-surface/95 backdrop-blur-md border-b border-border px-6 items-center justify-between shrink-0 select-none">
       {/* 1. Left: Page Indicator & Workspace Context */}
       <div className="flex items-center gap-3 min-w-0">
         <h2 className="text-sm font-bold text-charcoal tracking-tight truncate">
@@ -495,23 +501,8 @@ export const DesktopNavbar: React.FC = () => {
         )}
       </div>
 
-      {/* 3. Right: Settings Shortcut & Profile Account Button */}
+      {/* 3. Right: Profile Account Switcher */}
       <div className="flex items-center gap-2">
-        {/* Settings Page Button */}
-        <button
-          type="button"
-          onClick={() => navigate('/settings')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-            isSettingsActive
-              ? 'bg-sand text-wine font-semibold border border-sand-dark'
-              : 'text-charcoal hover:bg-sand/30 hover:text-wine'
-          }`}
-          title="Open Settings"
-        >
-          <Settings className="w-4 h-4 stroke-[1.8px]" />
-          <span>Settings</span>
-        </button>
-
         {/* Profile Button with Dropdown (Switch Accounts & Logout) */}
         <div className="relative" ref={profileContainerRef}>
           <button
@@ -560,15 +551,15 @@ export const DesktopNavbar: React.FC = () => {
                   </p>
                   <span className="inline-block mt-1 px-2 py-0.5 text-[9px] font-semibold rounded bg-sand/70 text-wine border border-sand-dark">
                     {isCustomer
-                      ? 'Customer Account'
+                      ? 'Personal Account'
                       : isOrderBased
-                      ? 'Vendor • Seller Mode'
-                      : 'Vendor • Booking Mode'}
+                      ? 'Professional • Seller Mode'
+                      : 'Professional • Booking Mode'}
                   </span>
                 </div>
               </div>
 
-              {/* Switch Role Experience (Customer ↔ Vendor) */}
+              {/* Switch Role Experience (Personal ↔ Professional) */}
               <div className="space-y-1.5">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-charcoal-muted">
                   Switch Experience
@@ -576,27 +567,41 @@ export const DesktopNavbar: React.FC = () => {
                 <div className="grid grid-cols-2 gap-1 p-1 bg-surface-card rounded-lg border border-border/60">
                   <button
                     type="button"
-                    onClick={() => handleRoleToggle('customer')}
+                    onClick={() => handleExperienceSwitch('PERSONAL')}
                     className={`py-1.5 text-xs font-semibold rounded transition-colors ${
                       isCustomer
                         ? 'bg-wine text-white shadow-xs'
                         : 'text-charcoal-muted hover:text-charcoal hover:bg-sand/30'
                     }`}
                   >
-                    Customer
+                    Personal
                   </button>
                   <button
                     type="button"
-                    onClick={() => handleRoleToggle('professional')}
+                    onClick={() => handleExperienceSwitch('PROFESSIONAL')}
                     className={`py-1.5 text-xs font-semibold rounded transition-colors ${
                       !isCustomer
                         ? 'bg-wine text-white shadow-xs'
                         : 'text-charcoal-muted hover:text-charcoal hover:bg-sand/30'
                     }`}
                   >
-                    Vendor
+                    Professional
                   </button>
                 </div>
+
+                {!hasProProfile && isCustomer && (
+                  <Link
+                    to="/onboarding/professional"
+                    onClick={() => setIsProfileOpen(false)}
+                    className="mt-1 flex items-center justify-between p-2 rounded-lg bg-sand/60 border border-sand-dark text-wine hover:bg-sand text-[11px] font-bold transition-all"
+                  >
+                    <span className="flex items-center gap-1.5">
+                      <Store className="w-3.5 h-3.5 text-wine" />
+                      <span>Become a Professional</span>
+                    </span>
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
+                )}
               </div>
 
               {/* Vendor Business Mode Quick Switcher (When Vendor) */}

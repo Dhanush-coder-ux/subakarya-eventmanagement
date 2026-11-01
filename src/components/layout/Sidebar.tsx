@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home,
@@ -13,11 +13,13 @@ import {
   User,
   LayoutDashboard,
   Package,
-  Settings,
+  Menu,
   Tag,
   RotateCcw,
   Repeat2,
   ClipboardList,
+  Bell,
+  X,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { useMarketplaceStore } from '../../store/useMarketplaceStore';
@@ -33,6 +35,38 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
   const { conversations, repostRequests, orders, bookings, businessMode } = useMarketplaceStore();
 
   const [showNotifications, setShowNotifications] = useState(false);
+  const notificationsRef = useRef<HTMLDivElement>(null);
+
+  // Close notifications on outside click or Escape key
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(e.target as Node)
+      ) {
+        const target = e.target as HTMLElement | null;
+        if (target?.closest('[data-notifications-trigger="true"]')) {
+          return;
+        }
+        setShowNotifications(false);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowNotifications(false);
+      }
+    };
+
+    if (showNotifications) {
+      document.addEventListener('mousedown', handleClickOutside);
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showNotifications]);
 
   const isCustomer = accountType === 'customer';
   const isOrderBased = businessMode === 'ORDER_BASED';
@@ -65,7 +99,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
     { label: 'Reels', path: '/reels', icon: Film },
     { label: 'Messages', path: '/chat', icon: Send, badge: unreadCount },
     { label: 'Bookings', path: '/bookings', icon: CalendarCheck },
-    { label: 'Settings', path: '/settings', icon: Settings },
     { label: 'Profile', path: `/profile/${currentUser.id}`, icon: User, isAvatar: true },
   ];
 
@@ -78,7 +111,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
     { label: 'Bookings', path: '/bookings', icon: CalendarCheck, badge: pendingBookingsCount },
     { label: 'Customers', path: '/chat', icon: Send, badge: unreadCount },
     { label: 'Reposts', path: '/professional/repost-requests', icon: Repeat2, badge: pendingRepostCount },
-    { label: 'Settings', path: '/settings', icon: Settings },
     { label: 'Profile', path: `/profile/${currentUser.id}`, icon: User, isAvatar: true },
   ];
 
@@ -89,7 +121,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
     { label: 'Customers', path: '/chat', icon: Send, badge: unreadCount },
     { label: 'Returns', path: '/settings/account-bank', icon: RotateCcw },
     { label: 'Reposts', path: '/professional/repost-requests', icon: Repeat2, badge: pendingRepostCount },
-    { label: 'Settings', path: '/settings', icon: Settings },
     { label: 'Profile', path: `/profile/${currentUser.id}`, icon: User, isAvatar: true },
   ];
 
@@ -195,6 +226,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
 
             {/* Notifications Item */}
             <button
+              data-notifications-trigger="true"
               onClick={() => setShowNotifications(!showNotifications)}
               className="w-full flex items-center gap-4 px-3 py-3 rounded-xl text-sm font-medium text-charcoal hover:bg-sand/30 transition-all text-left relative group"
               title="Notifications"
@@ -208,7 +240,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
           </nav>
         </div>
 
-        {/* Clean Bottom Navigation Item - Settings */}
+        {/* Clean Bottom Navigation Item - More (Settings & Preferences) */}
         <div className="pt-2 border-t border-border/60">
           <Link
             to="/settings"
@@ -217,10 +249,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
                 ? 'font-bold text-wine bg-sand/50 shadow-xs'
                 : 'text-charcoal hover:bg-sand/30 font-medium'
             }`}
-            title="Settings"
+            title="More"
           >
-            <Settings className="w-6 h-6 stroke-[1.8px] text-charcoal flex-shrink-0 icon-hover-base group-hover:rotate-45 transition-transform" />
-            {!isCollapsed && <span className="hidden lg:inline truncate">Settings</span>}
+            <Menu className="w-6 h-6 stroke-[1.8px] text-charcoal flex-shrink-0 icon-hover-base group-hover:scale-105 transition-transform" />
+            {!isCollapsed && <span className="hidden lg:inline truncate">More</span>}
           </Link>
         </div>
       </aside>
@@ -228,20 +260,31 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenCreate }) => {
       {/* Notifications Slideover/Drawer */}
       {showNotifications && (
         <div
-          className={`hidden md:block fixed top-0 bottom-0 ${
+          ref={notificationsRef}
+          className={`hidden md:flex flex-col fixed top-0 bottom-0 ${
             isCollapsed ? 'left-[72px]' : 'left-[72px] lg:left-[245px]'
-          } w-80 bg-surface-card border-r border-border shadow-dropdown p-4 z-30 animate-in slide-in-from-left duration-200 overflow-y-auto`}
+          } w-80 bg-surface-card border-r border-border shadow-elevated z-50 animate-in slide-in-from-left duration-200 overflow-hidden`}
         >
-          <div className="flex items-center justify-between pb-3 border-b border-border">
-            <h3 className="font-bold text-sm text-charcoal">Notifications</h3>
+          {/* Header - Aligned with desktop navbar height */}
+          <div className="h-14 px-4 border-b border-border bg-surface flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-2">
+              <Bell className="w-4 h-4 text-wine" />
+              <h3 className="font-bold text-sm text-charcoal">Notifications</h3>
+              <span className="w-2 h-2 rounded-full bg-wine animate-pulse" />
+            </div>
             <button
+              type="button"
               onClick={() => setShowNotifications(false)}
-              className="text-xs text-wine font-semibold hover:underline"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold text-charcoal-muted hover:text-charcoal hover:bg-sand/50 transition-colors"
+              title="Close Notifications"
             >
-              Close
+              <span>Close</span>
+              <X className="w-4 h-4" />
             </button>
           </div>
-          <div className="mt-3 space-y-2.5">
+
+          {/* Scrollable Notifications Feed */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
             <div
               onClick={() => {
                 setShowNotifications(false);
